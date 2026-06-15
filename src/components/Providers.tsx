@@ -60,18 +60,7 @@ function UserSync() {
           console.log('Successfully synced user session via API.');
           const data = await response.json().catch(() => ({}));
           
-          // If the synced user has an admin role, redirect them to /admin automatically
-          if (data.success && data.user) {
-            if (data.user.role === 'admin') {
-              if (!pathname.startsWith('/admin')) {
-                router.push('/admin');
-              }
-            } else if (data.user.role === 'provider') {
-              if (!pathname.startsWith('/dashboard')) {
-                router.push('/dashboard');
-              }
-            }
-          }
+          // User role synced successfully, no automatic redirects needed to allow browsing public pages
         }
       } catch (err) {
         console.error('Failed to run UserSync:', err);

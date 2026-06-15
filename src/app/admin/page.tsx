@@ -39,6 +39,7 @@ interface Provider {
   business_permit_url: string | null;
   is_verified: boolean;
   status: 'pending' | 'approved' | 'rejected' | 'suspended';
+  logo_url: string | null;
 }
 
 interface Category {
@@ -84,6 +85,8 @@ export default function AdminDashboard() {
   const [categoryName, setCategoryName] = useState('');
   const [categorySlug, setCategorySlug] = useState('');
   const [submittingCategory, setSubmittingCategory] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [currentCategoryPage, setCurrentCategoryPage] = useState(1);
 
   async function checkAdminAndLoad() {
     try {
@@ -95,7 +98,7 @@ export default function AdminDashboard() {
 
       // Verify user role via secure server sync API to avoid client-side RLS/JWT config errors
       const response = await fetch('/api/users/sync', { method: 'POST' });
-      if (!response.ok) {
+      if (!response.ok || !response.headers.get('content-type')?.includes('application/json')) {
         router.push('/');
         return;
       }
@@ -108,8 +111,8 @@ export default function AdminDashboard() {
 
       // Fetch all stats and tables in a single server-side API call to avoid RLS/JWT constraints
       const dataResponse = await fetch('/api/admin/data');
-      if (!dataResponse.ok) {
-        throw new Error('Failed to load admin data');
+      if (!dataResponse.ok || !dataResponse.headers.get('content-type')?.includes('application/json')) {
+        throw new Error('Failed to load admin data: Invalid response format');
       }
 
       const adminData = await dataResponse.json();
@@ -256,21 +259,29 @@ export default function AdminDashboard() {
           <p className="text-stone-500 text-xs font-sans mt-1">Platform management console for Serch.</p>
         </div>
 
-        {/* Tab Selection */}
-        <div className="flex items-center gap-2">
-          {['stats', 'providers', 'categories', 'reviews'].map((t) => (
-            <button
-              key={t}
-              onClick={() => setActiveTab(t as any)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all uppercase tracking-wider ${
-                activeTab === t
-                  ? 'bg-primary border-primary text-white shadow-sm'
-                  : 'bg-white border-champagne text-stone-600 hover:border-gold'
-              }`}
-            >
-              {t}
-            </button>
-          ))}
+        {/* Tab Selection & Navigation */}
+        <div className="flex items-center gap-3">
+          <Link
+            href="/search"
+            className="px-4 py-2 rounded-xl text-xs font-bold border border-accent text-accent hover:bg-teal-50 transition-all uppercase tracking-wider bg-white shadow-sm"
+          >
+            Find Providers
+          </Link>
+          <div className="flex items-center gap-2">
+            {['stats', 'providers', 'categories', 'reviews'].map((t) => (
+              <button
+                key={t}
+                onClick={() => setActiveTab(t as any)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all uppercase tracking-wider ${
+                  activeTab === t
+                    ? 'bg-primary border-primary text-white shadow-sm'
+                    : 'bg-white border-champagne text-stone-600 hover:border-gold'
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -304,154 +315,322 @@ export default function AdminDashboard() {
       )}
 
       {/* Tab 2: Provider Approvals */}
-      {activeTab === 'providers' && (
-        <div className="flex flex-col gap-6">
-          <div className="bg-white border border-champagne/60 rounded-2xl overflow-hidden shadow-sm">
-            <div className="divide-y divide-champagne/30">
-              {providers.map((p) => (
-                <div key={p.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                  <div>
-                    <h3 className="font-sans font-bold text-espresso text-base flex items-center gap-2">
-                      {p.business_name}
-                      {p.is_verified && <Award className="w-4 h-4 text-accent" />}
-                    </h3>
-                    <p className="text-stone-500 text-xs mt-1 font-sans">{p.description}</p>
-                    <div className="flex flex-wrap items-center gap-4 text-stone-400 text-xs mt-3">
-                      <span>City: {p.service_city}</span>
-                      <span>District: {p.service_district}</span>
-                      {p.website && <span>Website: {p.website}</span>}
+      {activeTab === 'providers' && (() => {
+        const itemsPerPage = 10;
+        const indexOfLastItem = currentPage * itemsPerPage;
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+        const currentProviders = providers.slice(indexOfFirstItem, indexOfLastItem);
+        const totalPages = Math.ceil(providers.length / itemsPerPage);
+
+        return (
+          <div className="flex flex-col gap-6">
+            <div className="bg-white border border-champagne/60 rounded-2xl overflow-hidden shadow-sm">
+              <div className="divide-y divide-champagne/30">
+                {currentProviders.map((p) => (
+                  <div key={p.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="flex items-start gap-4 min-w-0 flex-1">
+                      {/* Left: Company Logo */}
+                      <div className="w-12 h-12 rounded-xl overflow-hidden bg-stone-50 border border-champagne/40 flex-shrink-0 flex items-center justify-center relative">
+                        {p.logo_url ? (
+                          <img
+                            src={p.logo_url}
+                            alt={p.business_name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-champagne/20 border border-champagne/40 rounded-xl flex items-center justify-center text-accent text-sm font-bold">
+                            {p.business_name.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Right: Info Details */}
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-sans font-bold text-espresso text-base flex items-center gap-2">
+                          {p.business_name}
+                          {p.is_verified && <Award className="w-4 h-4 text-accent" />}
+                        </h3>
+                        <p className="text-stone-500 text-xs mt-1 font-sans">{p.description}</p>
+                        <div className="flex flex-wrap items-center gap-4 text-stone-400 text-xs mt-3">
+                          <span>City: {p.service_city}</span>
+                          <span>District: {p.service_district}</span>
+                          {p.website && <span>Website: {p.website}</span>}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2.5">
+                      {/* Status Badge */}
+                      <span className={`text-[10px] font-bold uppercase px-3 py-1 rounded-full border ${
+                        p.status === 'approved'
+                          ? 'bg-teal-50 border-teal-200 text-teal-800'
+                          : p.status === 'rejected'
+                          ? 'bg-red-50 border-red-200 text-red-800'
+                          : 'bg-amber-50 border-amber-200 text-amber-800'
+                      }`}>
+                        {p.status}
+                      </span>
+
+                      {/* View Map Location */}
+                      <button
+                        onClick={() => setSelectedProviderMap(p)}
+                        className="p-2 bg-stone-50 hover:bg-stone-100 border border-champagne/60 rounded-lg text-slate-700 text-xs font-semibold flex items-center gap-1"
+                        title="View Pinned Location"
+                      >
+                        <Eye className="w-4 h-4" /> Location
+                      </button>
+
+                      {/* Verification Toggle */}
+                      <button
+                        onClick={() => handleToggleVerified(p.id, p.is_verified)}
+                        className="p-2 bg-stone-50 hover:bg-stone-100 border border-champagne/60 rounded-lg text-slate-700 text-xs font-semibold flex items-center gap-1"
+                        title="Toggle Verification Badge"
+                      >
+                        <Award className="w-4 h-4" /> Verify
+                      </button>
+
+                      {/* Approve / Reject Actions */}
+                      {p.status === 'pending' && (
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => handleUpdateStatus(p.id, 'approved')}
+                            className="p-2 bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-700 rounded-lg transition-all"
+                            title="Approve Provider"
+                          >
+                            <Check className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleUpdateStatus(p.id, 'rejected')}
+                            className="p-2 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 rounded-lg transition-all"
+                            title="Reject Provider"
+                          >
+                            <XCircle className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
+                ))}
+              </div>
 
-                  <div className="flex items-center gap-2.5">
-                    {/* Status Badge */}
-                    <span className={`text-[10px] font-bold uppercase px-3 py-1 rounded-full border ${
-                      p.status === 'approved'
-                        ? 'bg-teal-50 border-teal-200 text-teal-800'
-                        : p.status === 'rejected'
-                        ? 'bg-red-50 border-red-200 text-red-800'
-                        : 'bg-amber-50 border-amber-200 text-amber-800'
-                    }`}>
-                      {p.status}
-                    </span>
-
-                    {/* View Map Location */}
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex justify-between items-center px-6 py-4 bg-stone-50 border-t border-champagne/30 flex-wrap gap-4">
+                  <span className="text-xs text-stone-500 font-sans">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <div className="flex items-center gap-1">
                     <button
-                      onClick={() => setSelectedProviderMap(p)}
-                      className="p-2 bg-stone-50 hover:bg-stone-100 border border-champagne/60 rounded-lg text-slate-700 text-xs font-semibold flex items-center gap-1"
-                      title="View Pinned Location"
+                      type="button"
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(1)}
+                      className="px-2.5 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
+                      title="First Page"
                     >
-                      <Eye className="w-4 h-4" /> Location
+                      &lt;&lt;
+                    </button>
+                    <button
+                      type="button"
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      className="px-3 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
+                      title="Previous Page"
+                    >
+                      &lt;
                     </button>
 
-                    {/* Verification Toggle */}
-                    <button
-                      onClick={() => handleToggleVerified(p.id, p.is_verified)}
-                      className="p-2 bg-stone-50 hover:bg-stone-100 border border-champagne/60 rounded-lg text-slate-700 text-xs font-semibold flex items-center gap-1"
-                      title="Toggle Verification Badge"
-                    >
-                      <Award className="w-4 h-4" /> Verify
-                    </button>
+                    {Array.from({ length: totalPages }).map((_, i) => {
+                      const pageNum = i + 1;
+                      return (
+                        <button
+                          type="button"
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                            currentPage === pageNum
+                              ? 'bg-accent border-accent text-white shadow-xs'
+                              : 'bg-white border-champagne text-stone-600 hover:border-gold'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
 
-                    {/* Approve / Reject Actions */}
-                    {p.status === 'pending' && (
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          onClick={() => handleUpdateStatus(p.id, 'approved')}
-                          className="p-2 bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-700 rounded-lg transition-all"
-                          title="Approve Provider"
-                        >
-                          <Check className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleUpdateStatus(p.id, 'rejected')}
-                          className="p-2 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 rounded-lg transition-all"
-                          title="Reject Provider"
-                        >
-                          <XCircle className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )}
+                    <button
+                      type="button"
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      className="px-3 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
+                      title="Next Page"
+                    >
+                      &gt;
+                    </button>
+                    <button
+                      type="button"
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(totalPages)}
+                      className="px-2.5 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
+                      title="Last Page"
+                    >
+                      &gt;&gt;
+                    </button>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
-          </div>
 
-          {/* Location modal */}
-          {selectedProviderMap && (
-            <div className="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center p-4">
-              <div className="bg-white border border-champagne rounded-2xl p-6 shadow-2xl max-w-lg w-full flex flex-col gap-4">
-                <div className="flex justify-between items-center border-b border-champagne/45 pb-3">
-                  <h3 className="font-display font-bold text-espresso text-base">
-                    Location: {selectedProviderMap.business_name}
-                  </h3>
-                  <button onClick={() => setSelectedProviderMap(null)} className="text-stone-400 hover:text-stone-600 font-bold text-lg">&times;</button>
+            {/* Location modal */}
+            {selectedProviderMap && (
+              <div className="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center p-4">
+                <div className="bg-white border border-champagne rounded-2xl p-6 shadow-2xl max-w-lg w-full flex flex-col gap-4">
+                  <div className="flex justify-between items-center border-b border-champagne/45 pb-3">
+                    <h3 className="font-display font-bold text-espresso text-base">
+                      Location: {selectedProviderMap.business_name}
+                    </h3>
+                    <button onClick={() => setSelectedProviderMap(null)} className="text-stone-400 hover:text-stone-600 font-bold text-lg">&times;</button>
+                  </div>
+                  <Map
+                    latitude={selectedProviderMap.latitude}
+                    longitude={selectedProviderMap.longitude}
+                    viewOnly={true}
+                  />
                 </div>
-                <Map
-                  latitude={selectedProviderMap.latitude}
-                  longitude={selectedProviderMap.longitude}
-                  viewOnly={true}
-                />
               </div>
-            </div>
-          )}
-        </div>
-      )}
+            )}
+          </div>
+        );
+      })()}
 
       {/* Tab 3: Categories CRUD */}
-      {activeTab === 'categories' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <form onSubmit={handleAddCategory} className="bg-white border border-champagne/60 rounded-2xl p-6 shadow-sm flex flex-col gap-4 h-max">
-            <h2 className="font-display font-bold text-espresso text-base flex items-center gap-1.5">
-              <FolderEdit className="w-4.5 h-4.5 text-accent" /> Add Category
-            </h2>
-            <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Category Name</label>
-              <input
-                type="text"
-                required
-                value={categoryName}
-                onChange={(e) => setCategoryName(e.target.value)}
-                placeholder="e.g. Roof Repair"
-                className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Slug</label>
-              <input
-                type="text"
-                required
-                value={categorySlug}
-                onChange={(e) => setCategorySlug(e.target.value)}
-                placeholder="e.g. roof-repair"
-                className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={submittingCategory}
-              className="w-full bg-primary hover:bg-slate-800 text-white font-semibold text-xs py-3 rounded-xl transition-all shadow-sm"
-            >
-              {submittingCategory ? 'Adding...' : 'Add Category'}
-            </button>
-          </form>
+      {activeTab === 'categories' && (() => {
+        const itemsPerPage = 10;
+        const indexOfLastItem = currentCategoryPage * itemsPerPage;
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+        const currentCategories = categories.slice(indexOfFirstItem, indexOfLastItem);
+        const totalPages = Math.ceil(categories.length / itemsPerPage);
 
-          <div className="lg:col-span-2 bg-white border border-champagne/60 rounded-2xl p-6 shadow-sm">
-            <h2 className="font-display font-bold text-espresso text-base mb-4">Active Categories</h2>
-            <div className="flex flex-col gap-3">
-              {categories.map((c) => (
-                <div key={c.id} className="p-3 border border-champagne/50 bg-stone-50/50 rounded-xl flex items-center justify-between font-sans text-xs">
-                  <div>
-                    <span className="font-bold text-slate-800 block">{c.name}</span>
-                    <span className="text-[10px] text-stone-500">Slug: {c.slug}</span>
+        return (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <form onSubmit={handleAddCategory} className="bg-white border border-champagne/60 rounded-2xl p-6 shadow-sm flex flex-col gap-4 h-max">
+              <h2 className="font-display font-bold text-espresso text-base flex items-center gap-1.5">
+                <FolderEdit className="w-4.5 h-4.5 text-accent" /> Add Category
+              </h2>
+              <div>
+                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Category Name</label>
+                <input
+                  type="text"
+                  required
+                  value={categoryName}
+                  onChange={(e) => setCategoryName(e.target.value)}
+                  placeholder="e.g. Roof Repair"
+                  className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Slug</label>
+                <input
+                  type="text"
+                  required
+                  value={categorySlug}
+                  onChange={(e) => setCategorySlug(e.target.value)}
+                  placeholder="e.g. roof-repair"
+                  className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={submittingCategory}
+                className="w-full bg-primary hover:bg-slate-800 text-white font-semibold text-xs py-3 rounded-xl transition-all shadow-sm"
+              >
+                {submittingCategory ? 'Adding...' : 'Add Category'}
+              </button>
+            </form>
+
+            <div className="lg:col-span-2 bg-white border border-champagne/60 rounded-2xl p-6 shadow-sm flex flex-col justify-between min-h-[400px]">
+              <div>
+                <h2 className="font-display font-bold text-espresso text-base mb-4">Active Categories</h2>
+                <div className="flex flex-col gap-3">
+                  {currentCategories.map((c) => (
+                    <div key={c.id} className="p-3 border border-champagne/50 bg-stone-50/50 rounded-xl flex items-center justify-between font-sans text-xs">
+                      <div>
+                        <span className="font-bold text-slate-800 block">{c.name}</span>
+                        <span className="text-[10px] text-stone-500">Slug: {c.slug}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex justify-between items-center mt-6 pt-4 border-t border-champagne/30 flex-wrap gap-4">
+                  <span className="text-xs text-stone-500 font-sans">
+                    Page {currentCategoryPage} of {totalPages}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      disabled={currentCategoryPage === 1}
+                      onClick={() => setCurrentCategoryPage(1)}
+                      className="px-2.5 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
+                      title="First Page"
+                    >
+                      &lt;&lt;
+                    </button>
+                    <button
+                      type="button"
+                      disabled={currentCategoryPage === 1}
+                      onClick={() => setCurrentCategoryPage(prev => Math.max(prev - 1, 1))}
+                      className="px-3 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
+                      title="Previous Page"
+                    >
+                      &lt;
+                    </button>
+
+                    {Array.from({ length: totalPages }).map((_, i) => {
+                      const pageNum = i + 1;
+                      return (
+                        <button
+                          type="button"
+                          key={pageNum}
+                          onClick={() => setCurrentCategoryPage(pageNum)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                            currentCategoryPage === pageNum
+                              ? 'bg-accent border-accent text-white shadow-xs'
+                              : 'bg-white border-champagne text-stone-600 hover:border-gold'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+
+                    <button
+                      type="button"
+                      disabled={currentCategoryPage === totalPages}
+                      onClick={() => setCurrentCategoryPage(prev => Math.min(prev + 1, totalPages))}
+                      className="px-3 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
+                      title="Next Page"
+                    >
+                      &gt;
+                    </button>
+                    <button
+                      type="button"
+                      disabled={currentCategoryPage === totalPages}
+                      onClick={() => setCurrentCategoryPage(totalPages)}
+                      className="px-2.5 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
+                      title="Last Page"
+                    >
+                      &gt;&gt;
+                    </button>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Tab 4: Review Moderation */}
       {activeTab === 'reviews' && (

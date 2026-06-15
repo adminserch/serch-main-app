@@ -114,6 +114,7 @@ function SearchContent() {
   const { user } = useUser();
   const [dbRole, setDbRole] = useState<string | null>(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [searchLoc, setSearchLoc] = useState(initialLoc);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -144,6 +145,11 @@ function SearchContent() {
     }
     loadUserRole();
   }, [user]);
+
+  // Reset pagination on filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, searchLoc, selectedCategory, priceFilter, minRating]);
 
   // Load providers from DB or fallback
   useEffect(() => {
@@ -240,6 +246,12 @@ function SearchContent() {
     return matchesQuery && matchesLoc && matchesCat && matchesPrice && matchesRating;
   });
 
+  const itemsPerPage = 10;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const paginatedProviders = filteredProviders.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredProviders.length / itemsPerPage);
+
   const toggleCompare = (p: Provider) => {
     if (compareList.some(item => item.id === p.id)) {
       setCompareList(prev => prev.filter(item => item.id !== p.id));
@@ -264,24 +276,13 @@ function SearchContent() {
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
               {/* Query */}
-              <div className="bg-stone-50 border border-champagne/60 rounded-xl px-3 py-2 flex items-center gap-2 text-sm w-full sm:w-64">
+              <div className="bg-stone-50 border border-champagne/60 rounded-xl px-3 py-2 flex items-center gap-2 text-sm w-full sm:w-[450px]">
                 <SearchIcon className="w-4 h-4 text-stone-400" />
                 <input 
                   type="text" 
-                  placeholder="What service?" 
+                  placeholder="What service are you looking for?" 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-transparent border-none focus:outline-none w-full text-espresso"
-                />
-              </div>
-              {/* Location */}
-              <div className="bg-stone-50 border border-champagne/60 rounded-xl px-3 py-2 flex items-center gap-2 text-sm w-full sm:w-48">
-                <MapPin className="w-4 h-4 text-stone-400" />
-                <input 
-                  type="text" 
-                  placeholder="City/District" 
-                  value={searchLoc}
-                  onChange={(e) => setSearchLoc(e.target.value)}
                   className="bg-transparent border-none focus:outline-none w-full text-espresso"
                 />
               </div>
@@ -339,7 +340,7 @@ function SearchContent() {
             </div>
 
             <div className="flex flex-col gap-5">
-              {filteredProviders.map((p) => {
+              {paginatedProviders.map((p) => {
                 const isCompared = compareList.some(item => item.id === p.id);
                 return (
                   <div 
@@ -361,9 +362,9 @@ function SearchContent() {
                       <div className="w-16 h-16 rounded-xl overflow-hidden bg-stone-50 border border-champagne/40 flex-shrink-0 flex items-center justify-center relative">
                         {p.logo_url ? (
                           <img
-                            src={p.logo_url}
-                            alt={p.business_name}
-                            className="w-full h-full object-cover"
+                             src={p.logo_url}
+                             alt={p.business_name}
+                             className="w-full h-full object-cover"
                           />
                         ) : (
                           <div className="w-full h-full bg-champagne/20 border border-champagne/40 rounded-xl flex items-center justify-center text-accent text-lg font-bold">
@@ -382,12 +383,9 @@ function SearchContent() {
                           <div className="flex items-center gap-1.5 flex-shrink-0">
                             {p.is_verified && (
                               <span className="bg-teal-50 border border-teal-200 text-teal-800 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <ShieldCheck className="w-3.5 h-3.5" /> Verified
+                                <ShieldCheck className="w-3.5 h-3.5" /> Verified Provider
                               </span>
                             )}
-                            <span className="text-xs font-bold text-espresso bg-stone-50 border border-champagne/50 px-2 py-0.5 rounded-lg">
-                              {p.price_level || '$$'}
-                            </span>
                           </div>
                         </div>
 
@@ -442,6 +440,72 @@ function SearchContent() {
                   </div>
                 );
               })}
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex justify-between items-center mt-6 pt-4 border-t border-champagne/30 flex-wrap gap-4">
+                  <span className="text-xs text-stone-500 font-sans">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(1)}
+                      className="px-2.5 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
+                      title="First Page"
+                    >
+                      &lt;&lt;
+                    </button>
+                    <button
+                      type="button"
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      className="px-3 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
+                      title="Previous Page"
+                    >
+                      &lt;
+                    </button>
+
+                    {Array.from({ length: totalPages }).map((_, i) => {
+                      const pageNum = i + 1;
+                      return (
+                        <button
+                          type="button"
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                            currentPage === pageNum
+                              ? 'bg-accent border-accent text-white shadow-xs'
+                              : 'bg-white border-champagne text-stone-600 hover:border-gold'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+
+                    <button
+                      type="button"
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      className="px-3 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
+                      title="Next Page"
+                    >
+                      &gt;
+                    </button>
+                    <button
+                      type="button"
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(totalPages)}
+                      className="px-2.5 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
+                      title="Last Page"
+                    >
+                      &gt;&gt;
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

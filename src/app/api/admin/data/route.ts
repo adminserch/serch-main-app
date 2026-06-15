@@ -28,7 +28,7 @@ export async function GET() {
     // Load Providers
     const { data: pData } = await supabaseAdmin
       .from('providers')
-      .select('id, business_name, description, service_city, service_district, latitude, longitude, website, business_permit_url, is_verified, status')
+      .select('id, business_name, description, service_city, service_district, latitude, longitude, website, business_permit_url, is_verified, status, logo_url')
       .order('status', { ascending: false });
 
     // Load Categories

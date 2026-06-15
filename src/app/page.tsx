@@ -126,10 +126,6 @@ export default function LandingPage() {
             .single();
           if (userData) {
             setDbRole(userData.role);
-            if (userData.role === 'admin') {
-              router.push('/admin');
-              return;
-            }
           }
         }
       } catch (err) {
