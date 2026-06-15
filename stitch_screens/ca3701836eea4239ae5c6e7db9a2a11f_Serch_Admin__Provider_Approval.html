@@ -1,0 +1,382 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Review Provider Application</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400&amp;family=Public+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#6d5e00",
+                        "surface-container-highest": "#e3e2e3",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#2259bf",
+                        "secondary-fixed-dim": "#c2c7cc",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#303031",
+                        "secondary-container": "#dfe3e8",
+                        "on-background": "#1b1c1d",
+                        "surface": "#faf9fa",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#d9e2ff",
+                        "on-primary-container": "#e7ebff",
+                        "surface-container-low": "#f5f3f4",
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e3e2e3",
+                        "surface-bright": "#faf9fa",
+                        "on-surface": "#1b1c1d",
+                        "on-tertiary-fixed": "#211b00",
+                        "background": "#faf9fa",
+                        "surface-container-high": "#e9e8e9",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#434653",
+                        "tertiary-fixed": "#f9e37a",
+                        "secondary-fixed": "#dfe3e8",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#00419d",
+                        "outline-variant": "#c3c6d5",
+                        "primary-container": "#3366cc",
+                        "outline": "#737784",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "inverse-primary": "#b1c5ff",
+                        "on-tertiary-container": "#4a3f00",
+                        "on-secondary-container": "#606569",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "tertiary-container": "#bfab49",
+                        "inverse-on-surface": "#f2f0f1",
+                        "surface-container": "#efedee",
+                        "on-secondary-fixed": "#171c20",
+                        "primary": "#094cb2",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#dbdadb",
+                        "on-primary-fixed": "#001946",
+                        "secondary": "#5a5f63"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Serif"],
+                        "display": ["Noto Serif"],
+                        "body": ["Inter"],
+                        "label": ["Public Sans"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #c3c6d5;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="bg-surface-container-low text-on-surface font-body h-screen flex overflow-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- Shared Component: SideNavBar -->
+<nav class="h-full w-72 flex flex-col fixed left-0 top-0 bg-surface-container-lowest p-6 space-y-4 z-40">
+<!-- Header -->
+<div class="flex items-center gap-4 mb-8 px-2">
+<div class="h-10 w-10 rounded-full bg-surface-container-highest overflow-hidden flex-shrink-0">
+<img alt="Admin profile" class="h-full w-full object-cover" data-alt="A professional headshot of an administrative user. The portrait is sharply focused against a neutral, well-lit background. The lighting is soft and even, suggesting a bright, modern office environment. The overall aesthetic implies authority and competence within a clean, corporate digital platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7K0YlF9F-Qfz4SPWGaHMsX14h1qwvPEIyvPZOHK4-G8iAvCOucCKbFGLJdt2XkAuuPEQOxW0lfNfdUusGl6vgzLmXh91uMFF5-oDytj2TaHSXoZ67rP3r9m8RqX6xQCoiHqT7-9b5gQKWv8kd1ruSV3OJR1aDEjtPdFb6ObTxasZV_Vp7wOrFdCvhewSrFklEQNcQPrzUMM9FIOcrHz0VzVbuADoK2GUInbkdaTDJ3cC949wEFkDBzxQ_btWfULkevzSsCGsLL3wm">
+</div>
+<div>
+<h1 class="font-display text-xl font-bold text-on-surface tracking-tight">Serch Admin</h1>
+<p class="font-label text-xs text-on-surface-variant font-medium">Operations Portal</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<ul class="flex-1 space-y-2">
+<!-- Inactive -->
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-all duration-300 font-body text-label-lg translate-x-0 hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<!-- Inactive -->
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-all duration-300 font-body text-label-lg translate-x-0 hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">how_to_reg</span>
+                    Registrations
+                </a>
+</li>
+<!-- Active (Context: Reviewing a Provider) -->
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#3366cc]/10 text-[#3366cc] font-bold font-body text-label-lg translate-x-1 duration-200" href="#"><span class="material-symbols-outlined fill-icon text-[20px]" style="font-variation-settings: 'FILL' 1;">group</span>Providers</a>
+</li>
+<!-- Inactive -->
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-all duration-300 font-body text-label-lg translate-x-0 hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">map</span>
+                    Locations
+                </a>
+</li>
+<!-- Inactive -->
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-all duration-300 font-body text-label-lg translate-x-0 hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+<!-- System Status CTA -->
+<div class="px-2 mb-4">
+<div class="flex items-center justify-between p-3 rounded-xl bg-surface-container bg-opacity-50">
+<span class="font-label text-xs font-semibold text-on-surface-variant">System Status</span>
+<div class="flex items-center gap-2">
+<span class="relative flex h-2.5 w-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary-container opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-tertiary"></span>
+</span>
+<span class="font-label text-xs font-medium text-tertiary">All Operational</span>
+</div>
+</div>
+</div>
+<!-- Footer Links -->
+<ul class="space-y-1 pt-4 border-t border-transparent relative">
+<div class="absolute top-0 left-4 right-4 h-px bg-surface-container-highest"></div>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-all duration-300 font-body text-label-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+                    Support
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-all duration-300 font-body text-label-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+                    Logout
+                </a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-72 flex-1 flex flex-col h-full overflow-y-auto">
+<!-- Header Actions Area -->
+<header class="sticky top-0 z-30 bg-surface-container-low/90 backdrop-blur-xl px-10 py-8 flex justify-between items-end">
+<div>
+<nav class="flex items-center gap-2 text-on-surface-variant font-label text-xs font-semibold uppercase tracking-widest mb-3">
+<a class="hover:text-primary transition-colors" href="#">Providers</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Pending Applications</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface">APP-2023-8942</span>
+</nav>
+<div class="flex items-center gap-4">
+<h2 class="font-headline text-4xl font-bold tracking-tight text-on-surface">Review Application</h2>
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label text-xs font-bold uppercase tracking-wider">
+                        Pending
+                    </span>
+</div>
+</div>
+<!-- Action Cluster -->
+<div class="flex items-center gap-3">
+<button class="px-5 py-2.5 rounded-xl bg-error-container text-on-error-container font-label text-sm font-bold tracking-wide hover:bg-[#ffc6c0] transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-error focus:outline-none">
+                    Reject
+                </button>
+<button class="px-5 py-2.5 rounded-xl bg-surface-container-highest text-on-surface font-label text-sm font-bold tracking-wide hover:bg-surface-dim transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-surface-tint focus:outline-none">
+                    Request Info
+                </button>
+<button class="px-6 py-2.5 rounded-xl bg-primary text-on-primary font-label text-sm font-bold tracking-wide hover:bg-[#073b8c] transition-colors shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:outline-none flex items-center gap-2" style="background-color: rgb(51, 102, 204);">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                    Approve
+                </button>
+</div>
+</header>
+<!-- Bento Grid Content -->
+<div class="px-10 pb-12 w-full max-w-7xl">
+<div class="grid grid-cols-12 gap-6">
+<!-- Left Column: Data Heavy -->
+<div class="col-span-12 lg:col-span-7 flex flex-col gap-6">
+<!-- Business Entity Details -->
+<section class="bg-surface-container-lowest rounded-2xl p-8 shadow-[0_4px_24px_-12px_rgba(0,0,0,0.05)]">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary text-2xl" style="color: rgb(51, 102, 204);">domain</span>
+<h3 class="font-headline text-2xl font-semibold text-on-surface">Entity Details</h3>
+</div>
+<div class="grid grid-cols-2 gap-y-8 gap-x-6">
+<div>
+<p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Legal Business Name</p>
+<p class="font-body text-base font-medium text-on-surface">Lumina Pet Care Services LLC</p>
+</div>
+<div>
+<p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Doing Business As (DBA)</p>
+<p class="font-body text-base font-medium text-on-surface">Lumina Walks</p>
+</div>
+<div>
+<p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Registration Number</p>
+<p class="font-body text-base font-mono text-on-surface bg-surface-container px-2 py-1 rounded-md inline-block">EIN-94-30291X</p>
+</div>
+<div>
+<p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Date Established</p>
+<p class="font-body text-base font-medium text-on-surface">March 15, 2021</p>
+</div>
+<div class="col-span-2">
+<p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Service Description</p>
+<p class="font-body text-base text-secondary leading-relaxed max-w-2xl">
+                                    Premium, insured dog walking and specialized pet sitting services tailored for high-energy breeds and elderly pets requiring medical administration. Operating exclusively within the metropolitan downtown district.
+                                </p>
+</div>
+</div>
+</section>
+<!-- Applicant Contact -->
+<section class="bg-surface-container-lowest rounded-2xl p-8 shadow-[0_4px_24px_-12px_rgba(0,0,0,0.05)]">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary text-2xl" style="color: rgb(51, 102, 204);">person_book</span>
+<h3 class="font-headline text-2xl font-semibold text-on-surface">Primary Contact</h3>
+</div>
+<div class="flex items-start gap-6">
+<div class="h-20 w-20 rounded-2xl bg-surface-container-high overflow-hidden flex-shrink-0 relative group">
+<img alt="Applicant Profile" class="h-full w-full object-cover" data-alt="A brightly lit, professional portrait of a female applicant. She has a warm, confident expression. The background is a soft, blurred office interior setting, emphasizing clarity and professionalism. The image has a clean, high-contrast look suitable for a high-end application review system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzwo2sFV2WEpcEajDC6ITy2LjrkkYq_xeKNp9Pg8dEZf9rnqftzsY7d_93mcyfqMrNHKOZ-LeNIg7oDdi7GdqhQgrj1a6JhQU8vH4_AYJoW21HSkCTpt892RWfcuL1JlNZ3Tz1xWReV_RpDaSvoOyjqC8DbjBSEodOv9bR71QKznMynXRYvVM70TapwVYJhbv4n1_gKIt5toCmKhhMtD11coNBjOqP-LlTMrFw_abMwwJYL0a_3tlrWF_vS-zYbkyVqtpw7RPIo_D-">
+<div class="absolute inset-0 bg-inverse-surface/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined text-on-primary">zoom_in</span>
+</div>
+</div>
+<div class="flex-1 grid grid-cols-2 gap-y-4 gap-x-6">
+<div>
+<p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Full Name</p>
+<p class="font-body text-base font-medium text-on-surface">Elena Rodriguez</p>
+</div>
+<div>
+<p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Role / Title</p>
+<p class="font-body text-base font-medium text-on-surface">Managing Director</p>
+</div>
+<div>
+<p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Email Address</p>
+<a class="font-body text-base font-medium text-primary hover:underline" href="mailto:elena@luminawalks.com" style="color: rgb(51, 102, 204);">elena@luminawalks.com</a>
+</div>
+<div>
+<p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Phone Number</p>
+<p class="font-body text-base font-medium text-on-surface">+1 (555) 019-8372</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Visual Heavy -->
+<div class="col-span-12 lg:col-span-5 flex flex-col gap-6">
+<!-- Location / Map View -->
+<section class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_4px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col h-[340px]">
+<div class="p-6 pb-4 flex justify-between items-center bg-surface-container-lowest z-10 relative">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-2xl" style="color: #3366cc;">location_on</span>
+<h3 class="font-headline text-xl font-semibold text-on-surface">Headquarters</h3>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors" title="Expand Map">
+<span class="material-symbols-outlined text-[20px]">open_in_full</span>
+</button>
+</div>
+<div class="flex-1 relative bg-surface-container">
+<!-- Map Background Placeholder -->
+<img alt="Map view" class="absolute inset-0 w-full h-full object-cover opacity-80" data-alt="A clean, minimalist digital map view centered on a downtown metropolitan area. The map uses a light-mode color palette with soft greys for roads and subtle beige tones for landmasses. There are no cluttered labels, prioritizing a high-end, editorial aesthetic. A subtle drop shadow suggests depth." data-location="San Francisco, CA" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzSDG43zdn_UYqUjmxPstTlQVSkAjfJnf3eT45aFjnP3mz4ocT60LLsfTEq91JLwQkLte7HAUNbG0LCL8yVTYQKDuTYFc3E1nEvf6g-dJ8Ute3Z4GyyhURY3dPyKQm6R1nryeK1HoxT9Y5HKLOAoWKwpNiFbiTxaU6OOfy7HPsMffMJ_XOHqFv3_yO9PbmYWvR-lkGpf64fxBDwtO7mCQBSQOfwr6jEWld6hdnqptZMs-vtJQBtPvRE-T9m7-xV8r0c27roFEPMO6a">
+<!-- Map Pin UI Overlay -->
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="relative animate-bounce">
+<div class="h-10 w-10 bg-primary rounded-full flex items-center justify-center shadow-lg relative z-10 border-4 border-surface-container-lowest" style="background-color: rgb(51, 102, 204);">
+<span class="material-symbols-outlined text-on-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">storefront</span>
+</div>
+<div class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-primary rotate-45 z-0" style="background-color: #3366cc;"></div>
+</div>
+</div>
+<!-- Address Pill Overlay -->
+<div class="absolute bottom-4 left-4 right-4 bg-surface-container-lowest/90 backdrop-blur-md rounded-xl p-3 flex items-center gap-3 shadow-sm border border-outline-variant/20">
+<div class="h-8 w-8 rounded-lg bg-surface-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">signpost</span>
+</div>
+<div>
+<p class="font-body text-sm font-semibold text-on-surface truncate">1420 Market Street, Suite 400</p>
+<p class="font-body text-xs text-secondary truncate">San Francisco, CA 94102</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Document Preview -->
+<section class="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_4px_24px_-12px_rgba(0,0,0,0.05)] flex-1 flex flex-col">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-2xl" style="color: #3366cc;">description</span>
+<h3 class="font-headline text-xl font-semibold text-on-surface">Required Documents</h3>
+</div>
+<span class="font-label text-xs font-semibold text-tertiary bg-tertiary-container/30 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                1 Pending
+                            </span>
+</div>
+<!-- PDF Viewer Faux UI -->
+<div class="flex-1 bg-surface-container rounded-xl border border-outline-variant/30 flex flex-col overflow-hidden relative group">
+<!-- Document Header -->
+<div class="bg-surface-container-high px-4 py-2 border-b border-outline-variant/30 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-error text-[18px]" style="font-variation-settings: 'FILL' 1;">picture_as_pdf</span>
+<span class="font-body text-sm font-medium text-on-surface truncate max-w-[180px]">SF_Business_Permit_2023.pdf</span>
+</div>
+<span class="font-body text-xs text-on-surface-variant">2.4 MB</span>
+</div>
+<!-- Document Canvas (Simulated PDF content) -->
+<div class="flex-1 bg-[#ebebeb] p-4 flex items-center justify-center overflow-hidden relative">
+<div class="bg-white w-full h-[200px] shadow-sm rounded-sm p-6 relative overflow-hidden">
+<!-- Faux text lines -->
+<div class="w-1/3 h-4 bg-surface-variant rounded mb-6"></div>
+<div class="space-y-3">
+<div class="w-full h-2 bg-surface-container-high rounded"></div>
+<div class="w-full h-2 bg-surface-container-high rounded"></div>
+<div class="w-5/6 h-2 bg-surface-container-high rounded"></div>
+<div class="w-4/6 h-2 bg-surface-container-high rounded"></div>
+</div>
+<!-- Faux seal/stamp -->
+<div class="absolute bottom-6 right-6 w-16 h-16 rounded-full border-4 border-error/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-error/30 text-3xl rotate-12">verified</span>
+</div>
+</div>
+<!-- Hover Action Overlay -->
+<div class="absolute inset-0 bg-inverse-surface/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4 backdrop-blur-sm">
+<button class="bg-surface-container-lowest text-on-surface p-3 rounded-full hover:bg-primary hover:text-on-primary transition-colors shadow-lg transform translate-y-4 group-hover:translate-y-0 duration-300" title="View Fullscreen">
+<span class="material-symbols-outlined">fullscreen</span>
+</button>
+<button class="bg-surface-container-lowest text-on-surface p-3 rounded-full hover:bg-primary hover:text-on-primary transition-colors shadow-lg transform translate-y-4 group-hover:translate-y-0 duration-300 delay-75" title="Download Document">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+</div>
+<p class="font-body text-xs text-secondary mt-3 text-center">
+                            Uploaded via secure portal on Oct 24, 2023 at 14:02 PST
+                        </p>
+</section>
+</div>
+</div>
+</div>
+</main>
+
+
+</body></html>

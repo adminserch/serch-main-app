@@ -1,0 +1,352 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>My Bookings | Serch</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400&amp;family=Inter:wght@300;400;500;600&amp;family=Public+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f2f0f1",
+                        "on-background": "#1b1c1d",
+                        "inverse-primary": "#b1c5ff",
+                        "secondary": "#5a5f63",
+                        "surface-bright": "#faf9fa",
+                        "on-secondary-container": "#606569",
+                        "secondary-fixed": "#dfe3e8",
+                        "primary-container": "#3366cc",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "tertiary-fixed": "#f9e37a",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#d9e2ff",
+                        "on-surface": "#1b1c1d",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "surface-container-highest": "#e3e2e3",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "on-surface-variant": "#434653",
+                        "on-primary-fixed": "#001946",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e9e8e9",
+                        "on-tertiary-fixed": "#211b00",
+                        "secondary-fixed-dim": "#c2c7cc",
+                        "on-tertiary-container": "#4a3f00",
+                        "tertiary": "#6d5e00",
+                        "secondary-container": "#dfe3e8",
+                        "outline": "#737784",
+                        "on-primary-container": "#e7ebff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#2259bf",
+                        "inverse-surface": "#303031",
+                        "tertiary-container": "#bfab49",
+                        "on-primary-fixed-variant": "#00419d",
+                        "surface-container-low": "#f5f3f4",
+                        "surface-variant": "#e3e2e3",
+                        "surface-container": "#efedee",
+                        "surface": "#faf9fa",
+                        "on-error-container": "#93000a",
+                        "background": "#faf9fa",
+                        "primary": "#094cb2",
+                        "surface-dim": "#dbdadb",
+                        "outline-variant": "#c3c6d5",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "on-secondary-fixed": "#171c20"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Noto Serif", "serif"],
+                        "display": ["Noto Serif", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Public Sans", "sans-serif"]
+                    },
+                    "fontSize": {}
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #faf9fa; /* background */
+            color: #1b1c1d; /* on-background */
+        }
+        h1, h2, h3, h4, h5, h6, .font-headline {
+            font-family: 'Noto Serif', serif;
+        }
+        .font-label {
+            font-family: 'Public Sans', sans-serif;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f5f3f4; /* surface-container-low */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #dfe3e8; /* secondary-container */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c3c6d5; /* outline-variant */
+        }
+        
+        .ghost-border {
+            border: 1px solid rgba(195, 198, 213, 0.15); /* outline-variant at 15% */
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col antialiased">
+<!-- TopNavBar (Shared Component) -->
+<!-- Nav intent: Destination/Ecosystem primary nav. Current page "My Bookings" doesn't strictly match Explore/Services/Collections/Concierge. 
+         Following hierarchy: Intent Fallback -> Concierge might be closest to managing personal services/bookings, or we leave it generic. 
+         Let's assume "Concierge" represents active personal management. -->
+<nav class="bg-surface-container-lowest dark:bg-surface-dim w-full top-0 sticky z-50 transition-colors duration-300">
+<div class="bg-surface-container-low dark:bg-surface-container-high w-full absolute bottom-0 h-[1px] opacity-0"></div> <!-- Separation logic - no border rule respected -->
+<div class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto flat no shadows">
+<!-- Logo area -->
+<div class="flex items-center gap-6">
+<a class="font-headline text-2xl font-bold text-primary dark:text-primary-fixed tracking-tight" href="#">Serch</a>
+<!-- Search Bar (on_left) -->
+<div class="hidden lg:flex items-center relative ml-8">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant z-10" data-icon="search" style="font-size: 20px;">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface rounded-full ghost-border focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-body-md font-body text-on-surface placeholder-on-surface-variant transition-all w-64" placeholder="Search services..." type="text">
+</div>
+</div>
+<!-- Navigation Links (Web) -->
+<div class="hidden md:flex items-center gap-8 font-body text-body-md leading-relaxed">
+<a class="text-on-surface-variant dark:text-on-surface-variant font-medium hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 active:opacity-80 transition-opacity" href="#">Explore</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-medium hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 active:opacity-80 transition-opacity" href="#">Services</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-medium hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 active:opacity-80 transition-opacity" href="#">Collections</a>
+<!-- Active State -->
+<a class="text-primary-container dark:text-primary-fixed font-bold border-b-2 border-primary-container pb-1 active:opacity-80 transition-opacity" href="#">Concierge</a>
+</div>
+<!-- Trailing Actions & Profile -->
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-full hover:bg-surface-container-low">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-full hover:bg-surface-container-low">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</button>
+<button class="ml-2 w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest ghost-border focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+<img alt="Seeker profile menu" class="w-full h-full object-cover" data-alt="A close up portrait of a modern professional looking thoughtful. High key lighting, clean editorial style. Serene mood. Neutral background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7NHL0-jIEvGwTOqib4JBkqaZ2iISf8JI5pyEh77mQVFJptxoj-zicLqmY7oGidfV2XPx1-4mA-Meb8iMy5_EOe4CZf5o9xawzwENZtRsM_PwaHIBY2ojWAP_jCiofPMyl1t5pgSJWsCxBC_rvEpxu0iRCeVouPvurTgyJaVDOzXmWMH8KQ_MgUPNgdSAoeoUaDTJCEoaiXXggA8fm1A-ARnHep7ess_3UFHENpuzP1nsQo87s-BumtY_C4ZzPmKpFZ8UZrXEqCAO0">
+</button>
+<!-- Mobile Menu Toggle -->
+<button class="md:hidden p-2 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-screen-2xl mx-auto px-4 md:px-8 py-12">
+<!-- Header Section -->
+<header class="mb-16 max-w-3xl">
+<p class="font-label text-sm text-tertiary uppercase tracking-widest mb-4">Concierge Desk</p>
+<h1 class="font-headline text-5xl md:text-6xl font-bold text-on-surface leading-tight mb-6">Your Itinerary</h1>
+<p class="font-body text-lg text-on-surface-variant leading-relaxed">Review past engagements and anticipate upcoming scholarly sessions. A curated record of your intellectual pursuits.</p>
+</header>
+<!-- View Controls & Filters -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+<!-- Segmented Control -->
+<div class="flex bg-surface-container-low p-1 rounded-full w-full md:w-auto">
+<button class="flex-1 md:flex-none px-6 py-2 rounded-full bg-surface-container-lowest text-primary-container font-body font-medium text-sm shadow-sm transition-all">Upcoming</button>
+<button class="flex-1 md:flex-none px-6 py-2 rounded-full text-on-surface-variant font-body font-medium text-sm hover:text-primary transition-all">Past</button>
+<button class="flex-1 md:flex-none px-6 py-2 rounded-full text-on-surface-variant font-body font-medium text-sm hover:text-primary transition-all">Archived</button>
+</div>
+<!-- Filter Actions -->
+<div class="flex gap-4 w-full md:w-auto">
+<button class="flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-surface text-on-surface font-body text-sm font-medium ghost-border hover:bg-surface-container-high transition-colors w-full md:w-auto">
+<span class="material-symbols-outlined" data-icon="filter_list" style="font-size: 18px;">filter_list</span>
+                    Filter
+                </button>
+<button class="flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-surface text-on-surface font-body text-sm font-medium ghost-border hover:bg-surface-container-high transition-colors w-full md:w-auto">
+<span class="material-symbols-outlined" data-icon="calendar_month" style="font-size: 18px;">calendar_month</span>
+                    Date
+                </button>
+</div>
+</div>
+<!-- Bento Grid Layout for Bookings -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
+<!-- Booking Card 1: Featured/Next Up (Spans 2 columns on lg) -->
+<article class="col-span-1 lg:col-span-2 bg-surface-container-lowest rounded-xl overflow-hidden group relative flex flex-col md:flex-row shadow-sm hover:shadow-md transition-shadow duration-300">
+<!-- Color Shift Backgrounds for structure instead of borders -->
+<div class="w-full md:w-2/5 h-64 md:h-auto bg-surface-container-low relative">
+<img alt="Consultation session" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700" data-alt="A modern, high-end medical or academic consultation room. Clean lines, minimalist decor, soft natural light streaming through a large window. High key aesthetic, scholarly atmosphere. Focus on a sleek desk with subtle architectural details." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZzKpOLUh7rs4FmB8IRuCeVihg4zF_Ueh4KZT-WA8wnknoqBwqC_ODMY6j5VHx8T9KYGfXKMqvI3Tkp3H9ijWdn_cWigozDRx6xrvV7V6feIeR_-hH5INLBqF0c3eGOi-BBV3ePHZt5rsGjCcCAeGZzCZSoaCgreZw9-mo52jAIfQjx_ULYAJpWhjDRQcflHa9tftIJI-BXhsPeXyZp20khGRfsPwJYqWBh6TyCkHIDTyFy1erwhD42i4xmw6y-5bYIk9Z15eYAKT_">
+<div class="absolute top-4 left-4 bg-tertiary-container text-on-tertiary-container font-label text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full glass-panel">
+                        Confirmed
+                    </div>
+</div>
+<div class="p-8 flex flex-col flex-grow justify-between bg-surface-container-lowest">
+<div>
+<div class="flex justify-between items-start mb-2">
+<p class="font-label text-sm text-tertiary uppercase tracking-widest">Medical Consultation</p>
+<span class="material-symbols-outlined text-tertiary" data-icon="event_available">event_available</span>
+</div>
+<h2 class="font-headline text-3xl font-bold text-on-surface mb-2">Dr. Alistair Sterling</h2>
+<p class="font-body text-on-surface-variant text-sm mb-6">Comprehensive review of neurological diagnostics and cognitive longevity protocols.</p>
+<div class="grid grid-cols-2 gap-4 mb-8">
+<div class="flex flex-col">
+<span class="font-label text-xs text-secondary uppercase tracking-wider mb-1">Date</span>
+<span class="font-body font-medium text-on-surface">Oct 24, 2024</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label text-xs text-secondary uppercase tracking-wider mb-1">Time</span>
+<span class="font-body font-medium text-on-surface">14:00 - 15:30 EST</span>
+</div>
+<div class="flex flex-col col-span-2">
+<span class="font-label text-xs text-secondary uppercase tracking-wider mb-1">Location</span>
+<span class="font-body font-medium text-on-surface">Sterling Clinic, Upper East Side</span>
+</div>
+</div>
+</div>
+<div class="flex gap-4 mt-auto">
+<button class="bg-gradient-to-r from-primary-container to-primary-container text-on-primary font-body font-medium px-6 py-3 rounded-full hover:opacity-90 transition-opacity flex-1 text-center">View Details</button>
+<button class="bg-surface-container-high text-primary font-body font-medium px-6 py-3 rounded-full hover:bg-secondary-container transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="chat_bubble_outline">chat_bubble_outline</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Booking Card 2 -->
+<article class="bg-surface-container-lowest rounded-xl overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-shadow duration-300">
+<div class="h-48 bg-surface-container-low relative">
+<img alt="Yoga session" class="w-full h-full object-cover opacity-80" data-alt="A serene, minimalist yoga or meditation studio. Natural materials, light wood floors, soft diffused sunlight. High key, peaceful mood. Clean architectural lines without clutter." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4bLN1mYRlu7EM45xDN1w43weiXiuXAfPpm7d8ly2_TzLQlxSIDhDmwRR1dgLtvYgEsmXicRdOx6V7nNvTf1Kovmcxm8h9rivyOkfvU1sKuHMrt9mkPN4YaGVv0UeKzhWRC0I2Lj--4m3aOL7HTdj7aNQrbCU2HqQbWdijvPLDE0sfWS0vKnLcOYet7MdShTarljNxrg_1HA8el04wNa8bgGlup3gOVtpSsatolSbUQgsNVwae0mDDos8PZkP3d5tG_QXQlF6sxHrj">
+<div class="absolute top-4 left-4 bg-surface text-on-surface font-label text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full glass-panel">
+                        Pending
+                    </div>
+</div>
+<div class="p-6 flex flex-col flex-grow bg-surface-container-lowest">
+<div class="mb-6">
+<p class="font-label text-xs text-secondary uppercase tracking-widest mb-1">Somatic Therapy</p>
+<h3 class="font-headline text-xl font-bold text-on-surface mb-4">Elena Rostova</h3>
+<div class="space-y-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="calendar_today" style="font-size: 18px;">calendar_today</span>
+<span class="font-body text-sm text-on-surface-variant">Nov 02, 2024</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="schedule" style="font-size: 18px;">schedule</span>
+<span class="font-body text-sm text-on-surface-variant">09:00 - 10:00 EST</span>
+</div>
+</div>
+</div>
+<div class="mt-auto">
+<button class="w-full bg-surface-container-high text-primary font-body font-medium px-4 py-3 rounded-full hover:bg-secondary-container transition-colors text-center text-sm">Review Request</button>
+</div>
+</div>
+</article>
+<!-- Booking Card 3 -->
+<article class="bg-surface-container-lowest rounded-xl overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-shadow duration-300">
+<div class="h-48 bg-surface-container-low relative">
+<img alt="Culinary class" class="w-full h-full object-cover opacity-80" data-alt="A pristine, high-end professional kitchen or culinary studio. Stainless steel, marble countertops, bright cinematic lighting. Organized and scholarly approach to gastronomy. Minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3Yhs3PzJLPpzr0e56Gx4jT81AJBXWC7bekn0uOJ-zZYJDGndllvY35KAffbvsnXvaRF4poGRJiMwRAM992Z6cl3ZgoeQw42DKKpPnTWb7Wk6dh_dSEVKXmn9J6LkHavlLxEkA98kLrDa--vwV_Unr13cbfdvi9F9yg-mfW2dyLgHsAxS_qFbJzY4UpFw83SKfw0oGQLbwv3-YgfMNBnJU3l7t1sX4yhaXh4z1hLAy85XwwUBv3DIvDlVCXD1qWEmZs8JYPn0NXYc-">
+<div class="absolute top-4 left-4 bg-tertiary-container text-on-tertiary-container font-label text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full glass-panel">
+                        Confirmed
+                    </div>
+</div>
+<div class="p-6 flex flex-col flex-grow bg-surface-container-lowest">
+<div class="mb-6">
+<p class="font-label text-xs text-secondary uppercase tracking-widest mb-1">Gastronomy Masterclass</p>
+<h3 class="font-headline text-xl font-bold text-on-surface mb-4">Chef Julian V.</h3>
+<div class="space-y-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="calendar_today" style="font-size: 18px;">calendar_today</span>
+<span class="font-body text-sm text-on-surface-variant">Nov 15, 2024</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="schedule" style="font-size: 18px;">schedule</span>
+<span class="font-body text-sm text-on-surface-variant">18:00 - 21:00 EST</span>
+</div>
+</div>
+</div>
+<div class="mt-auto flex gap-3">
+<button class="flex-grow bg-surface-container-high text-primary font-body font-medium px-4 py-3 rounded-full hover:bg-secondary-container transition-colors text-center text-sm">Details</button>
+<button class="bg-surface-container-high text-primary font-body font-medium px-4 py-3 rounded-full hover:bg-secondary-container transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Text-Heavy Archival Card (Alternative layout demonstrating hierarchy) -->
+<article class="bg-surface-dim rounded-xl p-8 flex flex-col relative overflow-hidden group">
+<!-- Decorative archival mark -->
+<div class="absolute -right-6 -top-6 text-surface-container-highest opacity-20 pointer-events-none">
+<span class="material-symbols-outlined" data-icon="history_edu" style="font-size: 120px;">history_edu</span>
+</div>
+<div class="z-10 relative">
+<p class="font-label text-xs text-tertiary uppercase tracking-widest mb-4">Archival Record</p>
+<h3 class="font-headline text-2xl font-bold text-on-surface mb-2">Philosophical Discourse</h3>
+<p class="font-body text-on-surface-variant text-sm mb-8 leading-relaxed">A deep dive into stoic principles applied to modern executive leadership with Dr. Aris.</p>
+<div class="space-y-4 mb-8 border-l-2 border-outline-variant pl-4">
+<div>
+<span class="font-label text-xs text-secondary uppercase tracking-wider block">Status</span>
+<span class="font-body text-sm text-on-surface">Completed • Sept 12, 2024</span>
+</div>
+<div>
+<span class="font-label text-xs text-secondary uppercase tracking-wider block">Artifacts</span>
+<span class="font-body text-sm text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-secondary" data-icon="description" style="font-size: 16px;">description</span>
+                                2 Documents Available
+                            </span>
+</div>
+</div>
+</div>
+<div class="mt-auto z-10">
+<button class="text-tertiary font-body font-medium text-sm hover:underline decoration-tertiary underline-offset-4 transition-all flex items-center gap-1">
+                        View Dossier
+                        <span class="material-symbols-outlined" data-icon="arrow_forward" style="font-size: 16px;">arrow_forward</span>
+</button>
+</div>
+</article>
+</div>
+<!-- Pagination/Load More -->
+<div class="flex justify-center mb-12">
+<button class="font-label text-sm uppercase tracking-widest text-primary-container border-b border-primary-container pb-1 hover:text-on-primary-fixed-variant hover:border-on-primary-fixed-variant transition-colors">Reveal Further Engagements</button>
+</div>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="bg-surface-dim dark:bg-surface-container-lowest w-full py-16 transition-colors duration-300">
+<div class="bg-surface-container-high dark:bg-surface-container-highest w-full h-[1px] absolute top-0 opacity-0"></div> <!-- Separation logic - no border rule respected -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 px-12 max-w-7xl mx-auto flat no shadows">
+<!-- Brand & Copyright -->
+<div class="flex flex-col justify-between h-full">
+<div class="font-headline text-lg italic text-on-surface dark:text-on-surface mb-8">
+                    Serch
+                </div>
+<div class="font-label text-xs uppercase tracking-widest text-tertiary dark:text-tertiary-fixed">
+                    © 2024 Serch Digital Curators. All rights reserved.
+                </div>
+</div>
+<!-- Links -->
+<div class="flex flex-col md:items-end space-y-4">
+<a class="font-label text-xs uppercase tracking-widest text-on-surface-variant hover:underline decoration-tertiary underline-offset-4 cursor-pointer transition-all" href="#">The Manifesto</a>
+<a class="font-label text-xs uppercase tracking-widest text-on-surface-variant hover:underline decoration-tertiary underline-offset-4 cursor-pointer transition-all" href="#">Scholarly Standards</a>
+<a class="font-label text-xs uppercase tracking-widest text-on-surface-variant hover:underline decoration-tertiary underline-offset-4 cursor-pointer transition-all" href="#">Provider Ethics</a>
+<a class="font-label text-xs uppercase tracking-widest text-on-surface-variant hover:underline decoration-tertiary underline-offset-4 cursor-pointer transition-all" href="#">Privacy Registry</a>
+<a class="font-label text-xs uppercase tracking-widest text-on-surface-variant hover:underline decoration-tertiary underline-offset-4 cursor-pointer transition-all" href="#">Terms of Engagement</a>
+</div>
+</div>
+</footer>
+
+
+</body></html>

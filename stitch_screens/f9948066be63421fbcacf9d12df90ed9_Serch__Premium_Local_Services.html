@@ -1,0 +1,256 @@
+<!DOCTYPE html><html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Serch - Premium Local Services</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700;900&amp;family=Inter:wght@400;500;600&amp;family=Public+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#c3c6d5",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "on-primary-container": "#e7ebff",
+                        "on-tertiary-fixed": "#211b00",
+                        "surface-container": "#efedee",
+                        "on-primary-fixed": "#001946",
+                        "surface-dim": "#dbdadb",
+                        "secondary-fixed-dim": "#c2c7cc",
+                        "on-secondary-container": "#606569",
+                        "inverse-on-surface": "#f2f0f1",
+                        "tertiary-container": "#bfab49",
+                        "on-surface-variant": "#434653",
+                        "on-secondary-fixed": "#171c20",
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "primary-container": "#3366cc",
+                        "inverse-primary": "#b1c5ff",
+                        "background": "#faf9fa",
+                        "surface-container-highest": "#e3e2e3",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#094cb2",
+                        "surface-container-high": "#e9e8e9",
+                        "error": "#ba1a1a",
+                        "secondary": "#5a5f63",
+                        "outline": "#737784",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "tertiary-fixed": "#f9e37a",
+                        "surface": "#faf9fa",
+                        "secondary-fixed": "#dfe3e8",
+                        "surface-container-low": "#f5f3f4",
+                        "surface-bright": "#faf9fa",
+                        "inverse-surface": "#303031",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#6d5e00",
+                        "on-primary-fixed-variant": "#00419d",
+                        "primary-fixed": "#d9e2ff",
+                        "on-tertiary-container": "#4a3f00",
+                        "on-surface": "#1b1c1d",
+                        "surface-tint": "#2259bf",
+                        "on-background": "#1b1c1d",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e3e2e3",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#dfe3e8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Noto Serif", "serif"],
+                        "display": ["Noto Serif", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Public Sans", "sans-serif"]
+                    },
+                    "fontSize": {}
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased min-h-screen flex flex-col pt-20">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface-container-lowest/80 backdrop-blur-md shadow-sm">
+<div class="flex justify-between items-center px-8 h-20 w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-12">
+<a class="font-headline text-2xl font-bold text-primary tracking-tight" href="/">Serch</a>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-label text-sm tracking-wide" href="#">Find Pros</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-label text-sm tracking-wide" href="#">Pricing</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-label text-sm tracking-wide" href="#">Resources</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-label text-sm tracking-wide" href="#">About</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="hidden md:flex items-center justify-center p-2 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-all duration-200">
+<span class="material-symbols-outlined">search</span>
+</button>
+<a class="text-primary font-label font-bold text-sm hover:bg-surface-container-high px-4 py-2 rounded-xl transition-all duration-200" href="#">Sign In</a>
+<a class="bg-gradient-to-r from-primary to-primary-container text-on-primary font-label font-bold text-sm px-6 py-2.5 rounded-xl hover:shadow-md transition-all duration-200" href="#">Join as Pro</a>
+</div>
+</div>
+</nav>
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="relative pt-24 pb-32 px-8 overflow-hidden bg-surface-container-low">
+<div class="absolute inset-0 z-0">
+<img alt="Hero background" class="w-full h-full object-cover opacity-20" data-alt="A luxurious, sunlit modern interior space representing premium living. Warm off-white tones dominate the scene, highlighted by sophisticated minimalist furniture and architectural details. Soft, natural light cascades through large windows, creating gentle shadows and a serene, upscale atmosphere. The visual style is high-end editorial, employing a palette of elegant neutrals with subtle hints of rich wood and metallic accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXiyY1j7vuIRzJ-jO-efd-5PoCKsWhj0k-wchMkNvy3txuKW0We6pu0VECMmnkF2lc5tuVjyPQjrnNALBXIJEDun-lxTT1AKxE-3gQ4Vk65jkRuNOH-w2fmzkrdfdvQbsGsUzC-3PpW49gO3uEN6VrnL0366LWVrQu4zQtcUswbD-n9yfLL8MUJsWx_GiFgt4pB-4s4dQ7UMAiElc3SY08Yxxdp6jlLqpIAv21jSesMA1J2BkASpX_bx5wUldezItcOd-2DxoD02mU">
+<div class="absolute inset-0 bg-gradient-to-b from-surface-container-low/50 via-surface-container-low/80 to-background"></div>
+</div>
+<div class="max-w-5xl mx-auto relative z-10 text-center">
+<h1 class="font-headline text-5xl md:text-7xl font-bold tracking-tight text-on-background mb-6 leading-tight">
+                    Find. <span class="text-primary">Book.</span> Trust.
+                </h1>
+<p class="font-body text-xl text-on-surface-variant max-w-2xl mx-auto mb-12 leading-relaxed">
+                    The curated marketplace for discerning homeowners. Connect with elite, verified professionals for your most important projects.
+                </p>
+<!-- Search Bar Glassmorphism -->
+<div class="glass-panel rounded-full p-2 mx-auto max-w-4xl shadow-lg border border-outline-variant/15 flex flex-col md:flex-row items-center gap-2">
+<div class="flex-grow flex items-center bg-surface-container-lowest rounded-full px-6 py-4 w-full border border-transparent focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-outline mr-3">search</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-body placeholder:text-outline p-0 text-lg" placeholder="What service do you need?" type="text">
+</div>
+<div class="h-8 w-px bg-outline-variant/30 hidden md:block"></div>
+<div class="flex-grow flex items-center bg-surface-container-lowest rounded-full px-6 py-4 w-full border border-transparent focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-outline mr-3">location_on</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-body placeholder:text-outline p-0 text-lg" placeholder="Zip code or neighborhood" type="text">
+</div>
+<button class="bg-primary text-on-primary font-label font-bold text-lg px-8 py-4 rounded-full w-full md:w-auto hover:bg-primary-container transition-colors shadow-md flex-shrink-0">
+                        Search
+                    </button>
+</div>
+<div class="mt-8 flex flex-wrap justify-center gap-4 text-sm font-label text-on-surface-variant">
+<span class="px-4 py-2 rounded-full bg-surface-container border border-outline-variant/20 hover:border-outline-variant/50 cursor-pointer transition-colors">Interior Design</span>
+<span class="px-4 py-2 rounded-full bg-surface-container border border-outline-variant/20 hover:border-outline-variant/50 cursor-pointer transition-colors">Landscaping</span>
+<span class="px-4 py-2 rounded-full bg-surface-container border border-outline-variant/20 hover:border-outline-variant/50 cursor-pointer transition-colors">Master Plumbing</span>
+<span class="px-4 py-2 rounded-full bg-surface-container border border-outline-variant/20 hover:border-outline-variant/50 cursor-pointer transition-colors">Custom Carpentry</span>
+</div>
+</div>
+</section>
+<!-- Curated Professionals Bento Grid -->
+<section class="py-24 px-8 max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+<div>
+<h2 class="font-headline text-4xl font-bold text-on-background mb-4">Curated Professionals</h2>
+<p class="font-body text-lg text-on-surface-variant max-w-xl">
+                        Discover highly-rated experts, meticulously vetted for quality, reliability, and unparalleled craftsmanship.
+                    </p>
+</div>
+<a class="font-label font-bold text-primary hover:text-primary-container flex items-center gap-2 group transition-colors" href="#">
+                    View All Experts <span class="material-symbols-outlined transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-fr">
+<!-- Card 1: Large Featured -->
+<div class="md:col-span-2 md:row-span-2 bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group hover:shadow-md transition-shadow relative border border-outline-variant/15 flex flex-col">
+<div class="h-64 md:h-80 relative overflow-hidden">
+<img alt="Professional cleaner" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A portrait of a confident, sharply dressed female architect standing in a bright, modern studio space. She is reviewing blueprints spread across a large wooden drafting table. The lighting is crisp and natural, emphasizing a professional, high-end editorial aesthetic. The color palette focuses on sophisticated neutrals, crisp whites, and subtle textures, reflecting a premium service environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAC9EZV1CW67wAvGFzFVfXFVsGuBfKuZfI3vrMLO4nZPo9o0XhoQM2vdw1Pw0LDK_ZCpqjuusmcI8-KYbB5PuPSYuAV3M_7oPpHGmsw8FSRzD8h_fTJLB_n0GwzwsMKSpYqVwwBVj9cXo6DqSpDjR4h0LEBrrfUdIrCREeWmK_Z3wqXyufCrvc6RVZnBAPf6UO5L8Z3RmnDOchCbKLeU3afiV-irMaZVYvtkiBBsBEzvF2WU2Tccqv87f0NLzBRsanc56emJCmSRjwC">
+<div class="absolute top-4 left-4 bg-background/90 backdrop-blur px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label text-xs font-bold text-on-surface tracking-wide uppercase">Serch Verified</span>
+</div>
+</div>
+<div class="p-8 flex-grow flex flex-col justify-between bg-surface-container-lowest">
+<div>
+<div class="flex justify-between items-start mb-3">
+<h3 class="font-headline text-2xl font-bold text-on-background">Elena Rostova</h3>
+<div class="flex items-center gap-1 bg-surface-container-high px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label font-bold text-sm text-on-surface">4.98</span>
+</div>
+</div>
+<p class="font-label text-primary font-medium mb-4">Master Interior Architect</p>
+<p class="font-body text-on-surface-variant line-clamp-2">Specializing in high-end residential renovations and bespoke spatial planning with over 15 years of international experience.</p>
+</div>
+<div class="mt-6 flex gap-3">
+<span class="bg-surface-container px-3 py-1 rounded-full text-xs font-label text-on-surface-variant">Design</span>
+<span class="bg-surface-container px-3 py-1 rounded-full text-xs font-label text-on-surface-variant">Renovation</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group hover:shadow-md transition-shadow border border-outline-variant/15 flex flex-col">
+<div class="h-48 relative overflow-hidden">
+<img alt="Electrician" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A close-up shot of a skilled electrician's hands carefully installing a sleek, modern light fixture in a luxury home. The scene is illuminated by soft, focused lighting that highlights the precision of the work. The aesthetic is clean, professional, and high-end editorial, utilizing a sophisticated color palette of crisp whites, metallic silvers, and deep shadows to convey trust and expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPHrplojNHysOA8PfUH-eFN9SQXKoNsyKouJJ3Aa9j9vy13eWvJq1weAyuKEAhKjLOdEIaBlfzNrAPPQkPJBA_KODeZVo3mDXNIjyQqYylwedu7uaGFbfDpzF9gjG_n0GJKh89SQcHNXMMU_FjSFMefhf5G3GHQ06oloyfJagvYfWU9FGj1jN_kLZmszaiS73Nft6ZErcsbwmiqoM2LrAVpROlOEZZZglZiEIWQ26DlfN9H1A_PV8yauYfiDQVQgtMeAvBRGFiLf2E">
+<div class="absolute top-4 left-4 bg-background/90 backdrop-blur p-1.5 rounded-full shadow-sm">
+<span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div class="p-6 flex-grow flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline text-lg font-bold text-on-background">Marcus Chen</h3>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-tertiary text-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label font-bold text-xs text-on-surface">5.0</span>
+</div>
+</div>
+<p class="font-label text-primary text-sm font-medium mb-3">Licensed Master Electrician</p>
+<p class="font-body text-sm text-on-surface-variant line-clamp-2">Smart home integrations and premium lighting installations.</p>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group hover:shadow-md transition-shadow border border-outline-variant/15 flex flex-col">
+<div class="h-48 relative overflow-hidden">
+<img alt="Landscaper" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A wide shot of a beautifully landscaped minimalist garden at twilight, designed by a professional. The scene features precise geometric plantings, elegant stone pathways, and subtle architectural lighting. The mood is serene and luxurious, capturing a high-end editorial style. The color palette consists of deep greens, cool greys, and warm off-white tones, perfectly reflecting a premium outdoor living space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqAXEoHUYe6mBrm1COY_DMEThGq2jNhPEMePu9fiTaOuCAvpntDgiiQGfeTfsedirG7HsQi8mAGAV00MwLm4FH0R6tawikhZff08Iq--Iep9NdLZRiUQWciuguQ9wp9yC1IZhW4WYr-1-AbT3WbfP54XcoGR4Q0OY2KOCTiEm2xnykPQ2zraAsGbMhSrb4hLj9gzXWunZdjvnMdPivWjMeZcNdSpsbbU0ObE_0XCrTyPqHP77zuQs1qWu12BYccm47UxOdLRxCtyrh">
+<div class="absolute top-4 left-4 bg-background/90 backdrop-blur p-1.5 rounded-full shadow-sm">
+<span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div class="p-6 flex-grow flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline text-lg font-bold text-on-background">Sarah Jenkins</h3>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-tertiary text-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label font-bold text-xs text-on-surface">4.95</span>
+</div>
+</div>
+<p class="font-label text-primary text-sm font-medium mb-3">Landscape Architect</p>
+<p class="font-body text-sm text-on-surface-variant line-clamp-2">Award-winning sustainable garden design and execution.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-highest w-full py-12 border-t border-outline-variant/15">
+<div class="flex flex-col items-center justify-center text-center px-8 max-w-7xl mx-auto">
+<div class="font-headline text-xl font-bold text-on-surface mb-8 tracking-tight">Serch</div>
+<div class="flex flex-wrap justify-center gap-8 mb-8">
+<a class="font-label text-on-secondary-fixed-variant hover:text-primary transition-colors text-sm font-medium" href="#">Trust &amp; Safety</a>
+<a class="font-label text-on-secondary-fixed-variant hover:text-primary transition-colors text-sm font-medium" href="#">Privacy Policy</a>
+<a class="font-label text-on-secondary-fixed-variant hover:text-primary transition-colors text-sm font-medium" href="#">Terms of Service</a>
+<a class="font-label text-on-secondary-fixed-variant hover:text-primary transition-colors text-sm font-medium" href="#">Service Agreement</a>
+</div>
+<p class="font-body text-on-surface-variant text-sm">© 2026 Serch Technologies. All rights reserved.</p>
+</div>
+</footer>
+
+
+</body></html>

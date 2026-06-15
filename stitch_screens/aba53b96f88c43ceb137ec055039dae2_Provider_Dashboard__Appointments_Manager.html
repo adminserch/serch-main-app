@@ -1,0 +1,254 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Appointments Manager - Alexandria</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Public+Sans:wght@500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#6d5e00",
+                        "on-tertiary-container": "#4a3f00",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#faf9fa",
+                        "on-secondary-container": "#606569",
+                        "surface-dim": "#dbdadb",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#bfab49",
+                        "surface-tint": "#2259bf",
+                        "primary": "#094cb2",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#b1c5ff",
+                        "surface-container": "#efedee",
+                        "tertiary-fixed": "#f9e37a",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "on-primary-fixed": "#001946",
+                        "on-primary-container": "#e7ebff",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f5f3f4",
+                        "outline": "#737784",
+                        "surface-container-high": "#e9e8e9",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "primary-container": "#3366cc",
+                        "on-surface-variant": "#434653",
+                        "background": "#faf9fa",
+                        "secondary-fixed-dim": "#c2c7cc",
+                        "on-background": "#1b1c1d",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#00419d",
+                        "primary-fixed": "#d9e2ff",
+                        "secondary-fixed": "#dfe3e8",
+                        "inverse-on-surface": "#f2f0f1",
+                        "on-tertiary-fixed": "#211b00",
+                        "surface-container-highest": "#e3e2e3",
+                        "outline-variant": "#c3c6d5",
+                        "secondary": "#5a5f63",
+                        "on-surface": "#1b1c1d",
+                        "inverse-surface": "#303031",
+                        "secondary-container": "#dfe3e8",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#171c20",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e3e2e3",
+                        "surface-bright": "#faf9fa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Noto Serif", "serif"],
+                        "display": ["Noto Serif", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Public Sans", "sans-serif"]
+                    },
+                    "fontSize": {}
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-headline { font-family: 'Noto Serif', serif; }
+        .font-label { font-family: 'Public Sans', sans-serif; }
+        .ghost-border { border: 1px solid rgba(195, 198, 213, 0.15); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low dark:bg-surface-dim shadow-sm z-50 hidden md:block">
+<div class="flex flex-col h-full p-4 gap-2">
+<div class="mb-8 px-4 py-2">
+<h1 class="font-headline text-2xl font-bold text-primary dark:text-primary-fixed">Alexandria</h1>
+<p class="font-label text-sm text-on-surface-variant">Provider Suite</p>
+</div>
+<div class="flex flex-col gap-2 flex-grow">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant/10 rounded-xl transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-xl font-bold active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+<span class="font-label">Bookings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant/10 rounded-xl transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">layers</span>
+<span class="font-label">Services</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant/10 rounded-xl transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label">Analytics</span>
+</a>
+</div>
+<div class="mt-auto flex flex-col gap-2 border-t border-outline-variant/15 pt-4">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant/10 rounded-xl transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant/10 rounded-xl transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label">Help Center</span>
+</a>
+</div>
+<div class="mt-4 px-2">
+<button class="w-full py-3 px-4 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl font-label font-medium shadow-sm hover:opacity-90 transition-opacity flex justify-center items-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                     New Service
+                 </button>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-h-screen ml-0 md:ml-64">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 z-40 bg-surface-container-lowest/80 dark:bg-surface-dim/80 backdrop-blur-xl flex justify-between items-center h-16 px-8 w-full md:w-[calc(100%-16rem)]">
+<div class="flex items-center"><button class="md:hidden mr-4 text-on-surface-variant p-2 rounded-full hover:bg-surface-variant"><span class="material-symbols-outlined">menu</span></button>
+<h2 class="font-headline font-medium text-on-surface text-lg">Appointments Manager</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Canvas -->
+<div class="pt-24 px-8 pb-12 flex-1 max-w-7xl mx-auto w-full">
+<div class="mb-10">
+<h1 class="font-headline text-4xl text-on-surface mb-2">Bookings Archive</h1>
+<p class="font-body text-on-surface-variant max-w-2xl">Manage and review your upcoming and past client engagements. Use the filters below to navigate your schedule.</p>
+</div>
+<!-- Tabs -->
+<div class="flex gap-8 border-b border-outline-variant/30 mb-8 px-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
+<button class="pb-4 font-label font-medium text-primary border-b-2 border-primary">Upcoming</button>
+<button class="pb-4 font-label font-medium text-on-surface-variant hover:text-primary transition-colors">Pending</button>
+<button class="pb-4 font-label font-medium text-on-surface-variant hover:text-primary transition-colors">Completed</button>
+<button class="pb-4 font-label font-medium text-on-surface-variant hover:text-primary transition-colors">Cancelled</button>
+</div>
+<!-- List Layout (Bento-inspired rows) -->
+<div class="flex flex-col gap-4">
+<!-- Row Item 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl ghost-border flex items-center hover:bg-surface-container-low transition-colors group flex-col md:flex-row items-start md:items-center gap-4 md:gap-0 md:justify-between">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden">
+<img alt="Client Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARtw4G7Trr8ELPyOawkgSM8696QYvyMX9ul6rX_qxJoyImNAhzQ_tI3nViObDL0T-LeHxO9kpTJoWtRq2jvxpMyNS0GvSigItaLXUj6IJwocm3FcQljqBqh0i8cr3Q5NrTjYscmBdiljOsc1J5HHUL1XvJ0g0pxYLUUymvQ6uc_PM1A59n7dMveX2GZ7Tv_ratXF1ujz8jKIvphN5v-AS7lEhmIL0IZQO7guL9p3NHo-q76PiminXs169CqKM8zDYShLD3FE7qf62p">
+</div>
+<div>
+<h3 class="font-headline font-medium text-lg text-on-surface">Eleanor Vance</h3>
+<p class="font-body text-sm text-on-surface-variant">Archival Consultation • Initial Assessment</p>
+</div>
+</div>
+<div class="flex items-center flex-col md:flex-row w-full md:w-auto items-start md:items-center gap-4 md:gap-12">
+<div class="text-left md:text-right">
+<p class="font-label font-medium text-on-surface">Oct 24, 2023</p>
+<p class="font-body text-sm text-on-surface-variant">2:00 PM - 3:30 PM</p>
+</div>
+<div class="w-32 flex justify-start md:justify-center w-auto md:w-32">
+<span class="inline-flex items-center gap-1.5 py-1 px-3 rounded-full text-xs font-label font-medium bg-primary-container text-on-primary-container">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                Confirmed
+                            </span>
+</div>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity opacity-100 md:opacity-0">
+<button class="px-4 py-2 text-sm font-label text-primary hover:bg-primary-container/50 rounded-lg transition-colors">Details</button>
+<button class="px-4 py-2 text-sm font-label text-on-surface-variant border border-outline-variant rounded-lg hover:bg-surface-variant transition-colors">Reschedule</button>
+</div>
+</div>
+</div>
+<!-- Row Item 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl ghost-border flex items-center hover:bg-surface-container-low transition-colors group flex-col md:flex-row items-start md:items-center gap-4 md:gap-0 md:justify-between">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden">
+<span class="font-headline text-lg text-on-surface-variant">TC</span>
+</div>
+<div>
+<h3 class="font-headline font-medium text-lg text-on-surface">Theodore Crane</h3>
+<p class="font-body text-sm text-on-surface-variant">Manuscript Review • Chapter 1-3</p>
+</div>
+</div>
+<div class="flex items-center flex-col md:flex-row w-full md:w-auto items-start md:items-center gap-4 md:gap-12">
+<div class="text-left md:text-right">
+<p class="font-label font-medium text-on-surface">Oct 26, 2023</p>
+<p class="font-body text-sm text-on-surface-variant">10:00 AM - 11:00 AM</p>
+</div>
+<div class="w-32 flex justify-start md:justify-center w-auto md:w-32">
+<span class="inline-flex items-center gap-1.5 py-1 px-3 rounded-full text-xs font-label font-medium bg-primary-container text-on-primary-container">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                Confirmed
+                            </span>
+</div>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity opacity-100 md:opacity-0">
+<button class="px-4 py-2 text-sm font-label text-primary hover:bg-primary-container/50 rounded-lg transition-colors">Details</button>
+<button class="px-4 py-2 text-sm font-label text-on-surface-variant border border-outline-variant rounded-lg hover:bg-surface-variant transition-colors">Reschedule</button>
+</div>
+</div>
+</div>
+<!-- Row Item 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl ghost-border flex items-center hover:bg-surface-container-low transition-colors group flex-col md:flex-row items-start md:items-center gap-4 md:gap-0 md:justify-between">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden">
+<img alt="Client Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDw5EDJJUs8WppnMo4TsVNssqBpQp95vpJaNmGOpYDHJ6QHaWSI4C2dS-HDLFpIMsdjU_c_DQujMme50S3xclHujqTV8Cvy-Ynn0DmD58aJiyME6qkfh9oryg7dEJL-WQv0GdsS9SqTOrdNvXZGwV9c3iG6cNiE-O9F_zS88FPftIi4UI09G9wz7ST7VLCOmr2ro2tKfc0JSUP1djDDBf0NSYTaHk0lgrufNODwm6fyxKhAqieJUTAgFzYAZ5r9idH9C5qJQJX-rq9g">
+</div>
+<div>
+<h3 class="font-headline font-medium text-lg text-on-surface">Julian Blackwood</h3>
+<p class="font-body text-sm text-on-surface-variant">Strategic Planning Session</p>
+</div>
+</div>
+<div class="flex items-center flex-col md:flex-row w-full md:w-auto items-start md:items-center gap-4 md:gap-12">
+<div class="text-left md:text-right">
+<p class="font-label font-medium text-on-surface">Nov 02, 2023</p>
+<p class="font-body text-sm text-on-surface-variant">1:00 PM - 5:00 PM</p>
+</div>
+<div class="w-32 flex justify-start md:justify-center w-auto md:w-32">
+<span class="inline-flex items-center gap-1.5 py-1 px-3 rounded-full text-xs font-label font-medium bg-tertiary-container/30 text-on-tertiary-container">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                                Action Needed
+                            </span>
+</div>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity opacity-100 md:opacity-0">
+<button class="px-4 py-2 text-sm font-label text-primary hover:bg-primary-container/50 rounded-lg transition-colors">Details</button>
+<button class="px-4 py-2 text-sm font-label text-on-surface-variant border border-outline-variant rounded-lg hover:bg-surface-variant transition-colors">Reschedule</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+
+
+</body></html>

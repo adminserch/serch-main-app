@@ -1,0 +1,312 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Serch - Provider Registration</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;500;700&amp;family=Inter:wght@300;400;500&amp;family=Public+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "tertiary": "#6d5e00",
+                            "on-tertiary-container": "#4a3f00",
+                            "surface-container-lowest": "#ffffff",
+                            "surface": "#faf9fa",
+                            "on-secondary-container": "#606569",
+                            "surface-dim": "#dbdadb",
+                            "primary-fixed-dim": "#b1c5ff",
+                            "error-container": "#ffdad6",
+                            "tertiary-container": "#bfab49",
+                            "surface-tint": "#2259bf",
+                            "primary": "#094cb2",
+                            "on-secondary": "#ffffff",
+                            "inverse-primary": "#b1c5ff",
+                            "surface-container": "#efedee",
+                            "tertiary-fixed": "#f9e37a",
+                            "on-secondary-fixed-variant": "#42474b",
+                            "on-primary-fixed": "#001946",
+                            "on-primary-container": "#e7ebff",
+                            "error": "#ba1a1a",
+                            "on-error": "#ffffff",
+                            "surface-container-low": "#f5f3f4",
+                            "outline": "#737784",
+                            "surface-container-high": "#e9e8e9",
+                            "tertiary-fixed-dim": "#dcc661",
+                            "on-tertiary-fixed-variant": "#524600",
+                            "primary-container": "#3366cc",
+                            "on-surface-variant": "#434653",
+                            "background": "#faf9fa",
+                            "secondary-fixed-dim": "#c2c7cc",
+                            "on-background": "#1b1c1d",
+                            "on-error-container": "#93000a",
+                            "on-primary-fixed-variant": "#00419d",
+                            "primary-fixed": "#d9e2ff",
+                            "secondary-fixed": "#dfe3e8",
+                            "inverse-on-surface": "#f2f0f1",
+                            "on-tertiary-fixed": "#211b00",
+                            "surface-container-highest": "#e3e2e3",
+                            "outline-variant": "#c3c6d5",
+                            "secondary": "#5a5f63",
+                            "on-surface": "#1b1c1d",
+                            "inverse-surface": "#303031",
+                            "secondary-container": "#dfe3e8",
+                            "on-tertiary": "#ffffff",
+                            "on-secondary-fixed": "#171c20",
+                            "on-primary": "#ffffff",
+                            "surface-variant": "#e3e2e3",
+                            "surface-bright": "#faf9fa"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.125rem",
+                            "lg": "0.25rem",
+                            "xl": "0.5rem",
+                            "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                            "headline": ["Noto Serif", "serif"],
+                            "display": ["Noto Serif", "serif"],
+                            "body": ["Inter", "sans-serif"],
+                            "label": ["Public Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Subtle scholarly texture */
+        body {
+            background-color: theme('colors.background');
+            background-image: radial-gradient(theme('colors.surface-dim') 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        /* Hide map attribution for cleaner UI in this mockup */
+        .leaflet-control-attribution {
+            display: none !important;
+        }
+    </style>
+<!-- Leaflet CSS -->
+<link crossorigin="" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+</head>
+<body class="text-on-background font-body min-h-screen flex flex-col antialiased">
+<!-- Top Navigation (Simplified for transactional flow) -->
+<header class="fixed top-0 w-full z-[100] bg-surface-container-lowest/90 backdrop-blur-md px-8 py-4 flex items-center justify-between shadow-sm">
+<div class="font-headline text-2xl font-bold text-primary-container tracking-tight">Serch</div>
+<button class="text-on-surface-variant font-label hover:text-primary transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-xl">close</span>
+            Exit Registration
+        </button>
+</header>
+<!-- Main Content Area -->
+<main class="flex-grow pt-24 pb-12 px-4 sm:px-8 max-w-6xl mx-auto w-full flex flex-col md:flex-row gap-8 lg:gap-16">
+<!-- Left Column: Stepper & Instructions -->
+<div class="w-full md:w-1/3 flex flex-col space-y-8">
+<!-- Header Section -->
+<div class="space-y-4">
+<p class="font-label text-xs uppercase tracking-widest text-on-surface-variant">Step 3 of 4</p>
+<h1 class="font-headline text-4xl lg:text-5xl font-medium leading-tight text-on-background">Service Location</h1>
+<p class="font-body text-on-surface-variant leading-relaxed">
+                    Pinpoint your primary practice location. This allows clients in your vicinity to discover your services accurately within our directory.
+                </p>
+</div>
+<!-- Vertical Stepper -->
+<div class="space-y-6 pt-6 relative before:absolute before:inset-y-0 before:left-[11px] before:w-[2px] before:bg-surface-dim">
+<!-- Completed Step 1 -->
+<div class="relative flex items-start gap-4">
+<div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center z-10 shrink-0 mt-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-primary">check</span>
+</div>
+<div>
+<h3 class="font-label font-medium text-on-surface">Professional Details</h3>
+<p class="text-xs text-on-surface-variant mt-1">Credentials &amp; biography</p>
+</div>
+</div>
+<!-- Completed Step 2 -->
+<div class="relative flex items-start gap-4">
+<div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center z-10 shrink-0 mt-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-primary">check</span>
+</div>
+<div>
+<h3 class="font-label font-medium text-on-surface">Verification</h3>
+<p class="text-xs text-on-surface-variant mt-1">Identity &amp; licensing</p>
+</div>
+</div>
+<!-- Current Step 3 -->
+<div class="relative flex items-start gap-4">
+<div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center z-10 shrink-0 mt-1 shadow-md shadow-primary/20">
+<div class="w-2 h-2 rounded-full bg-on-primary"></div>
+</div>
+<div>
+<h3 class="font-label font-medium text-primary">Service Location</h3>
+<p class="text-xs text-on-surface-variant mt-1">Map placement &amp; address</p>
+</div>
+</div>
+<!-- Upcoming Step 4 -->
+<div class="relative flex items-start gap-4">
+<div class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center z-10 shrink-0 mt-1 ring-1 ring-inset ring-outline-variant">
+</div>
+<div>
+<h3 class="font-label font-medium text-on-surface-variant">Review &amp; Submit</h3>
+<p class="text-xs text-on-surface-variant mt-1">Final confirmation</p>
+</div>
+</div>
+</div>
+<!-- Help Card -->
+<div class="bg-surface-container-low rounded-xl p-5 mt-auto">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-tertiary">lightbulb</span>
+<div>
+<h4 class="font-label font-medium text-on-surface text-sm">Need Assistance?</h4>
+<p class="font-body text-xs text-on-surface-variant mt-1 leading-relaxed">
+                            If you offer mobile services across multiple regions, pin your primary operational base here. You can add coverage areas later.
+                        </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Interactive Map Interface -->
+<div class="w-full md:w-2/3 flex flex-col space-y-6">
+<!-- Location Search & Display Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 space-y-6">
+<!-- Search Input -->
+<div class="relative">
+<label class="sr-only" for="address-search">Search Address</label>
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">search</span>
+</div>
+<input class="block w-full pl-12 pr-4 py-3 bg-surface-container-low border border-outline-variant/30 rounded-lg font-body text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:ring-1 focus:ring-primary focus:border-primary transition-all shadow-sm" id="address-search" placeholder="Enter street address or building name..." type="text">
+<button class="absolute inset-y-0 right-0 pr-4 flex items-center text-primary hover:text-primary-container transition-colors">
+<span class="material-symbols-outlined text-xl">my_location</span>
+</button>
+</div>
+<!-- Selected Address Display -->
+<div class="flex items-start gap-4 p-4 rounded-lg bg-surface-container-low/50">
+<span class="material-symbols-outlined text-primary mt-0.5 fill">location_on</span>
+<div>
+<h4 class="font-label font-medium text-on-surface" id="display-address">1200 Academic Blvd, Suite 400</h4>
+<p class="font-body text-sm text-on-surface-variant mt-1" id="display-city">Cambridge, MA 02138, United States</p>
+</div>
+</div>
+</div>
+<!-- Map Container -->
+<div class="relative rounded-xl overflow-hidden bg-surface-container-high h-[400px] lg:h-[500px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] group">
+<!-- Map div -->
+<div class="w-full h-full z-10 leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" data-location="Cambridge" id="map" style="position: relative;" tabindex="0"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(0px, 0px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 20; transform: translate3d(0px, 0px, 0px) scale(1);"><img alt="" src="https://b.basemaps.cartocdn.com/light_all/15/9911/12118@2x.png" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(230px, 213px, 0px);"><img alt="" src="https://a.basemaps.cartocdn.com/light_all/15/9911/12117@2x.png" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(230px, -43px, 0px);"><img alt="" src="https://a.basemaps.cartocdn.com/light_all/15/9910/12118@2x.png" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-26px, 213px, 0px);"><img alt="" src="https://c.basemaps.cartocdn.com/light_all/15/9912/12118@2x.png" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(486px, 213px, 0px);"><img alt="" src="https://c.basemaps.cartocdn.com/light_all/15/9911/12119@2x.png" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(230px, 469px, 0px);"><img alt="" src="https://d.basemaps.cartocdn.com/light_all/15/9910/12117@2x.png" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-26px, -43px, 0px);"><img alt="" src="https://b.basemaps.cartocdn.com/light_all/15/9912/12117@2x.png" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(486px, -43px, 0px);"><img alt="" src="https://b.basemaps.cartocdn.com/light_all/15/9910/12119@2x.png" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-26px, 469px, 0px);"><img alt="" src="https://d.basemaps.cartocdn.com/light_all/15/9912/12119@2x.png" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(486px, 469px, 0px);"></div></div></div><div class="leaflet-pane leaflet-overlay-pane"></div><div class="leaflet-pane leaflet-shadow-pane"></div><div class="leaflet-pane leaflet-marker-pane"><div class="leaflet-marker-icon custom-pin leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable" tabindex="0" role="button" style="margin-left: -18px; margin-top: -36px; width: 36px; height: 36px; transform: translate3d(342px, 250px, 0px); z-index: 250;"><div style="color: #094cb2; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                        <span class="material-symbols-outlined fill" style="font-size: 36px; line-height: 1;">location_on</span>
+                       </div></div></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"></div><div class="leaflet-proxy leaflet-zoom-animated" style="transform: translate3d(2.53733e+06px, 3.10225e+06px, 0px) scale(16384);"></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"></div><div class="leaflet-top leaflet-right"></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"><div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="#" title="Zoom in" role="button" aria-label="Zoom in" aria-disabled="false"><span aria-hidden="true" class="">+</span></a><a class="leaflet-control-zoom-out" href="#" title="Zoom out" role="button" aria-label="Zoom out" aria-disabled="false"><span aria-hidden="true" class="">−</span></a></div><div class="leaflet-control-attribution leaflet-control"><a href="https://leafletjs.com" title="A JavaScript library for interactive maps" class=""><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" class="leaflet-attribution-flag"><path fill="#4C7BE1" d="M0 0h12v4H0z"></path><path fill="#FFD500" d="M0 4h12v3H0z"></path><path fill="#E0BC00" d="M0 7h12v1H0z"></path></svg> Leaflet</a> <span aria-hidden="true" class="">|</span> © <a href="https://www.openstreetmap.org/copyright" class="">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions" class="">CARTO</a></div></div></div></div>
+<!-- Interaction Overlay (Map instructions) -->
+<div class="absolute top-4 left-1/2 -translate-x-1/2 z-20 glass-panel px-4 py-2 rounded-full shadow-sm flex items-center gap-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<span class="material-symbols-outlined text-sm text-on-surface">touch_app</span>
+<span class="font-label text-xs font-medium text-on-surface tracking-wide">Drag map to adjust pin</span>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center justify-between pt-4 border-t border-surface-container-highest">
+<button class="font-label font-medium text-on-surface hover:text-primary transition-colors flex items-center gap-2 py-2 px-4 rounded-lg hover:bg-surface-container-low">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+                    Back to Verification
+                </button>
+<button class="font-label font-medium text-on-primary bg-primary hover:bg-primary-container transition-colors px-8 py-3 rounded-lg shadow-sm flex items-center gap-2">
+                    Confirm Location
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Leaflet JS for Map Mockup -->
+<script crossorigin="" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize map (Mocking Cambridge MA location)
+            const lat = 42.3736;
+            const lng = -71.1097;
+            
+            // Map configuration focusing on a clean, scholarly aesthetic
+            const map = L.map('map', {
+                zoomControl: false, // We'll position it manually or hide it for a cleaner look
+                scrollWheelZoom: false // Disable scroll zoom to prevent page scroll interference
+            }).setView([lat, lng], 15);
+
+            // Add custom styled tiles (using CartoDB Positron for a clean, light mode look)
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(map);
+
+            // Add zoom control manually to bottom right
+            L.control.zoom({
+                position: 'bottomright'
+            }).addTo(map);
+
+            // Custom Icon using SVG matching our primary color
+            const customIcon = L.divIcon({
+                className: 'custom-pin',
+                html: `<div style="color: #094cb2; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                        <span class="material-symbols-outlined fill" style="font-size: 36px; line-height: 1;">location_on</span>
+                       </div>`,
+                iconSize: [36, 36],
+                iconAnchor: [18, 36] // Point of the icon which will correspond to marker's location
+            });
+
+            // Add marker
+            const marker = L.marker([lat, lng], {
+                icon: customIcon,
+                draggable: true // Allow dragging
+            }).addTo(map);
+
+            // Simple mock interaction for address search input
+            const searchInput = document.getElementById('address-search');
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    // Simulate loading state
+                    const val = this.value;
+                    if(val.length > 3) {
+                        document.getElementById('display-address').textContent = val;
+                        document.getElementById('display-city').textContent = "Simulated City, SC 12345, United States";
+                        
+                        // Simulate slight map movement
+                        const newLat = lat + (Math.random() - 0.5) * 0.01;
+                        const newLng = lng + (Math.random() - 0.5) * 0.01;
+                        map.flyTo([newLat, newLng], 15);
+                        marker.setLatLng([newLat, newLng]);
+                    }
+                }
+            });
+
+            // Update address display when marker is dragged (Mock logic)
+            marker.on('dragend', function(e) {
+                document.getElementById('display-address').textContent = "Custom Pinned Location";
+                document.getElementById('display-city').textContent = "Coordinates updated manually";
+                
+                // Add a brief pulse animation to the marker icon
+                const iconElement = marker.getElement();
+                if(iconElement) {
+                    iconElement.style.transform = iconElement.style.transform + " scale(1.1)";
+                    setTimeout(() => {
+                        iconElement.style.transform = iconElement.style.transform.replace(" scale(1.1)", "");
+                    }, 200);
+                }
+            });
+        });
+    </script>
+
+
+</body></html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Provider Portal - Serch</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&amp;family=Inter:wght@400;500;600&amp;family=Public+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#6d5e00",
+                        "on-tertiary-container": "#4a3f00",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#faf9fa",
+                        "on-secondary-container": "#606569",
+                        "surface-dim": "#dbdadb",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#bfab49",
+                        "surface-tint": "#2259bf",
+                        "primary": "#094cb2",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#b1c5ff",
+                        "surface-container": "#efedee",
+                        "tertiary-fixed": "#f9e37a",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "on-primary-fixed": "#001946",
+                        "on-primary-container": "#e7ebff",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f5f3f4",
+                        "outline": "#737784",
+                        "surface-container-high": "#e9e8e9",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "primary-container": "#3366cc",
+                        "on-surface-variant": "#434653",
+                        "background": "#faf9fa",
+                        "secondary-fixed-dim": "#c2c7cc",
+                        "on-background": "#1b1c1d",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#00419d",
+                        "primary-fixed": "#d9e2ff",
+                        "secondary-fixed": "#dfe3e8",
+                        "inverse-on-surface": "#f2f0f1",
+                        "on-tertiary-fixed": "#211b00",
+                        "surface-container-highest": "#e3e2e3",
+                        "outline-variant": "#c3c6d5",
+                        "secondary": "#5a5f63",
+                        "on-surface": "#1b1c1d",
+                        "inverse-surface": "#303031",
+                        "secondary-container": "#dfe3e8",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#171c20",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e3e2e3",
+                        "surface-bright": "#faf9fa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Serif"],
+                        "display": ["Noto Serif"],
+                        "body": ["Inter"],
+                        "label": ["Public Sans"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf9fa; color: #1b1c1d; }
+        .font-headline { font-family: 'Noto Serif', serif; }
+        .font-label { font-family: 'Public Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased flex">
+<!-- SideNavBar (From JSON) -->
+<nav class="fixed inset-y-0 left-0 z-50 w-64 bg-surface-container-low transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out md:flex flex-col h-screen py-6 px-4 shadow-sm">
+<!-- Brand / Header -->
+<div class="mb-10 px-4">
+<h1 class="font-headline text-xl font-bold text-primary" style="color: rgb(51, 102, 204);">Serch Provider Suite</h1>
+<p class="text-sm font-body text-on-surface-variant mt-1">Manage your business</p>
+</div>
+<!-- CTA -->
+<div class="px-2 mb-8">
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary font-label font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+                New Service
+            </button>
+</div>
+<!-- Main Navigation -->
+<ul class="flex-1 space-y-2 px-2">
+<!-- Active Tab: Dashboard -->
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-xl translate-x-1 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard" data-weight="fill" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label font-medium">Dashboard</span>
+</a>
+</li>
+<!-- Inactive Tabs -->
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="font-label font-medium">Bookings</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="home_repair_service">home_repair_service</span>
+<span class="font-label font-medium">Services</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label font-medium">Analytics</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label font-medium">Settings</span>
+</a>
+</li>
+</ul>
+<!-- Footer Navigation -->
+<ul class="mt-auto px-2 border-t border-outline-variant/15 pt-4">
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="font-label font-medium">Help Center</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 p-6 lg:p-12 min-h-screen"><div class="md:hidden flex items-center justify-between p-4 bg-surface-container-low border-b border-outline-variant/15 mb-6"><h1 class="font-headline text-lg font-bold text-primary" style="color: rgb(51, 102, 204);">Serch Provider Suite</h1><button class="p-2 text-on-surface-variant"><span class="material-symbols-outlined">menu</span></button></div>
+<!-- Header Section -->
+<header class="flex justify-between items-end mb-12">
+<div>
+<p class="font-label text-sm text-on-surface-variant uppercase tracking-wider mb-2">Overview</p>
+<h2 class="font-headline text-4xl text-on-background">Good morning, Dr. Aris</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2.5 h-2.5 bg-error rounded-full border-2 border-surface-container-high"></span>
+</button>
+<div class="h-12 w-12 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="Provider Profile Picture" data-alt="A professional headshot of a mature male doctor in a modern, brightly lit clinical setting. He is wearing a crisp white coat over a blue shirt. The lighting is soft and flattering, highlighting a friendly, trustworthy expression. The background is a clean, minimalist medical office with subtle hints of high-end equipment, fitting a premium, authoritative aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrL9jAvehn9Sij-_EgfDDtdlgVHw_TrPPDMYD7G8INWVQMn63wpFIz_CeA3ZBPfiIzEipH6aGq6V7TTOYCmvLaZvmSLZFGPtPdQ1tGkg6L6EC6OgkC1iwVKoldL_Hhrsx757fGoXk9Mbai66h-QdE0U1sNdnH1u_G5RjVZr1iHmdBCbPDVpD8vKgzwTiQuhVv0yCTAr6zbS3p4sdnLmGy5CAg_uGMesLZ6OtjJmDL9HH_IuAEuxKd5S-f7WLsrojI8-Gknt69_r5JC">
+</div>
+</div>
+</header>
+<!-- Metrics Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 sm:grid-cols-2">
+<!-- Stat Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+<div class="flex justify-between items-start mb-4">
+<p class="font-label text-sm text-on-surface-variant font-medium">Total Appointments</p>
+<span class="material-symbols-outlined text-primary bg-primary-fixed p-2 rounded-lg" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-headline text-3xl">124</h3>
+<span class="font-body text-sm text-tertiary font-medium bg-tertiary-fixed/30 px-2 py-0.5 rounded-sm">+12% this week</span>
+</div>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-tertiary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+<div class="flex justify-between items-start mb-4">
+<p class="font-label text-sm text-on-surface-variant font-medium">Pending Requests</p>
+<span class="material-symbols-outlined text-tertiary bg-tertiary-fixed p-2 rounded-lg" style="font-variation-settings: 'FILL' 1;">hourglass_empty</span>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-headline text-3xl">8</h3>
+<span class="font-body text-sm text-on-surface-variant font-medium">Needs review</span>
+</div>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+<div class="flex justify-between items-start mb-4">
+<p class="font-label text-sm text-on-surface-variant font-medium">Revenue (MTD)</p>
+<span class="material-symbols-outlined text-on-surface bg-surface-container-high p-2 rounded-lg" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-headline text-3xl">$8,450</h3>
+<span class="font-body text-sm text-primary font-medium bg-primary-fixed/30 px-2 py-0.5 rounded-sm">+4% vs last month</span>
+</div>
+</div>
+</section>
+<!-- Schedule & Activity Area -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Today's Schedule -->
+<section class="lg:col-span-2">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline text-2xl">Today's Schedule</h3>
+<a class="font-label text-sm text-primary hover:underline font-medium" href="#">View Full Calendar</a>
+</div>
+<div class="space-y-4">
+<!-- Appointment Item 1 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl flex items-center justify-between group hover:bg-surface-container-low transition-colors flex-col sm:flex-row items-start sm:items-center gap-4">
+<div class="flex items-center gap-5">
+<div class="flex flex-col items-center justify-center w-16 h-16 rounded-lg bg-surface-container-high text-on-surface">
+<span class="font-headline font-bold text-lg">09:00</span>
+<span class="font-label text-xs uppercase text-on-surface-variant">AM</span>
+</div>
+<div>
+<h4 class="font-body font-semibold text-lg text-on-background">Consultation: Emma Wright</h4>
+<p class="font-body text-sm text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">videocam</span> Video Call • 45 mins
+                                </p>
+</div>
+</div>
+<div class="flex gap-3 w-full sm:w-auto justify-end">
+<button class="px-4 py-2 bg-surface-container-high text-primary font-label text-sm font-medium rounded-lg hover:bg-surface-container-highest transition-colors flex-1 sm:flex-none">Message</button>
+<button class="px-4 py-2 bg-primary text-on-primary font-label text-sm font-medium rounded-lg hover:bg-surface-tint transition-colors shadow-sm flex-1 sm:flex-none">Join Call</button>
+</div>
+</div>
+<!-- Appointment Item 2 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl flex items-center justify-between group hover:bg-surface-container-low transition-colors flex-col sm:flex-row items-start sm:items-center gap-4">
+<div class="flex items-center gap-5">
+<div class="flex flex-col items-center justify-center w-16 h-16 rounded-lg bg-surface-container-high text-on-surface">
+<span class="font-headline font-bold text-lg">11:30</span>
+<span class="font-label text-xs uppercase text-on-surface-variant">AM</span>
+</div>
+<div>
+<h4 class="font-body font-semibold text-lg text-on-background">Follow-up: James Cole</h4>
+<p class="font-body text-sm text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span> In-Person • 30 mins
+                                </p>
+</div>
+</div>
+<div class="flex gap-3 w-full sm:w-auto justify-end">
+<button class="px-4 py-2 bg-surface-container-high text-primary font-label text-sm font-medium rounded-lg hover:bg-surface-container-highest transition-colors flex-1 sm:flex-none">Message</button>
+<button class="px-4 py-2 bg-surface-container-high text-on-surface font-label text-sm font-medium rounded-lg hover:bg-surface-container-highest transition-colors flex-1 sm:flex-none">Details</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Actions / Sidebar -->
+<section class="space-y-6">
+<!-- Action Card -->
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/15">
+<h3 class="font-headline text-lg mb-4">Quick Actions</h3>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex flex-col items-center justify-center p-4 bg-surface-container-lowest rounded-lg hover:bg-surface-container-high transition-colors gap-2 text-on-surface">
+<span class="material-symbols-outlined text-primary">edit_document</span>
+<span class="font-label text-xs font-medium">Write Notes</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 bg-surface-container-lowest rounded-lg hover:bg-surface-container-high transition-colors gap-2 text-on-surface">
+<span class="material-symbols-outlined text-tertiary">receipt_long</span>
+<span class="font-label text-xs font-medium">Invoices</span>
+</button>
+</div>
+</div>
+<!-- Recent Activity Mini -->
+<div class="bg-surface-container-lowest p-6 rounded-xl">
+<h3 class="font-headline text-lg mb-4">Recent Activity</h3>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<div class="w-2 h-2 rounded-full bg-primary mt-1.5"></div>
+<div>
+<p class="font-body text-sm text-on-background">New review from Sarah L.</p>
+<span class="font-label text-xs text-on-surface-variant">2 hours ago</span>
+</div>
+</li>
+<li class="flex items-start gap-3">
+<div class="w-2 h-2 rounded-full bg-tertiary mt-1.5"></div>
+<div>
+<p class="font-body text-sm text-on-background">Invoice #INV-204 paid</p>
+<span class="font-label text-xs text-on-surface-variant">Yesterday</span>
+</div>
+</li>
+</ul>
+</div>
+</section>
+</div>
+</main>
+
+
+</body></html>

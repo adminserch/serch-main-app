@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: #FCFBF9; /* Warm off-white background */
+  --foreground: #1C1917; /* Dark charcoal/espresso text */
+  --primary: #0F172A; /* Deep Navy */
+  --accent: #0D9488; /* Teal */
+  --gold: #D6C5B3; /* Muted Gold */
+  --espresso: #1C1917; /* Espresso */
+  --champagne: #F5F2EB; /* Warm champagne */
+  --card-bg: #FFFFFF;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-gold: var(--gold);
+  --color-espresso: var(--espresso);
+  --color-champagne: var(--champagne);
+  --color-card-bg: var(--card-bg);
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Outfit', sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Custom calendar aesthetics */
+.react-calendar {
+  width: 100% !important;
+  max-width: 100%;
+  background: white !important;
+  border: 1px solid var(--champagne) !important;
+  font-family: inherit !important;
+  border-radius: 0.75rem !important;
+  padding: 0.75rem !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+.react-calendar__tile--active {
+  background: var(--accent) !important;
+  color: white !important;
+  border-radius: 0.375rem !important;
+}
+
+.react-calendar__tile--now {
+  background: var(--champagne) !important;
+  border-radius: 0.375rem !important;
+}
+
+.react-calendar__tile:hover {
+  background: #F3F4F6 !important;
+  border-radius: 0.375rem !important;
+}
+

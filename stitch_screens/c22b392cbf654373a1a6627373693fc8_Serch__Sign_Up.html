@@ -1,0 +1,166 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Sign Up - Serch</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Inter:wght@400;500;600&amp;family=Public+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "inverse-on-surface": "#f2f0f1",
+                      "on-background": "#1b1c1d",
+                      "inverse-primary": "#b1c5ff",
+                      "secondary": "#5a5f63",
+                      "surface-bright": "#faf9fa",
+                      "on-secondary-container": "#606569",
+                      "secondary-fixed": "#dfe3e8",
+                      "primary-container": "#3366cc",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-fixed-dim": "#dcc661",
+                      "tertiary-fixed": "#f9e37a",
+                      "error": "#ba1a1a",
+                      "primary-fixed": "#d9e2ff",
+                      "on-surface": "#1b1c1d",
+                      "on-secondary-fixed-variant": "#42474b",
+                      "surface-container-highest": "#e3e2e3",
+                      "on-tertiary-fixed-variant": "#524600",
+                      "on-surface-variant": "#434653",
+                      "on-primary-fixed": "#001946",
+                      "on-error": "#ffffff",
+                      "surface-container-high": "#e9e8e9",
+                      "on-tertiary-fixed": "#211b00",
+                      "secondary-fixed-dim": "#c2c7cc",
+                      "on-tertiary-container": "#4a3f00",
+                      "tertiary": "#6d5e00",
+                      "secondary-container": "#dfe3e8",
+                      "outline": "#737784",
+                      "on-primary-container": "#e7ebff",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-tint": "#2259bf",
+                      "inverse-surface": "#303031",
+                      "tertiary-container": "#bfab49",
+                      "on-primary-fixed-variant": "#00419d",
+                      "surface-container-low": "#f5f3f4",
+                      "surface-variant": "#e3e2e3",
+                      "surface-container": "#efedee",
+                      "surface": "#faf9fa",
+                      "on-error-container": "#93000a",
+                      "background": "#faf9fa",
+                      "primary": "#094cb2",
+                      "surface-dim": "#dbdadb",
+                      "outline-variant": "#c3c6d5",
+                      "error-container": "#ffdad6",
+                      "primary-fixed-dim": "#b1c5ff",
+                      "on-secondary-fixed": "#171c20"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Noto Serif"
+                      ],
+                      "display": [
+                              "Noto Serif"
+                      ],
+                      "body": [
+                              "Inter"
+                      ],
+                      "label": [
+                              "Public Sans"
+                      ]
+              },
+              "fontSize": {}
+      },
+          },
+        }
+      </script>
+<style>
+        .ghost-border {
+            border: 1px solid rgba(195, 198, 213, 0.15); /* outline-variant at 15% */
+        }
+        .focus-primary-border:focus-within {
+            border-color: #094cb2;
+            box-shadow: 0 0 0 1px #094cb2;
+        }
+      </style>
+</head>
+<body class="bg-surface-container-lowest font-body text-on-surface antialiased min-h-screen flex flex-col justify-center items-center">
+<!-- Linear Flow: Navigation suppressed -->
+<main class="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 min-h-screen md:min-h-[800px]">
+<!-- Imagery / Aesthetic Section -->
+<div class="hidden md:flex flex-col justify-center p-12 bg-surface-container-low relative overflow-hidden rounded-r-xl">
+<div class="absolute inset-0 z-0">
+<img alt="Library Background" class="w-full h-full object-cover opacity-80" data-alt="A sophisticated, high-end library setting with towering wooden bookshelves filled with ancient texts. The lighting is soft, warm, and natural, streaming through large arched windows, creating a serene and scholarly atmosphere. The aesthetic aligns with a high-end editorial, 'Digital Curator' vibe, utilizing a refined palette of warm wood tones, creamy parchment whites, and deep, scholarly shadows. The mood is intellectually stimulating yet deeply calming." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1RDJUAl5f0vTv-ZooWxUMwoyHP37QHxEY3DGqs3C2WknHYSUZaHLXIWktPdsFnfxdcOZx6I8pFR33UktAZup0HSxrx7Fs6rNLKXxaRiZl3FK3d5iMj0t8p7akiZchsAgE8M7clft3YUcpxu-kogfAwcmk6UGXGo2XmQKR7bWFuIhLwgeMVyGgBKclwmo8u6zhGcupA_-9yK6R72BiwoD0bpsZgbUESpIulOR3hmxF4dYRzPvhlSmgaA4359T9kA1KAGlCQX6ED1JX">
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dim/90 via-surface-container/40 to-transparent z-10"></div>
+<div class="relative z-20 mt-auto">
+<h1 class="font-headline text-5xl font-bold text-on-surface mb-4">The Digital Curator</h1>
+<p class="font-body text-body-md text-on-surface-variant max-w-md leading-relaxed">
+                    Begin your scholarly journey. A premium reading experience awaits, where dense information is made effortless.
+                </p>
+</div>
+</div>
+<!-- Form Section -->
+<div class="flex flex-col justify-center p-8 sm:p-16 lg:p-24 bg-surface-container-lowest z-20">
+<div class="max-w-md w-full mx-auto">
+<!-- Brand Header -->
+<div class="mb-12">
+<h2 class="font-headline text-3xl font-bold text-primary mb-2">Serch</h2>
+<p class="font-label text-sm uppercase tracking-widest text-tertiary">Seeker Registration</p>
+</div>
+<form action="#" class="space-y-8" method="POST">
+<!-- Full Name Input -->
+<div class="space-y-2">
+<label class="block font-label text-sm text-on-surface-variant" for="fullName">Full Name</label>
+<div class="relative rounded bg-surface-bright ghost-border focus-primary-border transition-colors duration-300 flex items-center px-4 py-3">
+<span class="material-symbols-outlined text-outline mr-3">person</span>
+<input class="w-full bg-transparent border-none p-0 focus:ring-0 font-body text-on-surface placeholder:text-outline-variant" id="fullName" name="fullName" placeholder="Eleanor Vance" required="" type="text">
+</div>
+</div>
+<!-- Email Input -->
+<div class="space-y-2">
+<label class="block font-label text-sm text-on-surface-variant" for="email">Email Address</label>
+<div class="relative rounded bg-surface-bright ghost-border focus-primary-border transition-colors duration-300 flex items-center px-4 py-3">
+<span class="material-symbols-outlined text-outline mr-3">mail</span>
+<input class="w-full bg-transparent border-none p-0 focus:ring-0 font-body text-on-surface placeholder:text-outline-variant" id="email" name="email" placeholder="eleanor@example.com" required="" type="email">
+</div>
+</div>
+<!-- Password Input -->
+<div class="space-y-2">
+<label class="block font-label text-sm text-on-surface-variant" for="password">Password</label>
+<div class="relative rounded bg-surface-bright ghost-border focus-primary-border transition-colors duration-300 flex items-center px-4 py-3">
+<span class="material-symbols-outlined text-outline mr-3">lock</span>
+<input class="w-full bg-transparent border-none p-0 focus:ring-0 font-body text-on-surface placeholder:text-outline-variant" id="password" name="password" placeholder="••••••••" required="" type="password">
+<button class="text-outline hover:text-primary transition-colors focus:outline-none" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<!-- Actions -->
+<div class="pt-4 space-y-6">
+<button class="w-full bg-primary-container text-on-primary font-label text-sm uppercase tracking-widest py-4 rounded-xl hover:opacity-90 active:opacity-80 transition-opacity shadow-sm" type="submit">Create Seeker Account</button>
+<div class="text-center">
+<span class="font-body text-sm text-on-surface-variant">Already curated an account?</span>
+<a class="font-label text-sm text-primary-container font-bold hover:underline decoration-primary-container underline-offset-4 ml-2" href="#">Sign In</a>
+</div>
+</div>
+</form>
+</div>
+</div>
+</main>
+<!-- Linear Flow: Footer suppressed for transactional screen -->
+
+
+</body></html>

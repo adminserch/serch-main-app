@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>All Bookings - Serch Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Serif:wght@400;500;600;700;800&amp;family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-fixed-variant": "#524600",
+                      "on-secondary-fixed-variant": "#42474b",
+                      "surface-container": "#efedee",
+                      "surface-bright": "#faf9fa",
+                      "on-primary-fixed-variant": "#00419d",
+                      "primary-fixed-dim": "#b1c5ff",
+                      "inverse-surface": "#303031",
+                      "tertiary-fixed-dim": "#dcc661",
+                      "on-secondary-container": "#606569",
+                      "on-tertiary-fixed": "#211b00",
+                      "on-secondary": "#ffffff",
+                      "inverse-primary": "#b1c5ff",
+                      "on-error": "#ffffff",
+                      "tertiary": "#6d5e00",
+                      "secondary-fixed": "#dfe3e8",
+                      "primary-container": "#3366cc",
+                      "surface-container-high": "#e9e8e9",
+                      "surface": "#faf9fa",
+                      "on-error-container": "#93000a",
+                      "primary-fixed": "#d9e2ff",
+                      "tertiary-fixed": "#f9e37a",
+                      "secondary-container": "#dfe3e8",
+                      "on-tertiary": "#ffffff",
+                      "on-tertiary-container": "#4a3f00",
+                      "secondary-fixed-dim": "#c2c7cc",
+                      "surface-dim": "#dbdadb",
+                      "outline": "#737784",
+                      "on-secondary-fixed": "#171c20",
+                      "on-primary-fixed": "#001946",
+                      "error": "#ba1a1a",
+                      "surface-tint": "#2259bf",
+                      "outline-variant": "#c3c6d5",
+                      "tertiary-container": "#bfab49",
+                      "inverse-on-surface": "#f2f0f1",
+                      "primary": "#094cb2",
+                      "on-primary-container": "#e7ebff",
+                      "on-primary": "#ffffff",
+                      "on-surface": "#1b1c1d",
+                      "error-container": "#ffdad6",
+                      "surface-container-low": "#f5f3f4",
+                      "surface-variant": "#e3e2e3",
+                      "background": "#faf9fa",
+                      "secondary": "#5a5f63",
+                      "surface-container-highest": "#e3e2e3",
+                      "on-background": "#1b1c1d",
+                      "on-surface-variant": "#434653"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Noto Serif"
+                      ],
+                      "display": [
+                              "Noto Serif"
+                      ],
+                      "body": [
+                              "Inter"
+                      ],
+                      "label": [
+                              "Public Sans"
+                      ]
+              },
+              "fontSize": {}
+      },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen flex">
+<!-- SideNavBar (Admin) -->
+<nav class="h-full w-72 flex flex-col fixed left-0 top-0 bg-surface-container-lowest z-40 border-r-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+<div class="p-6 space-y-4 h-full flex flex-col">
+<!-- Brand / Header -->
+<div class="mb-8 px-2 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-primary" data-icon="shield_person">shield_person</span>
+</div>
+<div>
+<h1 class="font-display text-xl font-bold text-on-surface">Serch Admin</h1>
+<p class="font-label text-sm text-on-surface-variant">Operations Portal</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 text-secondary hover:bg-surface-container-high transition-all duration-300 rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-on-surface" data-icon="dashboard">dashboard</span>
+<span class="font-body text-label-lg font-medium group-hover:text-on-surface">Dashboard</span>
+</a>
+<!-- Active State Example (Assuming Bookings falls under Registrations or Dashboard, but semantic match implies a generic active state logic. I will highlight Registrations as closest placeholder or create a new active if needed. However, since the prompt says "All Bookings", I will highlight a generic active or use Dashboard. Let's stick to the JSON tabs. I'll make Dashboard active since it's an overarching view, but let's just highlight the first or a relevant one. The prompt implies this is a top-level view. Let's make "Registrations" active as it relates to records.) -->
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container/20 text-primary font-bold rounded-lg transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="how_to_reg" data-weight="fill" style="font-variation-settings: 'FILL' 1;">how_to_reg</span>
+<span class="font-body text-label-lg">Registrations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary hover:bg-surface-container-high transition-all duration-300 rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-on-surface" data-icon="group">group</span>
+<span class="font-body text-label-lg font-medium group-hover:text-on-surface">Providers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary hover:bg-surface-container-high transition-all duration-300 rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-on-surface" data-icon="map">map</span>
+<span class="font-body text-label-lg font-medium group-hover:text-on-surface">Locations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary hover:bg-surface-container-high transition-all duration-300 rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-on-surface" data-icon="settings">settings</span>
+<span class="font-body text-label-lg font-medium group-hover:text-on-surface">Settings</span>
+</a>
+</div>
+<!-- CTA -->
+<div class="mt-auto mb-6">
+<button class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-surface-container text-on-surface-variant font-label text-sm font-semibold rounded-lg hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="bolt">bolt</span>
+                    System Status
+                </button>
+</div>
+<!-- Footer Links -->
+<div class="pt-4 border-t-0 bg-surface-container-low/50 -mx-6 px-6 pb-2">
+<a class="flex items-center gap-3 px-4 py-2 text-secondary hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="help_outline">help_outline</span>
+<span class="font-body text-label-md">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-secondary hover:text-error transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="logout">logout</span>
+<span class="font-body text-label-md">Logout</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Main Canvas -->
+<main class="flex-1 ml-72 p-10 lg:p-16 max-w-7xl">
+<!-- Header Section -->
+<header class="mb-12">
+<h2 class="font-headline text-4xl lg:text-5xl font-bold text-on-surface tracking-tight mb-4">All Bookings</h2>
+<p class="font-body text-lg text-on-surface-variant max-w-2xl leading-relaxed">
+                Comprehensive ledger of all platform engagements. Review, filter, and manage transaction states across the network.
+            </p>
+</header>
+<!-- Filters & Search Bar (Glassmorphism / Bento feel) -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-8 flex flex-col lg:flex-row gap-6 items-end relative overflow-hidden">
+<!-- Ghost border simulation via subtle inner shadow/background -->
+<div class="absolute inset-0 ring-1 ring-inset ring-outline-variant/15 pointer-events-none rounded-xl"></div>
+<div class="flex-1 w-full space-y-2">
+<label class="font-label text-xs uppercase tracking-wider text-on-surface-variant font-semibold">Search Identifier</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface-bright border-none ring-1 ring-inset ring-outline-variant/20 focus:ring-2 focus:ring-primary rounded-lg font-body text-sm text-on-surface placeholder:text-outline/60 transition-shadow" placeholder="Booking ID, Seeker, or Provider Name..." type="text"/>
+</div>
+</div>
+<div class="w-full lg:w-48 space-y-2">
+<label class="font-label text-xs uppercase tracking-wider text-on-surface-variant font-semibold">Date Range</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="calendar_today">calendar_today</span>
+<select class="w-full pl-10 pr-8 py-3 bg-surface-bright border-none ring-1 ring-inset ring-outline-variant/20 focus:ring-2 focus:ring-primary rounded-lg font-body text-sm text-on-surface appearance-none transition-shadow cursor-pointer">
+<option>Last 30 Days</option>
+<option>Last 7 Days</option>
+<option>This Quarter</option>
+<option>Custom Range...</option>
+</select>
+</div>
+</div>
+<div class="w-full lg:w-48 space-y-2">
+<label class="font-label text-xs uppercase tracking-wider text-on-surface-variant font-semibold">Status</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="filter_list">filter_list</span>
+<select class="w-full pl-10 pr-8 py-3 bg-surface-bright border-none ring-1 ring-inset ring-outline-variant/20 focus:ring-2 focus:ring-primary rounded-lg font-body text-sm text-on-surface appearance-none transition-shadow cursor-pointer">
+<option>All Statuses</option>
+<option>Completed</option>
+<option>Upcoming</option>
+<option>Disputed</option>
+<option>Cancelled</option>
+</select>
+</div>
+</div>
+<button class="w-full lg:w-auto px-6 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary font-label text-sm font-bold rounded-lg hover:opacity-90 transition-opacity shadow-sm whitespace-nowrap">
+                Apply Filters
+            </button>
+</div>
+<!-- Ledger Table (Structured Information Architecture) -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden relative">
+<div class="absolute inset-0 ring-1 ring-inset ring-outline-variant/15 pointer-events-none rounded-xl"></div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b-0 relative">
+<th class="py-4 px-6 font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold w-24">ID</th>
+<th class="py-4 px-6 font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">Seeker</th>
+<th class="py-4 px-6 font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">Provider</th>
+<th class="py-4 px-6 font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">Service</th>
+<th class="py-4 px-6 font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">Date / Time</th>
+<th class="py-4 px-6 font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold text-right">Amount</th>
+<th class="py-4 px-6 font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold text-center">Status</th>
+<th class="py-4 px-6 font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold text-center">Actions</th>
+</tr>
+</thead>
+<tbody class="font-body text-sm divide-y-0 relative">
+<!-- We use background shifts instead of borders for rows -->
+<!-- Row 1: Completed -->
+<tr class="hover:bg-surface-container-low/50 transition-colors bg-surface-container-lowest">
+<td class="py-4 px-6 font-mono text-xs text-outline font-medium">#B-8921</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant bg-cover bg-center" data-alt="A professional headshot of a young woman with a neutral expression, styled in a high-end editorial light-mode aesthetic with soft studio lighting." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBdVS66ceihcTEB1RELQt9WYiEs-iVe4my51G04lSxmbRZJjjVGRxX9WVsa-V4YmOtL_hLoHtCaxul2g6maeNFliDbH8VkPUhFDtUohEoqBq75CkGlhjzn0Lc8ZcNZQ41bomUB8S5rhP4Wj_SwFUk36mp0KgLiwCAjdptwE3XzFnH5gHQ9ob4GI-yw_7Vwpxuiow71IQqYHtn0BcUApr4vTNz0pfiKpzTOlQCOjS6Dv7nRgU6juzqD3f49fGiXT7fYnM6Qv5Zschl4g');"></div>
+<span class="font-semibold text-on-surface">Alice Munro</span>
+</div>
+</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant bg-cover bg-center" data-alt="A professional headshot of a mature man looking confident, styled in a high-end editorial light-mode aesthetic with crisp white background." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAM7RpGAXzBiR7jAPlOQY6XdcEQPqzJTKoCrkqe1RcC_bC3qvpb0hSYkk-o0sVptwlbMWbfAWb0yHhFxHleXXZyUeoTd2W07wvOeeVAZ-ZWV3V4fDVudeCfxz-OIDva-qG7CzfNlA-PtGhrLTJXYVDThKFecaMalqciFnOBJ1plXuL0EwpnoNyzT1tikma0VAG52d8DhwO78t6mRCGwZ4aNDNSyEgYxPixuQ_fnllXJoSpG5zWpS84blvE8kX0vVWNV1G_HOYV6NlAc');"></div>
+<span class="font-medium text-on-surface-variant">David Chen</span>
+</div>
+</td>
+<td class="py-4 px-6 text-on-surface-variant">Consulting</td>
+<td class="py-4 px-6 text-on-surface-variant">
+<div class="flex flex-col">
+<span class="text-on-surface font-medium">Oct 12, 2023</span>
+<span class="text-xs text-outline">14:00 - 15:30</span>
+</div>
+</td>
+<td class="py-4 px-6 text-right font-headline font-semibold text-on-surface">$150.00</td>
+<td class="py-4 px-6 text-center">
+<span class="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label text-xs font-bold tracking-wide">
+                                    Completed
+                                </span>
+</td>
+<td class="py-4 px-6 text-center">
+<button class="text-primary hover:text-primary-container transition-colors p-1 rounded hover:bg-surface-container-low">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2: Disputed (Highlight with subtle background) -->
+<tr class="hover:bg-error-container/20 transition-colors bg-surface-bright">
+<td class="py-4 px-6 font-mono text-xs text-outline font-medium">#B-8922</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant bg-cover bg-center" data-alt="A close up portrait of a woman smiling subtly, set against a pristine white background, capturing a clean, modern, and editorial UI feel." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA0z0fCsWRN434sCO1MnNmvxnzgd5nxAmN64ydRhqah8mgTd8p8FrhicODLbmkgr89ptOhjAvevlfYmLiJGT4e4goGNG9S5l1VU6nzwM2cpWEKN2pLPqst1q-CG9hWIlpagCUwHBjaHulJ4JXrlf7ZZ1qqnq7bGCc0vVDnnK1U3Vk5vrTjYufNqVi2rEYiBHl3uh1Cs6g0Amr46M1QxK57M9lea9DQdnwKo9kN0xPBmRwpmmt8d0pIif_3kmUFfJR7EVJIbe_ak5mSt');"></div>
+<span class="font-semibold text-on-surface">Sarah Jenkins</span>
+</div>
+</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant bg-cover bg-center" data-alt="A portrait of a young man with glasses, looking directly at the camera, shot with bright, high-key lighting for a premium platform directory." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDTpDjIbguDIOSpbK2_vBo6qGrUk0nnQ_Ej5j7oZLTYKA-ibyKlLnIdXcBCASgvpjmWb6rQUeKsdCKtGbJfj3X3fnY7a55490zZ0Q32FBJa0kiPV9wYzEPoATPqnaV1zqknAGgws8Wt9v-mepKAt2ziKOLzP_LghelYt_tE6UynyuoDAokpi5Jbh4ktGaNEhS0WQmuKSQAybXLqXbdkRaMb649dHK__dhY7oh48cLh8yoguQ7hoW-O35Timp1szlfYLFMWtrLJYEDe9');"></div>
+<span class="font-medium text-on-surface-variant">Michael Ross</span>
+</div>
+</td>
+<td class="py-4 px-6 text-on-surface-variant">Plumbing</td>
+<td class="py-4 px-6 text-on-surface-variant">
+<div class="flex flex-col">
+<span class="text-on-surface font-medium">Oct 14, 2023</span>
+<span class="text-xs text-outline">09:00 - 11:00</span>
+</div>
+</td>
+<td class="py-4 px-6 text-right font-headline font-semibold text-on-surface">$320.00</td>
+<td class="py-4 px-6 text-center">
+<span class="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-error/10 text-error font-label text-xs font-bold tracking-wide border border-error/20">
+                                    Disputed
+                                </span>
+</td>
+<td class="py-4 px-6 text-center">
+<button class="text-primary hover:text-primary-container transition-colors p-1 rounded hover:bg-surface-container-low">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3: Upcoming -->
+<tr class="hover:bg-surface-container-low/50 transition-colors bg-surface-container-lowest">
+<td class="py-4 px-6 font-mono text-xs text-outline font-medium">#B-8923</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant font-bold text-xs">
+                                        TR
+                                    </div>
+<span class="font-semibold text-on-surface">Tom Riddle</span>
+</div>
+</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant font-bold text-xs">
+                                        EW
+                                    </div>
+<span class="font-medium text-on-surface-variant">Emma Watson</span>
+</div>
+</td>
+<td class="py-4 px-6 text-on-surface-variant">Tutoring</td>
+<td class="py-4 px-6 text-on-surface-variant">
+<div class="flex flex-col">
+<span class="text-on-surface font-medium">Oct 18, 2023</span>
+<span class="text-xs text-outline">16:00 - 17:00</span>
+</div>
+</td>
+<td class="py-4 px-6 text-right font-headline font-semibold text-on-surface">$85.00</td>
+<td class="py-4 px-6 text-center">
+<span class="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-primary-container/20 text-primary font-label text-xs font-bold tracking-wide">
+                                    Upcoming
+                                </span>
+</td>
+<td class="py-4 px-6 text-center">
+<button class="text-primary hover:text-primary-container transition-colors p-1 rounded hover:bg-surface-container-low">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4: Cancelled -->
+<tr class="hover:bg-surface-container-low/50 transition-colors bg-surface-bright">
+<td class="py-4 px-6 font-mono text-xs text-outline font-medium">#B-8924</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant bg-cover bg-center" data-alt="A portrait of a sophisticated woman in a minimal setting, embodying a high-end, clean light mode interface style." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBefTT6UNU7U8xLgAdpc9SD_N1iY1dxNgq55aAH9QsANWyeVznYCUNJxGZ0IdADtwKFXNCfJNApLiLdwcqmcGqdRnjfq8WUJm4fqKf__AUymXJlQ5UtrgDPmsex_4O_1AnhtyYzVuQ4ooszsTbCXPodDtk74Paf6OFi3bCrW8lkajIkyUGaO3GoII7zldWPMR3zK0y91gAUW-_MEoNCMI_I0LFYtokpz_z4tBNeB3rf5z7jM_tSkOaAyqKHoJ2rwP00q2tT1JBvDBPB');"></div>
+<span class="font-semibold text-outline">Lucy Heart</span>
+</div>
+</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant bg-cover bg-center" data-alt="A portrait of a male professional looking slightly off-camera, with soft, diffused lighting suitable for a premium dashboard design." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDyuIWKfCwVXouuodL_2UbCDzZMCTqMILfhE37LXGfAE125mKle7_xnJhEpxNhMpGICMlnM0QsvAdpZ1f4BpcE9uq3p05UL2ac5C1EhJ97inilLcPJ8KAsmhHYHGdtuu4L_k2sSMSkhj5lq4rTzsCSrBMveoqwFWRs70A1HeVxoyhSRLuzvdmIctyiYw0KmxBAToYe4EAkTf_ezo_8i52NwTU_YelpcXbI7FIVEtDvDNvM77j2kszvlgGEaGFx_c6Z0MvLyAFutxic8');"></div>
+<span class="font-medium text-outline">Natsu Dragneel</span>
+</div>
+</td>
+<td class="py-4 px-6 text-outline">Landscaping</td>
+<td class="py-4 px-6 text-outline">
+<div class="flex flex-col">
+<span class="font-medium">Oct 10, 2023</span>
+<span class="text-xs text-outline/60">08:00 - 12:00</span>
+</div>
+</td>
+<td class="py-4 px-6 text-right font-headline font-semibold text-outline line-through">$450.00</td>
+<td class="py-4 px-6 text-center">
+<span class="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-surface-container text-outline font-label text-xs font-bold tracking-wide">
+                                    Cancelled
+                                </span>
+</td>
+<td class="py-4 px-6 text-center">
+<button class="text-outline hover:text-on-surface-variant transition-colors p-1 rounded hover:bg-surface-container-low">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="bg-surface-container-low/50 px-6 py-4 flex items-center justify-between border-t border-surface-variant/50">
+<span class="font-label text-xs text-on-surface-variant">Showing 1 to 4 of 1,248 entries</span>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded hover:bg-surface-container transition-colors text-outline" disabled="">
+<span class="material-symbols-outlined text-[20px]" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded bg-primary text-on-primary font-label text-sm font-semibold flex items-center justify-center">1</button>
+<button class="w-8 h-8 rounded hover:bg-surface-container transition-colors text-on-surface-variant font-label text-sm font-semibold flex items-center justify-center">2</button>
+<button class="w-8 h-8 rounded hover:bg-surface-container transition-colors text-on-surface-variant font-label text-sm font-semibold flex items-center justify-center">3</button>
+<span class="text-outline mx-1">...</span>
+<button class="w-8 h-8 rounded hover:bg-surface-container transition-colors text-on-surface-variant font-label text-sm font-semibold flex items-center justify-center">12</button>
+<button class="p-2 rounded hover:bg-surface-container transition-colors text-on-surface">
+<span class="material-symbols-outlined text-[20px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

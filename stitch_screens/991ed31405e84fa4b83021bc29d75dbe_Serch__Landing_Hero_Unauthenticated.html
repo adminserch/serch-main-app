@@ -1,0 +1,292 @@
+<!DOCTYPE html><html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Serch - High-End Editorial</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Noto+Serif:wght@400;700&amp;family=Public+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-tertiary-container": "#4a3f00",
+                "on-secondary-container": "#606569",
+                "primary-fixed-dim": "#b1c5ff",
+                "inverse-primary": "#b1c5ff",
+                "tertiary-container": "#bfab49",
+                "inverse-on-surface": "#f2f0f1",
+                "on-secondary-fixed-variant": "#42474b",
+                "outline": "#737784",
+                "tertiary-fixed-dim": "#dcc661",
+                "on-primary-fixed-variant": "#00419d",
+                "primary-container": "#3366cc",
+                "outline-variant": "#c3c6d5",
+                "tertiary-fixed": "#f9e37a",
+                "on-surface-variant": "#434653",
+                "surface-container-lowest": "#ffffff",
+                "secondary-fixed": "#dfe3e8",
+                "secondary": "#5a5f63",
+                "surface-dim": "#dbdadb",
+                "on-primary-fixed": "#001946",
+                "surface-container": "#efedee",
+                "on-secondary-fixed": "#171c20",
+                "primary": "#094cb2",
+                "on-error-container": "#93000a",
+                "secondary-container": "#dfe3e8",
+                "on-background": "#1b1c1d",
+                "inverse-surface": "#303031",
+                "surface-tint": "#2259bf",
+                "secondary-fixed-dim": "#c2c7cc",
+                "error-container": "#ffdad6",
+                "surface-container-highest": "#e3e2e3",
+                "error": "#ba1a1a",
+                "tertiary": "#6d5e00",
+                "on-tertiary-fixed": "#211b00",
+                "background": "#faf9fa",
+                "surface-container-high": "#e9e8e9",
+                "on-tertiary-fixed-variant": "#524600",
+                "on-tertiary": "#ffffff",
+                "surface-container-low": "#f5f3f4",
+                "on-secondary": "#ffffff",
+                "surface-variant": "#e3e2e3",
+                "surface-bright": "#faf9fa",
+                "on-surface": "#1b1c1d",
+                "on-error": "#ffffff",
+                "on-primary": "#ffffff",
+                "primary-fixed": "#d9e2ff",
+                "on-primary-container": "#e7ebff",
+                "surface": "#faf9fa"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {},
+        "fontFamily": {
+                "headline": [
+                        "Noto Serif"
+                ],
+                "display": [
+                        "Noto Serif"
+                ],
+                "body": [
+                        "Inter"
+                ],
+                "label": [
+                        "Public Sans"
+                ]
+        },
+        "fontSize": {}
+},
+    },
+  }
+</script>
+<style>
+        .glass-nav {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .text-balance {
+            text-wrap: balance;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="sticky top-0 w-full z-50 transition-all duration-300 ease-in-out glass-nav border-b-0 shadow-[0_4px_30px_rgba(0,0,0,0.05)]">
+<div class="flex justify-between items-center px-4 md:px-8 py-4 max-w-screen-2xl mx-auto"><!-- Brand -->
+<a class="font-headline text-2xl font-bold tracking-tight transition-all duration-300 ease-in-out hover:scale-[1.02] text-primary-container" href="#">
+                Serch
+            </a>
+<!-- Search (Left aligned next to brand) -->
+<div class="hidden md:flex ml-8 mr-auto relative items-center">
+<span class="material-symbols-outlined absolute left-3 text-outline-variant text-lg pointer-events-none" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="pl-10 pr-4 py-2 w-64 bg-surface-container-lowest border border-outline-variant/15 text-on-surface font-label text-sm rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-on-surface-variant/50" placeholder="Search curated excellence..." type="text">
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-label text-sm text-primary font-bold border-b-2 border-primary pb-1 transition-all duration-300 ease-in-out hover:scale-[1.02]" href="#explore">Explore</a>
+<a class="font-label text-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/30 underline-offset-8 transition-all duration-300 ease-in-out hover:scale-[1.02]" href="#services">Services</a>
+<a class="font-label text-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/30 underline-offset-8 transition-all duration-300 ease-in-out hover:scale-[1.02]" href="#collections">Collections</a>
+<a class="font-label text-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/30 underline-offset-8 transition-all duration-300 ease-in-out hover:scale-[1.02]" href="#concierge">Concierge</a>
+</nav>
+<!-- Actions -->
+<div class="flex items-center gap-4 ml-auto md:ml-8">
+<a class="hidden md:block font-label text-sm font-medium text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/30 underline-offset-8" href="#">Sign In</a>
+<a class="font-label text-sm font-medium px-4 md:px-5 py-2 md:py-2.5 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-lg transition-all duration-300 hover:shadow-md hover:scale-[1.02]" href="#">Get Started</a>
+</div>
+<!-- Mobile Menu Toggle -->
+<button class="md:hidden ml-4 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-2xl">menu</span>
+</button></div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col relative">
+<!-- Hero Section -->
+<section class="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden bg-surface-container-lowest">
+<!-- Atmospheric Background -->
+<div class="absolute inset-0 z-0 opacity-40">
+<img alt="Hero Background" class="w-full h-full object-cover blur-sm" data-alt="A highly curated, modern architectural interior bathed in soft, diffused natural light pouring through large windows. The scene features minimalist design elements, subtle textures, and a profound sense of quiet elegance. The overall aesthetic is bright, light-mode, and scholarly, with a palette dominated by pristine whites, soft greys, and warm natural tones. This creates a premium, authoritative, and sophisticated backdrop suitable for a high-end luxury service." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxCFCTaO0o4ncWSrWo5BypmKak0FA9aUD7XouSfPwxY9sKgjEZO0GI1--nVUSs0iJ7nXXbjIu9XQU4_LT9xy5o3U3tpJKYJ_u3Szi5qUD8-Bkdsu8aOnrAUA-7COf07jI_uVGQlKq5JGEEv7LRKd7FHPs4N2hU2tBlq6rB9wrLt5fMzeZLtOflzXE72Uc95ePIt6E-ShsozoJ1RFlUv4G80jlUtWdQCHhOb-GdnkQ0321r6FYJJZew10P1lZVIZWCcLfBSI4imJWiW">
+<div class="absolute inset-0 bg-gradient-to-b from-surface-container-lowest/80 via-surface-container-lowest/50 to-surface-container-lowest"></div>
+</div>
+<!-- Hero Content -->
+<div class="relative z-10 max-w-4xl mx-auto px-4 md:px-6 text-center pt-20 pb-32">
+<h1 class="font-headline text-4xl md:text-7xl lg:text-8xl font-bold text-on-surface tracking-tight leading-[1.1] mb-8 text-balance">
+                    The Future of <br>
+<span class="text-primary relative inline-block">
+                        Local Excellence
+                        <!-- Decorative underline -->
+<svg class="absolute w-full h-3 -bottom-1 left-0 text-tertiary/30" fill="none" viewBox="0 0 200 9" xmlns="http://www.w3.org/2000/svg"><path d="M2.00017 6.84803C54.4988 2.05268 107.828 0.505501 198.001 3.84804" stroke="currentColor" stroke-linecap="round" stroke-width="3"></path></svg>
+</span>
+</h1>
+<p class="font-body text-lg md:text-2xl text-on-surface-variant max-w-2xl mx-auto leading-relaxed mb-12">
+                    Curating the world's finest professionals for the discerning seeker. An authoritative index of scholarly standards.
+                </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+<button class="w-full sm:w-auto px-8 py-4 bg-gradient-to-br from-primary to-primary-container text-on-primary font-label font-medium text-lg rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 group">
+                        Get Started
+                        <span class="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1" style="font-variation-settings: 'FILL' 0;">arrow_forward</span>
+</button>
+<a class="w-full sm:w-auto px-8 py-4 bg-surface-container-highest text-primary font-label font-medium text-lg rounded-lg hover:bg-surface-dim transition-colors duration-300 flex items-center justify-center gap-2" href="#explore">
+                        Explore the Index
+                    </a>
+</div>
+<!-- Scroll indicator -->
+<div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-on-surface-variant/50 animate-bounce">
+<span class="font-label text-xs uppercase tracking-widest font-semibold">Scroll</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">expand_more</span>
+</div>
+</div>
+</section>
+<!-- Explore Section Transition (Bento Grid Preview) -->
+<section class="relative z-20 w-full bg-surface-container-lowest py-16 md:py-24 px-4 md:px-12 lg:px-24 rounded-t-3xl -mt-8 shadow-[0_-10px_40px_rgba(0,0,0,0.03)]" id="explore">
+<div class="max-w-screen-2xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+<div class="max-w-2xl">
+<span class="font-label text-sm uppercase tracking-widest text-tertiary font-semibold mb-4 block">The Collection</span>
+<h2 class="font-headline text-4xl md:text-5xl font-bold text-on-surface mb-4">Curated Disciplines</h2>
+<p class="font-body text-on-surface-variant text-lg">A meticulous selection of services, vetted for scholarly intent and execution.</p>
+</div>
+<button class="font-label text-sm text-primary hover:text-primary-container flex items-center gap-1 group font-medium">
+                         View full directory 
+                         <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1" style="font-variation-settings: 'FILL' 0;">arrow_forward</span>
+</button>
+</div>
+<!-- High-End Bento Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+<!-- Featured Card (Spans 2 cols) -->
+<div class="col-span-1 sm:col-span-2 md:col-span-2 lg:col-span-2 row-span-2 relative group overflow-hidden rounded-xl bg-surface-container h-[400px] md:h-[500px] cursor-pointer">
+<img alt="Culinary Arts" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A high-end, exquisitely plated culinary dish presented on a minimalist ceramic plate in a bright, modern fine-dining setting. The lighting is soft and focused, highlighting the intricate textures and vibrant colors of the food against a pristine white background. The aesthetic is sophisticated, scholarly, and clean, perfectly aligning with a premium light-mode editorial design style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKixIia5RrlvAV2frW4Fle2ZvyvYibbR2_ncRH70ezgmnHPW0sIWHfDoG0Z-Cli-CVIDDPggx-v8wRFegxBNGFD-NzDSkbxe7kVUG5rPLJLqZN69vSiLPX_s9ijnomCr6Wo5HPjEz_oSog6lpYgVwFfA2hSGYharEslHedRjJjC8YuofTVvP_JINE0J1Q6eyUDq-qks2oKqEt36VpdrC3k8d2SSQ6X0as6I8OEz7KBULeESMe2KyBYQkV6WAKgOrZxiz9UJzP5ZqX5">
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/90 via-on-surface/30 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8 w-full">
+<div class="flex items-center gap-2 mb-3">
+<span class="px-3 py-1 bg-surface-container-lowest/20 backdrop-blur-md rounded-full font-label text-xs text-on-primary border border-surface-container-lowest/10 font-medium tracking-wide">Gastronomy</span>
+<span class="material-symbols-outlined text-tertiary-fixed text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<h3 class="font-headline text-3xl font-bold text-on-primary mb-2">Culinary Arts &amp; Provision</h3>
+<p class="font-body text-on-primary/80 line-clamp-2">Masterful execution of local ingredients by globally recognized artisans.</p>
+</div>
+</div>
+<!-- Standard Card -->
+<div class="relative group overflow-hidden rounded-xl bg-surface-container h-[240px] cursor-pointer">
+<div class="absolute inset-0 bg-surface-container-highest transition-colors group-hover:bg-surface-dim"></div>
+<div class="relative h-full p-6 flex flex-col justify-between">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 0;">architecture</span>
+</div>
+<div>
+<h3 class="font-headline text-xl font-bold text-on-surface mb-1 group-hover:text-primary transition-colors">Design &amp; Space</h3>
+<p class="font-body text-sm text-on-surface-variant">Architectural and interior curation.</p>
+</div>
+</div>
+</div>
+<!-- Standard Card -->
+<div class="relative group overflow-hidden rounded-xl bg-surface-container h-[240px] cursor-pointer">
+<div class="absolute inset-0 bg-surface-container-highest transition-colors group-hover:bg-surface-dim"></div>
+<div class="relative h-full p-6 flex flex-col justify-between">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 0;">health_and_safety</span>
+</div>
+<div>
+<h3 class="font-headline text-xl font-bold text-on-surface mb-1 group-hover:text-primary transition-colors">Wellness</h3>
+<p class="font-body text-sm text-on-surface-variant">Holistic health and physical restoration.</p>
+</div>
+</div>
+</div>
+<!-- Standard Card -->
+<div class="relative group overflow-hidden rounded-xl bg-surface-container h-[240px] cursor-pointer">
+<div class="absolute inset-0 bg-surface-container-highest transition-colors group-hover:bg-surface-dim"></div>
+<div class="relative h-full p-6 flex flex-col justify-between">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 0;">gavel</span>
+</div>
+<div>
+<h3 class="font-headline text-xl font-bold text-on-surface mb-1 group-hover:text-primary transition-colors">Legal Counsel</h3>
+<p class="font-body text-sm text-on-surface-variant">Vetted advisory and representation.</p>
+</div>
+</div>
+</div>
+<!-- Image Card -->
+<div class="relative group overflow-hidden rounded-xl bg-surface-container h-[240px] cursor-pointer">
+<img alt="Consulting" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A focused, professional setting showing a modern, minimalist workspace. A sleek desk holds elegant documents and a high-end pen, bathed in bright, diffused natural light. The aesthetic is extremely clean, sophisticated, and light-mode, utilizing whites, soft grays, and deep rich wood tones. This image conveys authority, precision, and scholarly expertise suitable for a luxury consulting service." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdQ12fCA37IFFWEjVob24rQoLPgpyy8ZxxOyc0G9AoOyPqVlT3ELUyQKg_JcDcndYc9tB14dp8LHrGtlwwzfQzCga7bHQhU-FWU0PRHsGsVg_zLQBfOYX4Bpt5mhjtyFogmhAKyl0dE4c7zhDE6VZ-qPYMoA5lyKMb0OPN5W2yvCTi0ZT7gwykr2rmXBbpGvk9d3wP-z4tc8z4mP_f9L31xDSNvvbnIRVHYx6FoH9szn96lynzMWlb6CddtglW_EQiSSrVQ8ptQ973">
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/80 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-6 w-full">
+<h3 class="font-headline text-xl font-bold text-on-primary mb-1">Strategic Advisory</h3>
+<p class="font-body text-sm text-on-primary/80">Business and financial foresight.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-8 bg-surface-dim text-tertiary">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-7xl mx-auto">
+<!-- Brand Column -->
+<div class="col-span-1 md:col-span-1 flex flex-col justify-between h-full">
+<a class="font-headline text-xl text-on-surface font-bold tracking-tight mb-4" href="#">Serch</a>
+</div>
+<!-- Links Columns -->
+<div class="col-span-1 md:col-span-3 flex flex-wrap gap-8 justify-start md:justify-end">
+<nav class="flex flex-col sm:flex-row gap-6 lg:gap-12">
+<a class="font-label text-sm text-on-surface-variant hover:text-tertiary hover:underline transition-all opacity-100 hover:opacity-80" href="#">The Manifesto</a>
+<a class="font-label text-sm text-on-surface-variant hover:text-tertiary hover:underline transition-all opacity-100 hover:opacity-80" href="#">Scholarly Standards</a>
+<a class="font-label text-sm text-on-surface-variant hover:text-tertiary hover:underline transition-all opacity-100 hover:opacity-80" href="#">Privacy</a>
+<a class="font-label text-sm text-on-surface-variant hover:text-tertiary hover:underline transition-all opacity-100 hover:opacity-80" href="#">Terms</a>
+</nav>
+</div>
+</div>
+<!-- Copyright -->
+<div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-outline-variant/15 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="font-body text-xs text-on-surface-variant">© 2024 Serch. All rights reserved. Curating local excellence with scholarly intent.</p>
+<div class="flex gap-4">
+<!-- Social icons could go here, omitting for minimalism as requested -->
+</div>
+</div>
+</footer>
+<script>
+        // Simple header scroll effect
+        const header = document.querySelector('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                header.classList.add('shadow-sm');
+                header.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+            } else {
+                header.classList.remove('shadow-sm');
+                header.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+            }
+        });
+    </script>
+
+
+
+
+</body></html>

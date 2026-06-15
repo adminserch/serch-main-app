@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Provider Portal - Serch</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&amp;family=Inter:wght@400;500;600&amp;family=Public+Sans:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#c3c6d5",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "on-primary-container": "#e7ebff",
+                        "on-tertiary-fixed": "#211b00",
+                        "surface-container": "#efedee",
+                        "on-primary-fixed": "#001946",
+                        "surface-dim": "#dbdadb",
+                        "secondary-fixed-dim": "#c2c7cc",
+                        "on-secondary-container": "#606569",
+                        "inverse-on-surface": "#f2f0f1",
+                        "tertiary-container": "#bfab49",
+                        "on-surface-variant": "#434653",
+                        "on-secondary-fixed": "#171c20",
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "primary-container": "#3366cc",
+                        "inverse-primary": "#b1c5ff",
+                        "background": "#faf9fa",
+                        "surface-container-highest": "#e3e2e3",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#094cb2",
+                        "surface-container-high": "#e9e8e9",
+                        "error": "#ba1a1a",
+                        "secondary": "#5a5f63",
+                        "outline": "#737784",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "tertiary-fixed": "#f9e37a",
+                        "surface": "#faf9fa",
+                        "secondary-fixed": "#dfe3e8",
+                        "surface-container-low": "#f5f3f4",
+                        "surface-bright": "#faf9fa",
+                        "inverse-surface": "#303031",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#6d5e00",
+                        "on-primary-fixed-variant": "#00419d",
+                        "primary-fixed": "#d9e2ff",
+                        "on-tertiary-container": "#4a3f00",
+                        "on-surface": "#1b1c1d",
+                        "surface-tint": "#2259bf",
+                        "on-background": "#1b1c1d",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e3e2e3",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#dfe3e8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Noto Serif"],
+                        "display": ["Noto Serif"],
+                        "body": ["Inter"],
+                        "label": ["Public Sans"]
+                    },
+                    "fontSize": {}
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: theme('colors.background'); color: theme('colors.on-background'); }
+        h1, h2, h3, h4, h5, h6, .font-headline { font-family: 'Noto Serif', serif; }
+        .font-label { font-family: 'Public Sans', sans-serif; }
+        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); }
+        .ghost-border { border: 1px solid rgba(195, 198, 213, 0.15); }
+    </style>
+</head>
+<body class="antialiased text-on-background bg-background selection:bg-primary-container selection:text-on-primary-container min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-64 bg-surface-container-low dark:bg-surface-dim py-6 px-4 fixed left-0 top-0 border-r border-outline-variant/15 z-40">
+<!-- Header -->
+<div class="mb-10 px-4">
+<div class="flex items-center gap-4 mb-4">
+<img alt="Provider Profile" class="w-12 h-12 rounded-full object-cover" data-alt="A professional headshot of a mature businessman in a tailored grey suit. He is standing in a brightly lit, modern office environment with subtle glass partitions in the background. The lighting is soft and flattering, creating a high-end, trustworthy aesthetic suitable for a premium business portal. The image uses a cool, neutral color palette with hints of corporate blue." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeMDqn7-IRu1z7ojQylJv4mKzhBDOgmpMdu6jkgER7C4FATKsboz0CT3qm6HPMF4WF517s_W7QXhuttueT6c6d9wCsVJS-03SHgORjkjWFssFGz7ViDWG03GTbPtg3sAi6s2SOT38e1UyhCZp2vFKIOjw5gwn3ERR04Ucib98FCRjAybaZfpqBf9uPTXxcGPkiw6mUcMbLUUmIbkaFlFcNT3rA0NhRtCq6VP399kN5GPbjb9QxzyHyALUvewat0ynBRDpHARpNW_WU"/>
+<div>
+<div class="font-headline text-xl font-bold text-primary">Serch</div>
+</div>
+</div>
+<h2 class="font-headline text-lg font-bold text-on-surface">Provider Portal</h2>
+<p class="font-body text-sm text-on-surface-variant">Manage your business</p>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 space-y-2">
+<!-- Active: Dashboard -->
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-xl translate-x-1 transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label font-medium">Dashboard</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all duration-200" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label font-medium">Bookings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all duration-200" href="#">
+<span class="material-symbols-outlined">home_repair_service</span>
+<span class="font-label font-medium">Services</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label font-medium">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label font-medium">Settings</span>
+</a>
+</div>
+<!-- CTA & Footer -->
+<div class="mt-auto space-y-4 pt-6 border-t border-outline-variant/15">
+<button class="w-full py-3 px-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-label font-medium rounded-xl hover:opacity-90 transition-opacity flex justify-center items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-sm">add</span>
+                New Service
+            </button>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all duration-200" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="font-label font-medium">Help Center</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-64 p-6 lg:p-12 pb-24 md:pb-12 max-w-7xl mx-auto">
+<!-- Page Header -->
+<header class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+<div>
+<h1 class="font-headline text-4xl lg:text-5xl font-bold text-on-surface mb-2">Overview</h1>
+<p class="font-body text-on-surface-variant text-lg">Welcome back. Here's what's happening today.</p>
+</div>
+<!-- Mobile Menu Toggle (Visible only on small screens) -->
+<button class="md:hidden flex items-center justify-center p-3 bg-surface-container-low text-on-surface rounded-xl hover:bg-surface-container-high transition-colors self-start">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</header>
+<!-- Bento Grid: Stats & Quick Insights -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+<!-- Stat Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl ghost-border flex flex-col justify-between hover:bg-surface-container-low transition-colors duration-300 group">
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-primary-fixed rounded-xl text-on-primary-fixed">
+<span class="material-symbols-outlined">calendar_month</span>
+</div>
+<span class="flex items-center text-sm font-label text-tertiary">
+                        +12% <span class="material-symbols-outlined text-xs ml-1">trending_up</span>
+</span>
+</div>
+<div>
+<h3 class="font-label text-sm text-on-surface-variant uppercase tracking-wider mb-1">Total Appointments</h3>
+<p class="font-headline text-3xl font-bold text-on-surface">1,248</p>
+</div>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl ghost-border flex flex-col justify-between hover:bg-surface-container-low transition-colors duration-300 group">
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-error-container text-on-error-container rounded-xl">
+<span class="material-symbols-outlined">pending_actions</span>
+</div>
+</div>
+<div>
+<h3 class="font-label text-sm text-on-surface-variant uppercase tracking-wider mb-1">Pending Requests</h3>
+<p class="font-headline text-3xl font-bold text-on-surface">24</p>
+</div>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl ghost-border flex flex-col justify-between hover:bg-surface-container-low transition-colors duration-300 group">
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-surface-variant text-on-surface rounded-xl">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<span class="flex items-center text-sm font-label text-tertiary">
+                        +5% <span class="material-symbols-outlined text-xs ml-1">trending_up</span>
+</span>
+</div>
+<div>
+<h3 class="font-label text-sm text-on-surface-variant uppercase tracking-wider mb-1">Confirmed Bookings</h3>
+<p class="font-headline text-3xl font-bold text-on-surface">1,102</p>
+</div>
+</div>
+<!-- Stat Card 4 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl ghost-border flex flex-col justify-between hover:bg-surface-container-low transition-colors duration-300 group">
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-tertiary-container text-on-tertiary-container rounded-xl">
+<span class="material-symbols-outlined">today</span>
+</div>
+</div>
+<div>
+<h3 class="font-label text-sm text-on-surface-variant uppercase tracking-wider mb-1">Today's Visits</h3>
+<p class="font-headline text-3xl font-bold text-on-surface">8</p>
+</div>
+</div>
+</section>
+<!-- Asymmetric Layout: Upcoming Appointments & Recent Activity -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+<!-- Upcoming Appointments (Takes up 2 cols on xl) -->
+<section class="xl:col-span-2 bg-surface-container-lowest rounded-xl p-8 ghost-border relative overflow-hidden">
+<div class="flex justify-between items-center mb-8">
+<h2 class="font-headline text-2xl font-bold text-on-surface">Upcoming Appointments</h2>
+<a class="font-label text-sm font-medium text-primary hover:underline flex items-center gap-1" href="#">
+                        View All <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<div class="space-y-4">
+<!-- Appointment Item 1 -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-surface hover:bg-surface-container-low transition-colors duration-200 ghost-border gap-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-variant rounded-full flex items-center justify-center text-on-surface-variant font-headline font-bold">
+                                JD
+                            </div>
+<div>
+<h4 class="font-label font-bold text-on-surface">John Doe</h4>
+<p class="font-body text-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">design_services</span>
+                                    Premium Consultation
+                                </p>
+</div>
+</div>
+<div class="flex flex-col sm:items-end gap-2 sm:gap-1">
+<div class="font-label text-sm font-medium text-on-surface bg-secondary-container px-3 py-1 rounded-full w-fit">
+                                10:00 AM - Today
+                            </div>
+<div class="flex gap-2">
+<button class="text-xs font-label font-medium px-4 py-2 bg-primary text-on-primary rounded-lg hover:opacity-90 transition-opacity">Confirm</button>
+<button class="text-xs font-label font-medium px-4 py-2 bg-surface-container-high text-on-surface rounded-lg hover:bg-surface-variant transition-colors">View</button>
+</div>
+</div>
+</div>
+<!-- Appointment Item 2 -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-surface hover:bg-surface-container-low transition-colors duration-200 ghost-border gap-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-primary-fixed rounded-full flex items-center justify-center text-on-primary-fixed font-headline font-bold">
+                                AS
+                            </div>
+<div>
+<h4 class="font-label font-bold text-on-surface">Alice Smith</h4>
+<p class="font-body text-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">home_repair_service</span>
+                                    Standard Maintenance
+                                </p>
+</div>
+</div>
+<div class="flex flex-col sm:items-end gap-2 sm:gap-1">
+<div class="font-label text-sm font-medium text-on-surface bg-surface-variant px-3 py-1 rounded-full w-fit">
+                                1:30 PM - Today
+                            </div>
+<div class="flex gap-2">
+<button class="text-xs font-label font-medium px-4 py-2 bg-surface-container-high text-on-surface rounded-lg hover:bg-surface-variant transition-colors">View</button>
+</div>
+</div>
+</div>
+<!-- Appointment Item 3 -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-surface hover:bg-surface-container-low transition-colors duration-200 ghost-border gap-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-tertiary-container rounded-full flex items-center justify-center text-on-tertiary-container font-headline font-bold">
+                                RJ
+                            </div>
+<div>
+<h4 class="font-label font-bold text-on-surface">Robert Johnson</h4>
+<p class="font-body text-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">plumbing</span>
+                                    Initial Inspection
+                                </p>
+</div>
+</div>
+<div class="flex flex-col sm:items-end gap-2 sm:gap-1">
+<div class="font-label text-sm font-medium text-on-surface bg-surface-variant px-3 py-1 rounded-full w-fit">
+                                9:00 AM - Tomorrow
+                            </div>
+<div class="flex gap-2">
+<button class="text-xs font-label font-medium px-4 py-2 bg-surface-container-high text-on-surface rounded-lg hover:bg-surface-variant transition-colors">View</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Action / Insight Panel -->
+<aside class="flex flex-col gap-8">
+<!-- Insight Card -->
+<div class="bg-surface-container-lowest p-8 rounded-xl ghost-border h-full flex flex-col justify-center items-center text-center">
+<div class="w-16 h-16 bg-primary-fixed rounded-full flex items-center justify-center text-primary mb-6">
+<span class="material-symbols-outlined text-3xl">lightbulb</span>
+</div>
+<h3 class="font-headline text-xl font-bold text-on-surface mb-3">Optimize Your Profile</h3>
+<p class="font-body text-sm text-on-surface-variant mb-6 leading-relaxed">Providers who add a portfolio gallery see a 30% increase in booking inquiries. Take a few minutes to showcase your best work.</p>
+<button class="text-sm font-label font-medium px-6 py-3 bg-surface-container-high text-primary rounded-xl hover:bg-surface-variant transition-colors w-full">Update Gallery</button>
+</div>
+</aside>
+</div>
+</main>
+</body></html>

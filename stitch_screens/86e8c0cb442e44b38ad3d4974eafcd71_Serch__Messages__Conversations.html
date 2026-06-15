@@ -1,0 +1,247 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Serch - Concierge Chat</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400&amp;family=Public+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-container": "#e7ebff",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "tertiary-container": "#bfab49",
+                        "on-secondary-container": "#606569",
+                        "surface-container-low": "#f5f3f4",
+                        "on-tertiary-fixed": "#211b00",
+                        "secondary-fixed-dim": "#c2c7cc",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#dfe3e8",
+                        "outline": "#737784",
+                        "inverse-on-surface": "#f2f0f1",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#faf9fa",
+                        "inverse-primary": "#b1c5ff",
+                        "surface-dim": "#dbdadb",
+                        "surface-variant": "#e3e2e3",
+                        "on-secondary-fixed": "#171c20",
+                        "primary-fixed": "#d9e2ff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "on-surface-variant": "#434653",
+                        "primary": "#094cb2",
+                        "on-tertiary-container": "#4a3f00",
+                        "on-error": "#ffffff",
+                        "on-background": "#1b1c1d",
+                        "tertiary-fixed": "#f9e37a",
+                        "secondary": "#5a5f63",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#00419d",
+                        "inverse-surface": "#303031",
+                        "surface-tint": "#2259bf",
+                        "surface-container-highest": "#e3e2e3",
+                        "surface": "#faf9fa",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "outline-variant": "#c3c6d5",
+                        "on-surface": "#1b1c1d",
+                        "background": "#faf9fa",
+                        "tertiary": "#6d5e00",
+                        "surface-container-high": "#e9e8e9",
+                        "secondary-container": "#dfe3e8",
+                        "on-primary-fixed": "#001946",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#efedee",
+                        "primary-container": "#3366cc"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Serif", "serif"],
+                        "display": ["Noto Serif", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Public Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.surface-container-lowest'); }
+        .ghost-border { outline: 1px solid theme('colors.outline-variant'); outline-offset: -1px; opacity: 0.15; }
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="font-body text-on-surface antialiased h-screen flex flex-col overflow-hidden">
+<!-- TopNavBar (Shared Component) -->
+<nav class="bg-surface-container-lowest dark:bg-surface-dim text-primary dark:text-primary-fixed-dim font-body text-body-md leading-relaxed w-full top-0 sticky z-50 flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto shadow-sm">
+<div class="flex items-center gap-8">
+<span class="font-headline text-2xl font-bold text-primary dark:text-primary-fixed tracking-tight">Serch</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-on-surface-variant dark:text-on-surface-variant font-medium hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 active:opacity-80 transition-opacity" href="#">Explore</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-medium hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 active:opacity-80 transition-opacity" href="#">Services</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-medium hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 active:opacity-80 transition-opacity" href="#">Collections</a>
+<a class="text-primary-container dark:text-primary-fixed font-bold border-b-2 border-primary-container pb-1 active:opacity-80 transition-opacity" href="#">Concierge</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">notifications</span>
+</button>
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">favorite</span>
+</button>
+<img alt="Seeker profile menu" class="w-10 h-10 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-primary transition-all" data-alt="A highly detailed close-up portrait of a sophisticated individual looking elegant, set against a pristine white background. The lighting is soft and high-key, contributing to a modern, light-mode luxury aesthetic. The subject embodies the refined 'digital curator' persona, matching the premium #094cb2 primary color brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjB_yZchYHsxYcZ8qJECvX6F4kDFnuIxXtG4_LncxDI4Tr0mYgplRoH6a5pMNIpFdwSSU2kFtPfxbIt9zGMgEUPVQpxQkcJNH6CDdj4Ynrtetw2QY4AhmXVIR1C68_PzPoQ94DAuJYQlPuHi4NL-C3s-cFAQyWHxtk9rplGgyGFTENelaVeirAVWkKGHyA0gb_Uf3Em9pnXZ0rmUWOEDg6tbvIsBGKGELrk9d2h9WenULga6CauXnX849gBEOr-whtO-70MMlbYMpp">
+</div>
+</nav>
+<!-- Main Chat Interface -->
+<main class="flex-1 flex overflow-hidden max-w-screen-2xl mx-auto w-full px-4 lg:px-8 pb-8 gap-6 pt-4">
+<!-- Conversation List (Sidebar) -->
+<aside class="w-full md:w-80 lg:w-96 flex flex-col bg-surface rounded-xl overflow-hidden shadow-sm flex-shrink-0 border border-outline-variant/15">
+<!-- Search -->
+<div class="p-4 bg-surface-container-low border-b border-outline-variant/15">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-lowest border-none rounded-lg py-2.5 pl-10 pr-4 text-sm font-body text-on-surface placeholder:text-on-surface-variant focus:ring-1 focus:ring-primary transition-shadow" placeholder="Search curated contacts..." type="text">
+</div>
+</div>
+<!-- List -->
+<div class="flex-1 overflow-y-auto hide-scrollbar p-2 space-y-1">
+<!-- Active Item -->
+<div class="flex items-start gap-4 p-3 rounded-lg cursor-pointer border bg-primary-container/5 border-primary-container/20">
+<div class="relative">
+<img alt="Dr. Alistair Sterling" class="w-12 h-12 rounded-full object-cover" data-alt="A distinguished male medical professional, possibly a doctor, wearing a subtle tailored suit and a discreet stethoscope, looking confident. The portrait uses soft natural light, conveying an editorial and authoritative medical consultation context. Colors lean towards deep blues and crisp whites, aligning with the brand's sophisticated primary palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPTlWqrT2bj_zA3_QgTx5hD5pY8ZmXa6eStwItnH4sQgiEHch5P_JPyQ0ViHhBhxFAjIFarmfbMBGv62bAiP7p2j4tIFrEpRBIjG62v49Eh01nbdDK3tB-jxdPO0IYB7ocmt0ykxTKae6xt2Gjebycb12S_X2mObA6TQpkb9Z9yDv-CYtM8LgTMPbxu2QDcg9tYAnCzLLZwYmLEUtlJNC2AuPDjEXsdDiMrp_-NlQypvY9_UPV344VC4-PO7fhXmoQJvxVMY039XZU">
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-tertiary-container rounded-full border-2 border-surface-container-lowest"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline mb-0.5">
+<h3 class="font-headline text-sm font-semibold text-primary-container truncate">Dr. Alistair Sterling</h3>
+<span class="font-label text-[10px] text-on-surface-variant uppercase tracking-wide">10:42 AM</span>
+</div>
+<p class="font-label text-[11px] text-tertiary uppercase tracking-wider mb-1">Medical Concierge</p>
+<p class="font-body text-xs text-on-surface truncate">I have reviewed your recent diagnostics. Shall we discuss...</p>
+</div>
+</div>
+<!-- Inactive Items -->
+<div class="flex items-start gap-4 p-3 rounded-lg hover:bg-surface-container-low cursor-pointer transition-colors border border-transparent">
+<div class="relative">
+<img alt="Maison Sommelier" class="w-12 h-12 rounded-full object-cover" data-alt="A portrait of an elegant sommelier in a high-end dining setting, wearing a crisp white shirt and a dark vest. The background is slightly blurred showing racks of fine wine. The lighting is warm yet sophisticated, evoking a scholarly and premium culinary experience in a modern editorial style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0ApuonSC1vzPYCXlQUwRZ8zWQO6-Vj1edm3fezkadJtc26qlnU56bg7LJX1ArwYjGT0gAlmvqJXAukXHFUlwuNCD89sF1Iph7bI_dDvP_EciUY42sqOA_4SqXSM0d8iPi55Q24Vp3ZhTrlyYuEPRA-9dvJY1EYs6w20NpXVk5c5FN1yQ1oNkIM0Yw40fxwaM70jw87JX34pnJj-ghTpJHbAAkXaAuIQhOxy3xSnfWAgmzJxfNi2Pxh7F0fIRAnJTT1e6_q5GjIQ5W">
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline mb-0.5">
+<h3 class="font-headline text-sm font-semibold text-on-surface truncate">Maison Sommelier</h3>
+<span class="font-label text-[10px] text-on-surface-variant uppercase tracking-wide">Yesterday</span>
+</div>
+<p class="font-label text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Culinary Arts</p>
+<p class="font-body text-xs text-on-surface-variant truncate">The vintage you requested has been secured for your event.</p>
+</div>
+</div>
+<div class="flex items-start gap-4 p-3 rounded-lg hover:bg-surface-container-low cursor-pointer transition-colors border border-transparent">
+<div class="relative">
+<img alt="Eleanor Vance" class="w-12 h-12 rounded-full object-cover" data-alt="A thoughtful female legal advisor or intellectual property specialist, dressed in sharp business attire, sitting in a bright, modern library or office. The environment is dense with books but brightened by generous daylight. The image feels authoritative, dense with information, yet clean and minimalist." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzp8iJ00VmOT_dcpw27U8nQMZ8kwC9TON9DXDRax8oNfno8tP65She6VOLqDzEX01Abtdhv4VHSh3peolpzAosq60uOaJsd9IAa6kHSAZSt2gGY47Bo48MceVxttupif4s0LklECsR9beavqKvTm4dJfBbrr8-xBMEwK8ug2_puvEK8DD2A53DgjsQ7G81QzLBe61Fr9a828ftGjS0WtGfz2F0zN_hoKgL99TC9KIlclk4SCQHFswWgXxGgZHpm0ZW1ANnujSM78CY">
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline mb-0.5">
+<h3 class="font-headline text-sm font-semibold text-on-surface truncate">Eleanor Vance</h3>
+<span class="font-label text-[10px] text-on-surface-variant uppercase tracking-wide">Mon</span>
+</div>
+<p class="font-label text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Legal Curatorship</p>
+<p class="font-body text-xs text-on-surface-variant truncate">Please find the finalized draft of the manifesto attached.</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Active Chat Window -->
+<section class="hidden md:flex flex-1 flex-col bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/15 relative overflow-hidden">
+<!-- Chat Header -->
+<header class="flex justify-between items-center p-5 bg-surface-container-low/50 backdrop-blur-md border-b border-outline-variant/15 z-10">
+<div class="flex items-center gap-4">
+<img alt="Dr. Alistair Sterling" class="w-12 h-12 rounded-full object-cover ring-2 ring-surface-container-lowest" data-alt="A distinguished male medical professional, possibly a doctor, wearing a subtle tailored suit and a discreet stethoscope, looking confident. The portrait uses soft natural light, conveying an editorial and authoritative medical consultation context. Colors lean towards deep blues and crisp whites, aligning with the brand's sophisticated primary palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9XBfKFodsvTNOKQ_2sitjniKrjm67BZpe5q7Ug0TPTwYkiiQ0f1ynGdgRydj3vvL-splboMcfkLLke6iZdCK1Fi-uSRGlpA5B0nRkEeaztWR6Or_n1tn13OaPHgiiXByS40zxFpLXOmlD2WsC6K0tfWOlIHEJupoTJD3nGI_DxOS3cupt3R_hMCndjcyzlNeasKBUBaVLxVKwU7PKZcLORSopHu2C_fGxJ0I1TVX__m_umPu2lvCgiMahqzzKiw_M3NEwrTO_v7As">
+<div>
+<h2 class="font-headline text-lg font-bold text-on-surface">Dr. Alistair Sterling</h2>
+<div class="flex items-center gap-2">
+<span class="font-label text-xs text-tertiary uppercase tracking-widest flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span> Medical Concierge
+                            </span>
+</div>
+</div>
+</div>
+<button class="font-label text-xs uppercase tracking-wider hover:underline underline-offset-4 decoration-primary font-semibold flex items-center gap-1 text-primary-container">
+                    Dossier <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</header>
+<!-- Messages Area -->
+<div class="flex-1 overflow-y-auto p-6 space-y-6 bg-surface-container-lowest">
+<!-- Date Divider -->
+<div class="flex justify-center">
+<span class="font-label text-xs text-on-surface-variant uppercase tracking-widest bg-surface-container-low px-4 py-1 rounded-full">Today</span>
+</div>
+<!-- Provider Message (Left) -->
+<div class="flex items-end gap-3 max-w-[80%]">
+<img alt="Dr. Sterling" class="w-8 h-8 rounded-full object-cover mb-1" data-alt="A distinguished male medical professional, possibly a doctor, wearing a subtle tailored suit and a discreet stethoscope, looking confident. The portrait uses soft natural light, conveying an editorial and authoritative medical consultation context. Colors lean towards deep blues and crisp whites, aligning with the brand's sophisticated primary palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZ6m4lFlj2YTSuxlywDDS-DXpX51LvVOoCtgU5w_o7UJfnpodYArmlq1WAe5tWchSBM9WPy1LPm9IFDj5sfukzyAasLeB5w-PJ1teRTQVpp_yr24hCTamQfyPD1TokR1trFKHP_vxETJxjvsHgiAP62MJfhibf9ql3ppgzzHnTH1EywQm10JeCES3bBqnYguoTI_CQOlCWeYnVKvOZp6eYLYEVzyvT3nlDhiJoKwfQMALSGj49PerBtrOZP14Ymeb-XEvVxXmiWjdo">
+<div class="bg-surface-container-high rounded-2xl rounded-bl-none p-4 text-on-surface">
+<p class="font-body text-sm leading-relaxed">Good morning. I have carefully reviewed the recent diagnostics from your comprehensive screening. Everything appears quite optimal, though there are a few minor adjustments to your regimen we might discuss to ensure absolute peak performance.</p>
+<span class="block mt-2 font-label text-[10px] text-on-surface-variant uppercase tracking-wide">10:40 AM</span>
+</div>
+</div>
+<div class="flex items-end gap-3 max-w-[80%]">
+<img alt="Dr. Sterling" class="w-8 h-8 rounded-full object-cover mb-1" data-alt="A distinguished male medical professional, possibly a doctor, wearing a subtle tailored suit and a discreet stethoscope, looking confident. The portrait uses soft natural light, conveying an editorial and authoritative medical consultation context. Colors lean towards deep blues and crisp whites, aligning with the brand's sophisticated primary palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9-YbJYXo0F_QrTvfPzneKWwTtLRswetCBv60-h0xY7BEk4JkKa11GF6dun7M7RJQU4h3SRQBO-UJipWWyL-HZqitfTUSJ277Q6Zz6dRngUwO-bIjuHhyYxYGtV8QqmcVTw3vSkleXfdLdeOkLItR9-4WEMQWZa4WhGFMeNogQCNjHQrcFOtW0JO8A54kTU8vi9MLtITCCWKsTJEGl2NzwqhXVDkBrUcY3IQOHTwW3UpA3O7fbz92I9EKsrZ6bMfsf2stWs6XFSb1a">
+<div class="bg-surface-container-high rounded-2xl rounded-tl-none rounded-bl-none p-4 text-on-surface">
+<p class="font-body text-sm leading-relaxed">Shall we arrange a brief consultation this afternoon to go over the nuances?</p>
+<span class="block mt-2 font-label text-[10px] text-on-surface-variant uppercase tracking-wide">10:42 AM</span>
+</div>
+</div>
+<!-- Seeker Message (Right) -->
+<div class="flex items-end justify-end gap-3 w-full">
+<div class="bg-primary-container/10 border border-primary-container/20 rounded-2xl rounded-br-none p-4 text-on-surface max-w-[80%]"><p class="font-body text-sm leading-relaxed">Thank you, Dr. Sterling. I appreciate the thorough review. Yes, this afternoon would be perfectly fine. Would 3:00 PM suit your schedule?</p><span class="block mt-2 font-label text-[10px] text-primary-container uppercase tracking-wide text-right">10:45 AM</span></div>
+</div>
+<!-- Typing Indicator -->
+<div class="flex items-end gap-3 max-w-[80%] opacity-70">
+<img alt="Dr. Sterling" class="w-8 h-8 rounded-full object-cover mb-1 grayscale" data-alt="A distinguished male medical professional, possibly a doctor, wearing a subtle tailored suit and a discreet stethoscope, looking confident. The portrait uses soft natural light, conveying an editorial and authoritative medical consultation context. Colors lean towards deep blues and crisp whites, aligning with the brand's sophisticated primary palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtxjyQFZg22_Y5jN_8Ey_Y5U944vMzSTlT63Ya7iWTLe3n1NfHbKuuboS3xH0UFPXDGWumRYhPLpS-QcE1amBmjlUCs5vFAnm3Oqcu37jMmE-0vmbHRLcrZrTdLQ3i6TQ4kS4gozn_WaNjAX3A7vXQ0yD_xckGW-PtqG0nmv1DK4fQURzqN3Ebwd5wS6Z21xnWWAPPzaj3joF__LRjzvffeFktdR7TI0M6C4lVmubHPYjRWTEvELBSr8ryLqK6wLlUyB-wmxRWGLIu">
+<div class="bg-surface-container rounded-2xl rounded-bl-none p-3 px-4 flex gap-1 items-center h-10">
+<span class="w-1.5 h-1.5 bg-outline rounded-full animate-bounce"></span>
+<span class="w-1.5 h-1.5 bg-outline rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+<span class="w-1.5 h-1.5 bg-outline rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<footer class="p-4 bg-surface border-t border-outline-variant/15 flex flex-col gap-3 z-10">
+<!-- AI Assistant Suggestion (Subtle) -->
+<div class="flex gap-2 items-center text-xs">
+<span class="material-symbols-outlined text-[16px] text-tertiary">auto_awesome</span>
+<button class="bg-surface-container-high hover:bg-surface-container-highest text-on-surface px-3 py-1.5 rounded-full font-label transition-colors">Draft courteous confirmation</button>
+<button class="bg-surface-container-high hover:bg-surface-container-highest text-on-surface px-3 py-1.5 rounded-full font-label transition-colors">Propose alternative time</button>
+</div>
+<div class="flex items-end gap-2 bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-lg hover:bg-surface-container-low mb-0.5">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+<textarea class="flex-1 bg-transparent border-none focus:ring-0 resize-none font-body text-sm py-2.5 hide-scrollbar max-h-32 min-h-[44px] text-on-surface" placeholder="Compose a response..." rows="1"></textarea>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-lg hover:bg-surface-container-low mb-0.5">
+<span class="material-symbols-outlined">mood</span>
+</button>
+<button class="p-2 text-on-primary rounded-lg hover:bg-surface-tint transition-colors shadow-sm mb-0.5 flex items-center justify-center bg-primary-container">
+<span class="material-symbols-outlined" data-weight="fill">send</span>
+</button>
+</div>
+</footer>
+</section>
+</main>
+
+
+</body></html>

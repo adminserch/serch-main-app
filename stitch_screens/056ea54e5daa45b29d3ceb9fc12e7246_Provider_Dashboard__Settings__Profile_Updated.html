@@ -1,0 +1,288 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Settings - Serch Provider Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Noto+Serif:wght@400;600;700;800&amp;family=Public+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary": "#6d5e00",
+                      "on-tertiary-container": "#4a3f00",
+                      "surface-container-lowest": "#ffffff",
+                      "surface": "#faf9fa",
+                      "on-secondary-container": "#606569",
+                      "surface-dim": "#dbdadb",
+                      "primary-fixed-dim": "#b1c5ff",
+                      "error-container": "#ffdad6",
+                      "tertiary-container": "#bfab49",
+                      "surface-tint": "#2259bf",
+                      "primary": "#094cb2",
+                      "on-secondary": "#ffffff",
+                      "inverse-primary": "#b1c5ff",
+                      "surface-container": "#efedee",
+                      "tertiary-fixed": "#f9e37a",
+                      "on-secondary-fixed-variant": "#42474b",
+                      "on-primary-fixed": "#001946",
+                      "on-primary-container": "#e7ebff",
+                      "error": "#ba1a1a",
+                      "on-error": "#ffffff",
+                      "surface-container-low": "#f5f3f4",
+                      "outline": "#737784",
+                      "surface-container-high": "#e9e8e9",
+                      "tertiary-fixed-dim": "#dcc661",
+                      "on-tertiary-fixed-variant": "#524600",
+                      "primary-container": "#3366cc",
+                      "on-surface-variant": "#434653",
+                      "background": "#faf9fa",
+                      "secondary-fixed-dim": "#c2c7cc",
+                      "on-background": "#1b1c1d",
+                      "on-error-container": "#93000a",
+                      "on-primary-fixed-variant": "#00419d",
+                      "primary-fixed": "#d9e2ff",
+                      "secondary-fixed": "#dfe3e8",
+                      "inverse-on-surface": "#f2f0f1",
+                      "on-tertiary-fixed": "#211b00",
+                      "surface-container-highest": "#e3e2e3",
+                      "outline-variant": "#c3c6d5",
+                      "secondary": "#5a5f63",
+                      "on-surface": "#1b1c1d",
+                      "inverse-surface": "#303031",
+                      "secondary-container": "#dfe3e8",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed": "#171c20",
+                      "on-primary": "#ffffff",
+                      "surface-variant": "#e3e2e3",
+                      "surface-bright": "#faf9fa"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Noto Serif"
+                      ],
+                      "display": [
+                              "Noto Serif"
+                      ],
+                      "body": [
+                              "Inter"
+                      ],
+                      "label": [
+                              "Public Sans"
+                      ]
+              },
+              "fontSize": {}
+      },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5, h6, .font-headline { font-family: 'Noto Serif', serif; }
+        .font-label { font-family: 'Public Sans', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+        
+        /* Ghost border for inputs */
+        .input-ghost {
+            border: 1px solid rgba(195, 198, 213, 0.4); /* outline-variant at ~40% for visibility */
+            background-color: var(--color-surface-container-lowest);
+        }
+        .input-ghost:focus {
+            border-color: var(--color-primary);
+            outline: none;
+            box-shadow: none;
+        }
+
+        /* Glassmorphism for floating menus/modals (if needed) */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen flex">
+<!-- SideNavBar (Shared Component) -->
+<nav class="h-full w-64 flex flex-col bg-surface-container-low dark:bg-surface-dim fixed left-0 top-0 h-screen py-6 px-4 z-40">
+<div class="mb-8 px-4">
+<h1 class="font-headline text-xl font-bold text-on-primary-container">Serch Provider Portal</h1>
+<p class="font-body text-sm text-on-surface-variant mt-1">Manage your business</p>
+</div>
+<button class="mb-8 w-full py-3 px-4 to-primary-container text-on-primary font-label font-medium rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2 bg-primary-container">
+<span class="material-symbols-outlined text-lg">add</span>
+            New Service
+        </button>
+<ul class="space-y-2 flex-grow font-label">
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+                    Bookings
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">home_repair_service</span>
+                    Services
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+                    Analytics
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-xl translate-x-1 transition-all font-semibold text-on-primary" href="#">
+<span class="material-symbols-outlined fill">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+<div class="mt-auto">
+<ul class="font-label">
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+                        Help Center
+                    </a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 p-10 max-w-7xl">
+<!-- Page Header -->
+<header class="mb-12 flex justify-between items-end">
+<div>
+<h2 class="font-headline text-4xl font-extrabold text-on-surface tracking-tight">Settings</h2>
+<p class="font-body text-on-surface-variant mt-2 text-lg">Configure your business profile, bookings, and team access.</p>
+</div>
+<!-- Secondary Action Example -->
+<button class="bg-surface-container-high text-primary font-label font-semibold py-2 px-6 rounded-lg hover:bg-surface-container-highest transition-colors">
+                View Public Profile
+            </button>
+</header>
+<!-- Settings Interface (Tabs + Content) -->
+<div class="flex flex-col lg:flex-row gap-12">
+<!-- Left Sidebar Tabs (Local Navigation) -->
+<aside class="w-full lg:w-1/4">
+<nav class="flex flex-col space-y-1 font-label">
+<button class="text-left px-4 py-3 rounded-lg bg-surface-container text-primary font-semibold flex items-center justify-between bg-primary-container" onclick="switchTab('business-profile')">
+                        Business Profile
+                        <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+<button class="text-left px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-lowest transition-colors flex items-center justify-between bg-primary-container" onclick="switchTab('booking-config')">
+                        Booking Configuration
+                    </button>
+<button class="text-left px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-lowest transition-colors flex items-center justify-between bg-primary-container" onclick="switchTab('account-security')">
+                        Account Security
+                    </button>
+<button class="text-left px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-lowest transition-colors flex items-center justify-between bg-primary-container" onclick="switchTab('team-management')">
+                        Team Management
+                    </button>
+</nav>
+</aside>
+<!-- Right Content Area -->
+<section class="flex-1">
+<!-- Business Profile Content -->
+<div class="space-y-12" id="business-profile">
+<!-- Basic Info -->
+<div class="bg-surface-container-lowest p-8 rounded-xl">
+<h3 class="font-headline text-2xl font-bold text-on-surface mb-6">Basic Information</h3>
+<!-- Logo Upload -->
+<div class="mb-8 flex items-center gap-6">
+<div class="h-24 w-24 rounded-full bg-surface-container-highest overflow-hidden flex-shrink-0 relative group cursor-pointer">
+<img alt="Current Logo" class="w-full h-full object-cover" data-alt="A close-up, high-quality photograph of a modern, abstract geometric logo design displayed on a pristine white background. The logo features sharp angles and a sophisticated color palette of deep primary blue and archival gold, reflecting a high-end, professional corporate identity. The lighting is bright and evenly distributed, creating a crisp light-mode aesthetic perfect for a premium business profile avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdxH_ELFSXCIilo15vXr1HcHBfh7IOvdEBCeNso4WOGJP2gwncb0VdCVpSQgtCJtxO0qgZS2z9TmUOOGJbRWQGXsezw3OIEupaJnpqS1grKd9xKr0jY3j6w3EG5Is4SiT6RtwQQoVOSi_X_pDEnLg4Pz3UI1gMxwv3Ow57cYAil4TexyjzWldks5ZPPoj-qHcvivpIYF7r09dkv7z9jyqdbmDYLDXcSD8zxFAeUYPQj0AebrGL3mdOcKdxYDpaadcFft2qP0LHg3f4">
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white">upload</span>
+</div>
+</div>
+<div>
+<h4 class="font-label font-semibold text-on-surface mb-1">Business Logo</h4>
+<p class="font-body text-sm text-on-surface-variant mb-3">Recommended size: 400x400px. JPG or PNG.</p>
+<button class="text-primary font-label font-medium hover:underline text-sm">Upload new logo</button>
+</div>
+</div>
+<!-- Form Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-body">
+<div class="space-y-2">
+<label class="block text-sm font-medium text-on-surface">Business Name</label>
+<input class="w-full rounded-lg input-ghost px-4 py-2 text-on-surface focus:ring-0" type="text" value="Apex Home Services">
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-medium text-on-surface">Category</label>
+<select class="w-full rounded-lg input-ghost px-4 py-2 text-on-surface focus:ring-0 appearance-none">
+<option>Home Maintenance</option>
+<option>Cleaning</option>
+<option>Landscaping</option>
+</select>
+</div>
+<div class="space-y-2 md:col-span-2">
+<label class="block text-sm font-medium text-on-surface">Business Description</label>
+<textarea class="w-full rounded-lg input-ghost px-4 py-2 text-on-surface focus:ring-0 resize-none" rows="4">Premium home maintenance services specializing in HVAC, plumbing, and electrical repairs for residential properties.</textarea>
+<p class="text-xs text-on-surface-variant mt-1 text-right">0 / 500 characters</p>
+</div>
+</div>
+</div>
+<!-- Social Links -->
+<div class="bg-surface-container-lowest p-8 rounded-xl">
+<h3 class="font-headline text-2xl font-bold text-on-surface mb-6">Social Links</h3>
+<p class="font-body text-on-surface-variant mb-6">Connect your social profiles to build trust with potential clients.</p>
+<div class="space-y-4 font-body">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center flex-shrink-0 text-on-surface-variant">
+<span class="material-symbols-outlined">language</span>
+</div>
+<input class="flex-1 rounded-lg input-ghost px-4 py-2 text-on-surface focus:ring-0" placeholder="Website URL" type="url" value="https://apexservices.com">
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center flex-shrink-0 text-on-surface-variant">
+<span class="material-symbols-outlined">share</span> <!-- Placeholder for actual social icons if not available in MS -->
+</div>
+<input class="flex-1 rounded-lg input-ghost px-4 py-2 text-on-surface focus:ring-0" placeholder="Instagram Profile" type="url">
+</div>
+</div>
+</div>
+<!-- Save Action -->
+<div class="flex justify-end pt-4 border-t border-surface-container-highest border-opacity-0"> <!-- No actual line, using margin instead if preferred, or extremely subtle tone -->
+<button class="to-primary-container text-on-primary font-label font-semibold py-3 px-8 rounded-lg hover:opacity-90 transition-opacity shadow-sm bg-primary-container">
+                            Save Changes
+                        </button>
+</div>
+</div>
+<!-- Placeholders for other tabs (hidden by default in a real app, showing layout concept) -->
+<div class="hidden" id="booking-config">
+<h3 class="font-headline text-2xl font-bold text-on-surface mb-6">Booking Configuration Content</h3>
+</div>
+</section>
+</div>
+</main>
+<script>
+        // Simple tab switching logic for demonstration
+        function switchTab(tabId) {
+            // In a real implementation, this would hide other sections and update active states on buttons
+            console.log("Switching to tab: " + tabId);
+        }
+    </script>
+
+
+
+
+</body></html>

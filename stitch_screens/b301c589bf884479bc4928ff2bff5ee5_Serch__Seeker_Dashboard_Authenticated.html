@@ -1,0 +1,278 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Serch - Seeker Dashboard</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Public+Sans:wght@400;500&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#434653",
+                        "outline-variant": "#c3c6d5",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "surface-container-low": "#f5f3f4",
+                        "surface-container-highest": "#e3e2e3",
+                        "outline": "#737784",
+                        "on-error-container": "#93000a",
+                        "on-background": "#1b1c1d",
+                        "background": "#faf9fa",
+                        "secondary-container": "#dfe3e8",
+                        "surface-dim": "#dbdadb",
+                        "surface-variant": "#e3e2e3",
+                        "secondary-fixed": "#dfe3e8",
+                        "on-secondary-fixed": "#171c20",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "surface-container-high": "#e9e8e9",
+                        "on-tertiary-container": "#4a3f00",
+                        "inverse-on-surface": "#f2f0f1",
+                        "tertiary-fixed": "#f9e37a",
+                        "primary-container": "#3366cc",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "inverse-primary": "#b1c5ff",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#094cb2",
+                        "on-primary-fixed-variant": "#00419d",
+                        "on-primary-container": "#e7ebff",
+                        "on-tertiary-fixed": "#211b00",
+                        "on-primary-fixed": "#001946",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#faf9fa",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "surface-tint": "#2259bf",
+                        "tertiary": "#6d5e00",
+                        "surface-bright": "#faf9fa",
+                        "inverse-surface": "#303031",
+                        "surface-container": "#efedee",
+                        "tertiary-container": "#bfab49",
+                        "on-secondary-container": "#606569",
+                        "secondary-fixed-dim": "#c2c7cc",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#1b1c1d",
+                        "secondary": "#5a5f63",
+                        "primary-fixed": "#d9e2ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Serif", "serif"],
+                        "display": ["Noto Serif", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Public Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        /* Ghost Border utility */
+        .ghost-border {
+            border: 1px solid rgba(195, 198, 213, 0.15); /* outline-variant at 15% */
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased min-h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 w-full z-50 bg-surface-container-lowest/80 backdrop-blur-md shadow-sm">
+<div class="flex justify-between items-center px-8 h-20 w-full max-w-7xl mx-auto px-4 md:px-8">
+<div class="flex items-center gap-12">
+<!-- Brand -->
+<a class="font-headline text-2xl font-bold text-primary tracking-tight" href="#">
+                    Serch
+                </a>
+<!-- Navigation Links (Web) -->
+<div class="hidden md:flex items-center gap-8">
+<a class="font-label text-sm font-medium text-on-surface-variant hover:text-primary transition-colors" href="#">Explore</a>
+<a class="font-label text-sm font-medium text-on-surface-variant hover:text-primary transition-colors" href="#">Services</a>
+<a class="font-label text-sm font-medium text-on-surface-variant hover:text-primary transition-colors" href="#">Collections</a>
+<a class="font-label text-sm font-medium text-on-surface-variant hover:text-primary transition-colors" href="#">Concierge</a>
+<a class="font-label text-sm font-bold text-primary border-b-2 border-primary pb-1" href="#">Bookings</a>
+<a class="font-label text-sm font-medium text-on-surface-variant hover:text-primary transition-colors" href="#">Messages</a>
+</div>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-6">
+<!-- Search Icon -->
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+<!-- Notification Bell -->
+<button class="relative text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<!-- User Profile -->
+<button class="flex items-center gap-2 bg-surface-container-high hover:bg-surface-dim transition-colors rounded-full p-1 pr-4">
+<img alt="Eleanor Profile" class="w-8 h-8 rounded-full object-cover" data-alt="A professional headshot of a sophisticated woman in her early thirties, bathed in soft, natural light against a minimalist, bright white background. She has a composed, intelligent expression, wearing understated elegant clothing. The overall aesthetic is highly polished, editorial, and clean, perfectly aligning with a premium, high-end digital service platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJbf0ZTVml-XTAPd0iPb0d62Zny7K2fWr71Sn_BngV-3Oq_wHAP3J-nXsU63GuOUm1oYrnDy7UKDEJWHQu92fss5kWVFLG_5E8McxCBIaiUkzDIKCytha1UHgD1exrRbCUrQhMfbts6OukNgwm9hH9VpkL3esjS731His_dC1GadSRPvdWMFwci9KBAXLYpl9exCQ1nGMVs-HX_rsIxd4DEjnEdsQvWa3ctdROXSCRgCNSgMcOpMWZHJ1Cf4ulesil3RBaCTKXxAzm">
+<span class="font-label text-sm font-medium text-on-surface hidden md:inline">Eleanor</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-32 pb-24 px-8 max-w-7xl mx-auto w-full px-4 md:px-8">
+<!-- Header Section -->
+<header class="mb-16">
+<h1 class="font-headline text-5xl font-bold text-on-surface mb-4 leading-tight">
+                Good morning, Eleanor.
+            </h1>
+<p class="font-body text-lg text-on-surface-variant max-w-2xl">
+                Your curated overview of upcoming engagements and personalized recommendations for professional discovery.
+            </p>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+<!-- Curatorial Engagements (Next Appointment) - Span 8 -->
+<section class="md:col-span-8 bg-surface-container-low rounded-xl p-8 flex flex-col justify-between min-h-[320px]">
+<div>
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-headline text-2xl font-bold text-on-surface">Upcoming Engagement</h2>
+<span class="bg-tertiary-container/20 text-tertiary px-3 py-1 rounded-full font-label text-xs font-semibold tracking-wide">CONFIRMED</span>
+</div>
+<div class="flex items-start gap-6 flex-col md:flex-row">
+<div class="bg-surface-container-highest rounded-lg p-4 flex flex-col items-center justify-center min-w-[80px] w-fit">
+<span class="font-label text-sm text-on-surface-variant uppercase">OCT</span>
+<span class="font-headline text-3xl font-bold text-primary">24</span>
+</div>
+<div>
+<h3 class="font-headline text-xl font-bold text-on-surface mb-2">Initial Consultation: Archival Restoration</h3>
+<p class="font-body text-on-surface-variant mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">schedule</span>
+                                10:00 AM - 11:30 AM (EST)
+                            </p>
+<div class="flex items-center gap-3">
+<img alt="Dr. Julian Vance" class="w-10 h-10 rounded-full object-cover" data-alt="A portrait of a distinguished male professional, likely an archivist or historian, in his forties. He is wearing a tailored tweed jacket and has a thoughtful, scholarly demeanor. The background is a soft-focus library or study with warm, muted tones. The lighting is sophisticated and editorial, highlighting his expertise and the premium nature of the service." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC62FXEWAq5Juq7Cd9JGH5Em-JMrAAO0bsgFOClE0VHEyRWTrfCLuEmrNUnYPLI6LjknRPcTlh4qoKaK31u3Q5UmtA7L-2vaSivOxhJZdUQA-Zg7udRxFBOaVpY54YspcP32wSCQZK_91QB6B7680QHkBc1DYnjjZCUbdlPxwv42i37b1qKVR_BLluJ7MWz4JFy6L3ogYOo9sJdC2vgizzTV4EfL_sUzdM9IhLrlvSTJ1IntbF0ebPpHyGSbM57ZJsqHr1Qyz3LCmpX">
+<div>
+<p class="font-label text-sm font-medium text-on-surface">Dr. Julian Vance</p>
+<p class="font-body text-xs text-on-surface-variant">Master Archivist</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 flex gap-4 flex-col md:flex-row">
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary font-label text-sm font-medium px-6 py-3 rounded-lg hover:opacity-90 transition-opacity w-full md:w-fit">
+                        Join Virtual Session
+                    </button>
+<button class="bg-surface-container-high text-primary font-label text-sm font-medium px-6 py-3 rounded-lg hover:bg-surface-dim transition-colors w-full md:w-fit">
+                        Review Brief
+                    </button>
+</div>
+</section>
+<!-- Quick Stats / Actions - Span 4 -->
+<section class="md:col-span-4 flex flex-col gap-8">
+<!-- Action Card -->
+<div class="bg-surface-dim rounded-xl p-6 flex-grow flex flex-col justify-center">
+<span class="material-symbols-outlined text-primary text-3xl mb-4">diamond</span>
+<h3 class="font-headline text-xl font-bold text-on-surface mb-2">Concierge Request</h3>
+<p class="font-body text-sm text-on-surface-variant mb-6">Need a specific specialist? Let our curators find the perfect match for your unique project.</p>
+<button class="text-primary font-label text-sm font-semibold hover:underline flex items-center gap-1 w-fit">
+                        Initiate Request <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- Curated Recommendations - Span 12 -->
+<section class="md:col-span-12 mt-8">
+<div class="flex justify-between items-end mb-8 flex-col md:flex-row items-start md:items-end gap-4">
+<div>
+<h2 class="font-headline text-3xl font-bold text-on-surface mb-2">Curated for You</h2>
+<p class="font-body text-on-surface-variant">Professionals aligning with your interest in Interior Architecture &amp; Archival Research.</p>
+</div>
+<button class="text-primary font-label text-sm font-medium hover:underline">View All Recommendations</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Pro Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl ghost-border p-6 hover:bg-surface-container-low transition-colors duration-300 group cursor-pointer">
+<div class="w-full h-48 bg-surface-container mb-6 rounded-lg overflow-hidden relative">
+<img alt="Interior Architecture" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A beautifully composed interior architecture shot showing a minimalist living space. The room features clean lines, a mix of natural wood and concrete materials, and large windows letting in bright, diffused daylight. The style is highly editorial, resembling a spread in a luxury design magazine. The overall mood is serene, sophisticated, and architecturally precise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCr4WndeQJcO2cCEzRroHCwYmgLbafb_LlyBcBB6XzDZVW0W5wHvEbqLT91NdIUXYExSQ0Id_bjNyPzYhROC58QEAgdOZaFIqHbXSBQdjzh77Hk28em5P4kRvc9IQGWfyKM0DOxbkW9FpfzqovaQCASjEsrh_g5Omf67YRt0aH6kRx6ijQgr2C9gi-crHHmEcspAwF43o36ubGJSWRat8cq0W-ESdJrypIrIQlySYIGeIbiiTEGY-pFbxpEMJ0n6Ui8bcE3YKTPC9dX">
+<div class="absolute top-4 right-4 bg-surface-container-lowest/90 backdrop-blur-sm p-1.5 rounded-full">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">bookmark_border</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded text-[10px] font-label font-bold uppercase tracking-wider">Architecture</span>
+</div>
+<h3 class="font-headline text-lg font-bold text-on-surface mb-1">Studio Vesper</h3>
+<p class="font-body text-sm text-on-surface-variant line-clamp-2">Specializing in seamless integrations of historical structures with modern minimalist interiors.</p>
+</div>
+<!-- Pro Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl ghost-border p-6 hover:bg-surface-container-low transition-colors duration-300 group cursor-pointer">
+<div class="w-full h-48 bg-surface-container mb-6 rounded-lg overflow-hidden relative">
+<img alt="Rare Books Archive" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A close-up, high-quality image of rare, leather-bound books stacked neatly on a polished wooden desk. Soft, warm directional light highlights the gold foil lettering and textured leather covers. The background is softly blurred, emphasizing the scholarly, archival nature of the subject. The aesthetic is rich, intellectual, and premium, evoking a sense of history and careful curation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBi8PyMot8R_h7zqO53fZ9i_elqpK6EO07hMW7x4VqRM9jW9y5ANy0CmwK7P1Z2NsF1GgOJpN3ybZY5WidloUXx0XKo6Gbl02vusRZhC4Xt261Rpj5kymoP5WWZ1fJV0KK0fKMiXo0LQju6TUJsSo_ODj9I6NgGU_8HSSmfZpz1S7SZ8L90bsE4KwLX5Xvc3q_W7hYWED2_6JI7lT8BeecVBe92VPSDx1t9ivPJVQJQrTJArTFU61ldx_2YV3cYu-poAVIc6ogd07s">
+<div class="absolute top-4 right-4 bg-surface-container-lowest/90 backdrop-blur-sm p-1.5 rounded-full">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">bookmark_border</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded text-[10px] font-label font-bold uppercase tracking-wider">Archival</span>
+</div>
+<h3 class="font-headline text-lg font-bold text-on-surface mb-1">Elias Thorne</h3>
+<p class="font-body text-sm text-on-surface-variant line-clamp-2">Expert in private library curation and rare manuscript acquisition for high-net-worth collectors.</p>
+</div>
+<!-- Pro Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl ghost-border p-6 hover:bg-surface-container-low transition-colors duration-300 group cursor-pointer">
+<div class="w-full h-48 bg-surface-container mb-6 rounded-lg overflow-hidden relative">
+<img alt="Furniture Restoration" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A focused, editorial shot of an artisan carefully restoring a piece of mid-century modern furniture. The lighting is crisp and bright, illuminating the rich wood grain and the precise tools being used. The environment is a clean, organized studio workshop. The image conveys craftsmanship, attention to detail, and a premium approach to preservation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwGyT5u9ESZUkN4F9emu3xE4nbx1FAePEQvA1ZbrJOoL-09MVni1XJvZ3GOxQXF4pQD7gZYz6dgs5a2V-kBbOsk173zeuvN2BtTMM1pFeUD_U9Q5OnOGgv7aGnjmOC4-aV7y2rznj9zkUhzuIopn_wMUpGoAfL668dQyQ8Ukglb59mB4wCW5wEJeb_orUwz6cfaqWACXg23S-62VsU7uTRVssZ2xt7lT_JDapJn82_pgzuz_l0Ko2T60dLyLVtOzhFAk6oAhiH92oS">
+<div class="absolute top-4 right-4 bg-surface-container-lowest/90 backdrop-blur-sm p-1.5 rounded-full">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">bookmark_border</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded text-[10px] font-label font-bold uppercase tracking-wider">Restoration</span>
+</div>
+<h3 class="font-headline text-lg font-bold text-on-surface mb-1">Atelier Jensen</h3>
+<p class="font-body text-sm text-on-surface-variant line-clamp-2">Heritage furniture restoration with a focus on mid-century Scandinavian and Bauhaus artifacts.</p>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-highest w-full py-12 mt-auto">
+<div class="flex flex-col items-center justify-center text-center px-8 max-w-7xl mx-auto">
+<div class="font-headline text-xl font-bold text-on-surface mb-6">Serch</div>
+<div class="flex gap-6 mb-8">
+<a class="font-label text-sm text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Trust &amp; Safety</a>
+<a class="font-label text-sm text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label text-sm text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label text-sm text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Service Agreement</a>
+</div>
+<p class="font-body text-sm text-on-surface-variant">© 2026 Serch Technologies. All rights reserved.</p>
+</div>
+</footer>
+
+
+</body></html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Serch - Mobile Navigation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&amp;family=Inter:wght@300;400;600&amp;family=Public+Sans:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed-dim": "#dcc661",
+                      "surface-bright": "#faf9fa",
+                      "on-tertiary": "#ffffff",
+                      "surface-variant": "#e3e2e3",
+                      "surface-container-high": "#e9e8e9",
+                      "surface-container-low": "#f5f3f4",
+                      "on-tertiary-container": "#4a3f00",
+                      "surface-dim": "#dbdadb",
+                      "primary-container": "#3366cc",
+                      "on-secondary-fixed": "#171c20",
+                      "on-primary-fixed-variant": "#00419d",
+                      "tertiary": "#6d5e00",
+                      "on-primary": "#ffffff",
+                      "surface-tint": "#2259bf",
+                      "background": "#faf9fa",
+                      "inverse-on-surface": "#f2f0f1",
+                      "secondary": "#5a5f63",
+                      "on-primary-fixed": "#001946",
+                      "on-tertiary-fixed": "#211b00",
+                      "on-secondary-container": "#606569",
+                      "error-container": "#ffdad6",
+                      "outline-variant": "#c3c6d5",
+                      "primary": "#094cb2",
+                      "on-surface-variant": "#434653",
+                      "secondary-container": "#dfe3e8",
+                      "secondary-fixed": "#dfe3e8",
+                      "inverse-primary": "#b1c5ff",
+                      "surface-container-highest": "#e3e2e3",
+                      "outline": "#737784",
+                      "inverse-surface": "#303031",
+                      "surface-container": "#efedee",
+                      "primary-fixed": "#d9e2ff",
+                      "surface": "#faf9fa",
+                      "on-tertiary-fixed-variant": "#524600",
+                      "tertiary-fixed": "#f9e37a",
+                      "on-secondary-fixed-variant": "#42474b",
+                      "error": "#ba1a1a",
+                      "on-secondary": "#ffffff",
+                      "on-surface": "#1b1c1d",
+                      "on-background": "#1b1c1d",
+                      "on-error": "#ffffff",
+                      "tertiary-container": "#bfab49",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-fixed-dim": "#b1c5ff",
+                      "secondary-fixed-dim": "#c2c7cc",
+                      "on-error-container": "#93000a",
+                      "on-primary-container": "#e7ebff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "fontFamily": {
+                      "headline": ["Noto Serif", "serif"],
+                      "display": ["Noto Serif", "serif"],
+                      "body": ["Inter", "sans-serif"],
+                      "label": ["Public Sans", "sans-serif"]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 1rem); }
+        
+        /* Drawer transition classes */
+        .drawer-open { transform: translateX(0); }
+        .drawer-closed { transform: translateX(-100%); }
+        .overlay-open { opacity: 1; pointer-events: auto; }
+        .overlay-closed { opacity: 0; pointer-events: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body antialiased min-h-screen flex flex-col overflow-x-hidden">
+<!-- Mobile Top Bar (TopNavBar derived for Mobile) -->
+<!-- Note: TopNavBar from JSON specifies hidden brand logo on some states, but prompt says "Mobile Top Bar: Minimalist with the Serch wordmark and a menu trigger." -->
+<header class="fixed top-0 w-full z-40 bg-surface-container-lowest/80 backdrop-blur-xl shadow-sm md:hidden">
+<div class="flex items-center justify-between px-4 py-3 w-full max-w-full mx-auto">
+<!-- Menu Trigger -->
+<button aria-label="Open menu" class="p-2 text-primary cursor-pointer active:opacity-70" id="menu-btn">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<!-- Serch Wordmark -->
+<h1 class="font-headline text-2xl font-bold text-primary tracking-tight">Serch</h1>
+<!-- Placeholder for balance, or search icon -->
+<button aria-label="Search" class="p-2 text-primary cursor-pointer active:opacity-70">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas (Dummy content for context) -->
+<main class="flex-grow pt-20 pb-24 px-4 md:px-8 max-w-4xl mx-auto w-full">
+<section class="mb-12">
+<h2 class="font-headline text-4xl mb-4 text-on-surface">The Digital Curator</h2>
+<p class="font-body text-on-surface-variant leading-relaxed text-lg mb-8 max-w-2xl">
+                A scholarly, premium reading experience. Dense information made effortless through serif authority and generous whitespace. Discover the curated picks that define the editorial standard.
+            </p>
+<div class="grid grid-cols-1 gap-6">
+<!-- Bento Style Card -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/15 flex flex-col space-y-4">
+<div class="w-full h-48 bg-surface-container-low rounded-lg overflow-hidden relative">
+<!-- Image placeholder -->
+<div class="absolute inset-0 bg-surface-dim/30 flex items-center justify-center text-on-surface-variant font-label text-sm">Editorial Image</div>
+</div>
+<h3 class="font-headline text-2xl">Expert Insights</h3>
+<p class="font-body text-sm text-on-surface-variant">Deep dives into archival content, curated by our premium tier network.</p>
+</div>
+<!-- Another Card -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/15 flex flex-col space-y-4">
+<div class="w-full h-48 bg-surface-container-low rounded-lg overflow-hidden relative">
+<!-- Image placeholder -->
+<div class="absolute inset-0 bg-surface-dim/30 flex items-center justify-center text-on-surface-variant font-label text-sm">Archival Highlights</div>
+</div>
+<h3 class="font-headline text-2xl text-tertiary flex items-center gap-2">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+                         Premium Archive
+                     </h3>
+<p class="font-body text-sm text-on-surface-variant">Exclusive access to scholarly standards and curated networks.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Mobile Sidebar Overlay (SideNavBar JSON adaptation) -->
+<!-- Overlay Background -->
+<div class="fixed inset-0 bg-scrim/50 backdrop-blur-sm z-50 overlay-closed transition-opacity duration-300 md:hidden" id="drawer-overlay"></div>
+<!-- Drawer Content -->
+<aside class="fixed inset-y-0 left-0 w-80 max-w-[85vw] z-[60] bg-surface-container-lowest shadow-2xl shadow-on-surface/5 drawer-closed transition-transform duration-300 ease-in-out flex flex-col h-full md:hidden" id="side-drawer">
+<!-- Drawer Header -->
+<div class="p-6 pb-2 border-b border-surface-container-low flex items-center justify-between">
+<span class="font-headline text-xl text-on-surface font-bold">Serch</span>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-full hover:bg-surface-container-low" id="close-btn">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- User Profile Section -->
+<div class="p-6 bg-surface-container-lowest flex flex-col items-start border-b border-surface-container-low">
+<div class="w-16 h-16 rounded-full bg-surface-container-highest border-2 border-surface-container mb-4 overflow-hidden shadow-sm">
+<!-- Avatar Placeholder -->
+<div class="w-full h-full flex items-center justify-center text-on-surface-variant font-headline text-xl bg-surface-dim">
+                    TC
+                </div>
+</div>
+<h2 class="font-headline text-xl text-on-surface mb-1">The Curator</h2>
+<p class="font-body text-sm font-light text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+                Premium Tier Member
+            </p>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-grow overflow-y-auto p-4 space-y-2">
+<!-- Active Link -->
+<a class="flex items-center gap-4 p-3 text-primary bg-surface-container-high rounded-lg font-semibold hover:translate-x-1 transition-transform duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-body text-sm">Curated Picks</span>
+</a>
+<!-- Inactive Links -->
+<a class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-low rounded-lg hover:text-primary hover:translate-x-1 transition-transform duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined">workspace_premium</span>
+<span class="font-body text-sm font-light">Expert Network</span>
+</a>
+<a class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-low rounded-lg hover:text-primary hover:translate-x-1 transition-transform duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-body text-sm font-light">Archive</span>
+</a>
+<div class="my-4 border-t border-surface-container-low"></div>
+<a class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-low rounded-lg hover:text-primary hover:translate-x-1 transition-transform duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body text-sm font-light">Settings</span>
+</a>
+<a class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-low rounded-lg hover:text-primary hover:translate-x-1 transition-transform duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body text-sm font-light">Help</span>
+</a>
+</nav>
+<!-- Drawer Footer / CTA -->
+<div class="p-6 bg-surface-container-lowest mt-auto">
+<button class="w-full bg-surface-container-high text-primary hover:text-primary-container hover:bg-surface-container-highest transition-all duration-300 ease-in-out py-3 rounded-lg font-label text-sm uppercase tracking-wider font-semibold flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">support_agent</span>
+                Contact Concierge
+            </button>
+</div>
+</aside>
+<!-- Mobile Bottom NavBar (JSON Implementation) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-md rounded-t-xl shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
+<!-- Tonal separation without strict border -->
+<div class="h-[1px] w-full bg-surface-dim opacity-50"></div>
+<div class="flex justify-around items-center h-16 w-full px-4 pb-safe">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center text-primary font-bold font-label text-[10px] uppercase tracking-widest active:scale-95 transition-transform hover:text-primary w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="leading-none">Home</span>
+</a>
+<!-- Search -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant font-label text-[10px] uppercase tracking-widest active:scale-95 transition-transform hover:text-primary w-16" href="#">
+<span class="material-symbols-outlined mb-1">search</span>
+<span class="leading-none">Search</span>
+</a>
+<!-- Bookings -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant font-label text-[10px] uppercase tracking-widest active:scale-95 transition-transform hover:text-primary w-16" href="#">
+<span class="material-symbols-outlined mb-1">calendar_today</span>
+<span class="leading-none">Bookings</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant font-label text-[10px] uppercase tracking-widest active:scale-95 transition-transform hover:text-primary w-16" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="leading-none">Profile</span>
+</a>
+</div>
+</nav>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.getElementById('menu-btn');
+            const closeBtn = document.getElementById('close-btn');
+            const drawer = document.getElementById('side-drawer');
+            const overlay = document.getElementById('drawer-overlay');
+
+            function openDrawer() {
+                drawer.classList.remove('drawer-closed');
+                drawer.classList.add('drawer-open');
+                overlay.classList.remove('overlay-closed');
+                overlay.classList.add('overlay-open');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            }
+
+            function closeDrawer() {
+                drawer.classList.remove('drawer-open');
+                drawer.classList.add('drawer-closed');
+                overlay.classList.remove('overlay-open');
+                overlay.classList.add('overlay-closed');
+                document.body.style.overflow = '';
+            }
+
+            menuBtn.addEventListener('click', openDrawer);
+            closeBtn.addEventListener('click', closeDrawer);
+            overlay.addEventListener('click', closeDrawer);
+        });
+    </script>
+</body></html>

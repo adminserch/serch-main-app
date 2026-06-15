@@ -1,0 +1,251 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Serch - Seeker Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&amp;family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Public+Sans:wght@500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f2f0f1",
+                        "on-background": "#1b1c1d",
+                        "inverse-primary": "#b1c5ff",
+                        "secondary": "#5a5f63",
+                        "surface-bright": "#faf9fa",
+                        "on-secondary-container": "#606569",
+                        "secondary-fixed": "#dfe3e8",
+                        "primary-container": "#3366cc",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "tertiary-fixed": "#f9e37a",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#d9e2ff",
+                        "on-surface": "#1b1c1d",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "surface-container-highest": "#e3e2e3",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "on-surface-variant": "#434653",
+                        "on-primary-fixed": "#001946",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e9e8e9",
+                        "on-tertiary-fixed": "#211b00",
+                        "secondary-fixed-dim": "#c2c7cc",
+                        "on-tertiary-container": "#4a3f00",
+                        "tertiary": "#6d5e00",
+                        "secondary-container": "#dfe3e8",
+                        "outline": "#737784",
+                        "on-primary-container": "#e7ebff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#2259bf",
+                        "inverse-surface": "#303031",
+                        "tertiary-container": "#bfab49",
+                        "on-primary-fixed-variant": "#00419d",
+                        "surface-container-low": "#f5f3f4",
+                        "surface-variant": "#e3e2e3",
+                        "surface-container": "#efedee",
+                        "surface": "#faf9fa",
+                        "on-error-container": "#93000a",
+                        "background": "#faf9fa",
+                        "primary": "#094cb2",
+                        "surface-dim": "#dbdadb",
+                        "outline-variant": "#c3c6d5",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "on-secondary-fixed": "#171c20"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Noto Serif", "serif"],
+                        "display": ["Noto Serif", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Public Sans", "sans-serif"]
+                    },
+                    "fontSize": {}
+                },
+            },
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.surface-bright'); }
+    </style>
+</head>
+<body class="font-body text-on-surface antialiased bg-surface-bright min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-surface-dim text-primary dark:text-primary-fixed-dim font-body text-body-md leading-relaxed w-full top-0 sticky bg-surface-container-low dark:bg-surface-container-high flat no shadows z-50 transition-colors duration-300">
+<div class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<a class="font-headline text-2xl font-bold text-primary dark:text-primary-fixed" href="#">Serch</a>
+<!-- Search Bar (on_left) -->
+<div class="hidden md:flex items-center bg-surface-container-lowest border border-outline-variant/15 rounded-full px-4 py-2 w-64 focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none outline-none text-sm text-on-surface w-full focus:ring-0 placeholder-on-surface-variant/50 font-body" placeholder="Search services..." type="text">
+</div>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<!-- Highlight 'Explore' as it's the dashboard/home equivalent -->
+<a class="text-primary-container dark:text-primary-fixed font-bold border-b-2 border-primary-container pb-1 active:opacity-80 transition-opacity" href="#">Explore</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-medium hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 active:opacity-80 transition-opacity" href="#">Services</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-medium hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 active:opacity-80 transition-opacity" href="#">Collections</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-medium hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 active:opacity-80 transition-opacity" href="#">Concierge</a>
+</nav>
+<div class="flex items-center gap-4">
+<button aria-label="notifications" class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button aria-label="favorite" class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant/15">
+<img alt="Seeker profile menu" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCos3oKnI3jwsSCkoU9hLKVGDqqLeiwmdNHJHO25TX1I0OTPSwdJuCu3WEMNiOxL3kQV6AtelwJUN5Dl1nS2wEN1ManrC7C5zFWCfFMfOS5V0ogXprX0QQ3ACPhBVw0mXgooZpNOEBXf1-EA9bD6ZzDDPdmt_ydSp3z9PDs7KPCICCEMaGUtDvjDl-BkKxy5pKBsoqq9b9rj3RqwAsA0LXQeWCFGT-9W0p3jYZdbnrAK3MdI7NzeZ-AdSdO63y_I3gaG8NPu6O1SnV">
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow max-w-screen-2xl mx-auto w-full px-4 sm:px-8 py-12 md:py-20 flex flex-col gap-16 md:gap-24">
+<!-- Welcome Section -->
+<section class="flex flex-col gap-4 animate-fade-in">
+<h1 class="font-headline text-4xl md:text-6xl text-on-surface tracking-tight">Good morning, Eleanor.</h1>
+<p class="font-body text-lg text-on-surface-variant max-w-2xl leading-relaxed">Your curated selection of premier services awaits. You have one active engagement today.</p>
+</section>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 auto-rows-min">
+<!-- Active Bookings (Span 8) -->
+<section class="lg:col-span-8 flex flex-col gap-6">
+<div class="flex items-baseline justify-between border-b border-surface-dim pb-2">
+<h2 class="font-headline text-2xl text-on-surface">Active Engagements</h2>
+<a class="font-label text-sm text-primary uppercase tracking-wider hover:underline underline-offset-4" href="#">View Archive</a>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start shadow-[0_4px_24px_rgba(27,28,29,0.04)] border border-outline-variant/10">
+<div class="w-24 h-24 md:w-32 md:h-32 shrink-0 rounded-lg overflow-hidden bg-surface-container-high">
+<img alt="Bespoke tailoring session" class="w-full h-full object-cover" data-alt="A close-up shot of an elegant bespoke tailoring session in a well-lit, sophisticated studio. The image features high-quality fabrics, measuring tapes, and a sense of refined craftsmanship. The lighting is soft and natural, enhancing the warm off-white and rich textural tones. The mood is calm, professional, and luxurious, fitting a high-end editorial style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuNwYL5fnf2CjuNSd6CjalEygKz6df89cxZA4ikvKhm6ydi14ITzcX51rWjYx4hOtUuW4NnTDC67Ycgdm3HHRnaq56rudOLop27vWexS9il53yPdfxgEqXQg7Gg85fiI_1JBWO0v870eBsirr9eRccxXL_31oYaOYYaGikmqbGnzuOnpAJb29GCUWZ-seDJiLUReR72wgHVNdK-WzCzDUuqnFBoh57CgFxMnCRiyar4VkBp6G2FSpxGRhZU4xo-us_9zhzFVDZ0cAI">
+</div>
+<div class="flex-grow flex flex-col gap-3">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-container/20 text-on-tertiary-container font-label text-xs w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                            In Progress
+                        </div>
+<h3 class="font-headline text-xl font-bold text-on-surface">Bespoke Fitting Session</h3>
+<p class="font-body text-on-surface-variant text-sm">with <span class="font-medium text-on-surface">Alistair &amp; Co. Tailors</span></p>
+<div class="mt-2 flex items-center gap-4 text-sm text-on-surface-variant font-body">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]" data-icon="schedule">schedule</span>
+                                Today, 2:00 PM
+                            </div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]" data-icon="location_on">location_on</span>
+                                The Savoy, Suite 4B
+                            </div>
+</div>
+</div>
+<div class="flex md:flex-col gap-3 w-full md:w-auto mt-4 md:mt-0">
+<button class="flex-1 md:flex-none px-6 py-2.5 bg-primary-container text-on-primary rounded-lg font-label text-sm font-medium hover:opacity-90 transition-opacity whitespace-nowrap">Manage</button>
+<button class="flex-1 md:flex-none px-6 py-2.5 bg-surface-container-high text-on-surface rounded-lg font-label text-sm font-medium hover:bg-surface-variant transition-colors whitespace-nowrap">Message</button>
+</div>
+</div>
+</section>
+<!-- Quick Access / Next Steps (Span 4) -->
+<section class="lg:col-span-4 flex flex-col gap-6">
+<div class="flex items-baseline justify-between border-b border-surface-dim pb-2">
+<h2 class="font-headline text-2xl text-on-surface">Concierge</h2>
+</div>
+<div class="bg-primary-fixed/30 rounded-xl p-6 border border-primary-fixed-dim/20 flex flex-col gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container mb-2">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<h3 class="font-headline text-lg font-bold text-on-surface">Need assistance?</h3>
+<p class="font-body text-sm text-on-surface-variant mb-2">Our digital curators are available to organize your next specialized engagement.</p>
+<button class="w-full py-3 border border-primary-container text-primary-container rounded-lg font-label text-sm font-medium hover:bg-primary-container/5 transition-colors flex items-center justify-center gap-2">
+                        Request Service <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- Recommended (Span 12) -->
+<section class="lg:col-span-12 flex flex-col gap-6 mt-8">
+<div class="flex items-baseline justify-between border-b border-surface-dim pb-2">
+<h2 class="font-headline text-2xl text-on-surface">Curated for You</h2>
+<a class="font-label text-sm text-primary uppercase tracking-wider hover:underline underline-offset-4" href="#">Explore Directory</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Provider Card 1 -->
+<div class="group flex flex-col rounded-xl overflow-hidden bg-surface-container-lowest border border-outline-variant/10 shadow-[0_2px_12px_rgba(27,28,29,0.03)] hover:shadow-[0_8px_32px_rgba(27,28,29,0.06)] transition-all duration-300 cursor-pointer">
+<div class="h-48 relative overflow-hidden bg-surface-container-high">
+<img alt="Art appraisal service" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A refined interior showing a professional art appraisal setting. A minimalist desk with an antique magnifying glass, a leather-bound notebook, and a glimpse of a classic oil painting in the background. The scene is bathed in warm, directional lighting against a soft off-white backdrop. The aesthetic is scholarly, high-end, and meticulously curated." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6yCYw4fliATfvXXH5kuj0QwcVXjYx-YdAPcw5AR7N5-TjO9q6FMeiXuGLSIWvqw-_a5BBb8RR_vsHnjnVH4XmMFRrwFbt5auIiRXgrxky7hnrLwisB8JX2a8HeSolOxr9dFxwkX4wlu9UxUkRH23jV65gPbfyKp3-SsQiTylMnuVUl0B_BCwh10J5y4RE4_jJsebFyffEqfEcTR2yA3euZYkbWb3Qln6uOn3a8Aoc005YCBjRw7aPg77hRjAr-WH596Yhy0PjKoBU">
+<div class="absolute top-4 right-4 bg-surface-container-lowest/80 backdrop-blur-md px-2 py-1 rounded text-xs font-label text-tertiary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span> 4.9
+                            </div>
+</div>
+<div class="p-5 flex flex-col gap-2">
+<div class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Fine Art Services</div>
+<h3 class="font-headline text-lg font-bold text-on-surface">Sotheby's Appraisal Network</h3>
+<p class="font-body text-sm text-on-surface-variant line-clamp-2">Private consultations for collection valuation and acquisition strategy.</p>
+</div>
+</div>
+<!-- Provider Card 2 -->
+<div class="group flex flex-col rounded-xl overflow-hidden bg-surface-container-lowest border border-outline-variant/10 shadow-[0_2px_12px_rgba(27,28,29,0.03)] hover:shadow-[0_8px_32px_rgba(27,28,29,0.06)] transition-all duration-300 cursor-pointer">
+<div class="h-48 relative overflow-hidden bg-surface-container-high">
+<img alt="Private sommelier service" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A sophisticated wine tasting setup on a sleek, dark wooden table. Crystal clear wine glasses, a decanter, and an open vintage bottle are beautifully arranged. The background is slightly blurred, hinting at an exclusive wine cellar. The lighting is moody yet elegant, emphasizing the premium, editorial feel of the composition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9ANgGkANwba_4GFX5-W74QWQ_NtV4sW7ZkPEJwmu6kMxOO131lf1R5YzwEZCVZOiq0X2X6GShFTvZqhE9eH3a2ID_lmlfTzSgHXpGvdUY2gF4i06jPDU2QkxAYeG4HdPKjoghB_KNuL2eKNMKD5LGt89LHdnxPLn0QrAbLKAfhJpWHPGC7YV99gIRk4Z-wgWMSqFPGIjjXVD3eNCzfPUH-Am-xigIaG69PQSHzOmfmAuZvspsPCDlWHUX_ALEJwzmJ9cVd2vbkJnc">
+<div class="absolute top-4 right-4 bg-surface-container-lowest/80 backdrop-blur-md px-2 py-1 rounded text-xs font-label text-tertiary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span> 5.0
+                            </div>
+</div>
+<div class="p-5 flex flex-col gap-2">
+<div class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Culinary Arts</div>
+<h3 class="font-headline text-lg font-bold text-on-surface">Maison Sommelier</h3>
+<p class="font-body text-sm text-on-surface-variant line-clamp-2">Curated cellar management and bespoke tasting experiences.</p>
+</div>
+</div>
+<!-- Provider Card 3 -->
+<div class="group flex flex-col rounded-xl overflow-hidden bg-surface-container-lowest border border-outline-variant/10 shadow-[0_2px_12px_rgba(27,28,29,0.03)] hover:shadow-[0_8px_32px_rgba(27,28,29,0.06)] transition-all duration-300 cursor-pointer">
+<div class="h-48 relative overflow-hidden bg-surface-container-high">
+<img alt="Executive transport service" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A sleek, modern executive lounge or private transport interior with minimalist leather seating. The environment is impeccably clean, characterized by sharp architectural lines and large glass windows letting in diffused natural light. The color palette focuses on deep blacks, warm greys, and pristine whites, conveying a highly professional and luxurious atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyalKppQovCYD9PkBbUmHD2lPoiYyS5jgRqkBaEAIp9BoWwCOpW4Gajk_ujw3NBHsr4r7l8U3oXsLYgUNZBlDGvnNhGazZvQGkA0udVXr0aBl4CNpuuw90pCjBwy8xK_Ml4ATi1ljffGFmW2-dIJtPu1TKsiBWAipJ5RRgqPqmETJll4GNibT1a4Vlhhug8kkRSMzOuhrc_7JkQTeZ5AKTPKpSJGM9v6qiCz0mEm-T13Ph892zXPSpeIQaGfQmX7RhNDx0G2G134be">
+<div class="absolute top-4 right-4 bg-surface-container-lowest/80 backdrop-blur-md px-2 py-1 rounded text-xs font-label text-tertiary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span> 4.8
+                            </div>
+</div>
+<div class="p-5 flex flex-col gap-2">
+<div class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Logistics</div>
+<h3 class="font-headline text-lg font-bold text-on-surface">Aero Private Charter</h3>
+<p class="font-body text-sm text-on-surface-variant line-clamp-2">Seamless global transit solutions for the discerning traveler.</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-dim dark:bg-surface-container-lowest text-tertiary dark:text-tertiary-fixed font-label text-xs uppercase tracking-widest w-full py-16 bg-surface-container-high dark:bg-surface-container-highest flat no shadows mt-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 px-12 max-w-7xl mx-auto">
+<div class="flex flex-col gap-6">
+<span class="font-headline text-lg italic text-on-surface dark:text-on-surface normal-case">Serch</span>
+<p class="text-on-surface-variant normal-case">© 2024 Serch Digital Curators. All rights reserved.</p>
+</div>
+<div class="flex flex-col gap-4">
+<nav class="flex flex-col gap-3">
+<a class="text-on-surface-variant hover:underline decoration-tertiary underline-offset-4 cursor-pointer transition-all w-fit" href="#">The Manifesto</a>
+<a class="text-on-surface-variant hover:underline decoration-tertiary underline-offset-4 cursor-pointer transition-all w-fit" href="#">Scholarly Standards</a>
+<a class="text-on-surface-variant hover:underline decoration-tertiary underline-offset-4 cursor-pointer transition-all w-fit" href="#">Provider Ethics</a>
+<a class="text-on-surface-variant hover:underline decoration-tertiary underline-offset-4 cursor-pointer transition-all w-fit" href="#">Privacy Registry</a>
+<a class="text-on-surface-variant hover:underline decoration-tertiary underline-offset-4 cursor-pointer transition-all w-fit" href="#">Terms of Engagement</a>
+</nav>
+</div>
+</div>
+</footer>
+
+
+</body></html>

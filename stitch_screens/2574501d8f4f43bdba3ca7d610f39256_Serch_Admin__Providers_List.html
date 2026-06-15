@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Serch Admin - Providers List</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Noto+Serif:wght@400;600;700&amp;family=Public+Sans:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "surface-container": "#efedee",
+                        "surface-bright": "#faf9fa",
+                        "on-primary-fixed-variant": "#00419d",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "inverse-surface": "#303031",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "on-secondary-container": "#606569",
+                        "on-tertiary-fixed": "#211b00",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#b1c5ff",
+                        "on-error": "#ffffff",
+                        "tertiary": "#6d5e00",
+                        "secondary-fixed": "#dfe3e8",
+                        "primary-container": "#3366cc",
+                        "surface-container-high": "#e9e8e9",
+                        "surface": "#faf9fa",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#d9e2ff",
+                        "tertiary-fixed": "#f9e37a",
+                        "secondary-container": "#dfe3e8",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#4a3f00",
+                        "secondary-fixed-dim": "#c2c7cc",
+                        "surface-dim": "#dbdadb",
+                        "outline": "#737784",
+                        "on-secondary-fixed": "#171c20",
+                        "on-primary-fixed": "#001946",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#2259bf",
+                        "outline-variant": "#c3c6d5",
+                        "tertiary-container": "#bfab49",
+                        "inverse-on-surface": "#f2f0f1",
+                        "primary": "#094cb2",
+                        "on-primary-container": "#e7ebff",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#1b1c1d",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f5f3f4",
+                        "surface-variant": "#e3e2e3",
+                        "background": "#faf9fa",
+                        "secondary": "#5a5f63",
+                        "surface-container-highest": "#e3e2e3",
+                        "on-background": "#1b1c1d",
+                        "on-surface-variant": "#434653"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Noto Serif"],
+                        "display": ["Noto Serif"],
+                        "body": ["Inter"],
+                        "label": ["Public Sans"]
+                    },
+                    "fontSize": {}
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body antialiased flex min-h-screen">
+<!-- SideNavBar (Shared Component) -->
+<nav class="hidden md:flex h-full w-72 flex-col fixed left-0 top-0 bg-surface-container-lowest dark:bg-surface-dim z-40" style="border-right: 1px solid rgba(195, 198, 213, 0.15);">
+<div class="p-6 space-y-4 h-full flex flex-col justify-between">
+<div>
+<!-- Brand Anchor -->
+<div class="mb-10 flex items-center gap-4">
+<img alt="Admin profile" class="w-12 h-12 rounded-full object-cover" data-alt="A close up, professional headshot of a mature executive in a well-lit, minimal studio setting. They are wearing a tailored dark suit. The lighting is soft and even, highlighting a calm, authoritative expression. The background is a clean, bright white surface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDEpY_79sg5wcxYh41oflYGAYTM8zqNk0Fq7Ut8p4bf6eZ_I-XD4lT7rOc3i3XHvl-YK5AjhpCC2JNn7kxWXRyCSqKDDK1sHXOtquA3ypxdPEhCJP6oPa8SURjuioJDeyWA_ii32nxABW-LkpB9b5BegojiLKhMZiG6p7Cw5SF45Jktg5dwW6rqDjhNLs64P-9dwPCg2CW-ZRRCNpke4CQwpj2NG3WTDJaYo8Ie7XYhHQ1OAi5TS0Mzxo8yfu-JGaMdVRGUZSjp6cr"/>
+<div>
+<h1 class="font-display text-xl font-bold text-on-surface dark:text-on-surface-variant">Serch Admin</h1>
+<p class="font-body text-label-lg text-secondary">Operations Portal</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<ul class="space-y-2">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 font-body text-label-lg text-secondary dark:text-secondary-fixed-dim hover:bg-surface-container-high transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 font-body text-label-lg text-secondary dark:text-secondary-fixed-dim hover:bg-surface-container-high transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="how_to_reg">how_to_reg</span>
+<span>Registrations</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 font-body text-label-lg bg-primary-container/20 text-primary dark:text-primary-fixed-dim font-bold rounded-lg transition-all duration-300 translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group" style="font-variation-settings: 'FILL' 1;">group</span>
+<span>Providers</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 font-body text-label-lg text-secondary dark:text-secondary-fixed-dim hover:bg-surface-container-high transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span>Locations</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 font-body text-label-lg text-secondary dark:text-secondary-fixed-dim hover:bg-surface-container-high transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</li>
+</ul>
+</div>
+<!-- Footer Actions -->
+<div class="space-y-4">
+<button class="w-full py-2 px-4 rounded-lg bg-surface-container-high text-primary font-label hover:bg-surface-container-highest transition-colors">
+                    System Status
+                </button>
+<ul class="space-y-2">
+<li>
+<a class="flex items-center gap-3 px-4 py-2 font-body text-label-lg text-secondary hover:text-primary transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span>Support</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-2 font-body text-label-lg text-secondary hover:text-error transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-72 bg-surface-container-low min-h-screen">
+<!-- Mobile Top Nav (Simplified fallback for when side nav is hidden) -->
+<div class="md:hidden flex items-center justify-between p-4 bg-surface-container-lowest sticky top-0 z-30 shadow-sm">
+<h1 class="font-display text-xl font-bold text-on-surface">Serch Admin</h1>
+<button class="p-2 text-on-surface-variant"><span class="material-symbols-outlined">menu</span></button>
+</div>
+<div class="p-8 lg:p-12 max-w-[1600px] mx-auto space-y-10">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h2 class="font-headline text-4xl lg:text-5xl font-bold text-on-surface tracking-tight mb-2">Providers</h2>
+<p class="font-body text-on-surface-variant max-w-2xl text-lg">Manage and oversee the network of service professionals. Review statuses, analyze performance, and ensure platform quality.</p>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-lowest text-on-surface font-label hover:bg-surface-container-high transition-colors shadow-sm">
+<span class="material-symbols-outlined text-sm" data-icon="download">download</span>
+                        Export List
+                    </button>
+<button class="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-primary to-primary-container text-on-primary font-label hover:opacity-90 transition-opacity shadow-sm">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                        New Provider
+                    </button>
+</div>
+</header>
+<!-- High-Level Stats (Bento-ish layout) -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Stat Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-2xl flex flex-col justify-between h-40 shadow-sm hover:-translate-y-1 transition-transform duration-300">
+<div class="flex items-start justify-between">
+<span class="font-label text-on-surface-variant text-sm uppercase tracking-wider">Total Pros</span>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="group">group</span>
+</div>
+</div>
+<div>
+<div class="font-headline text-4xl text-on-surface">12,450</div>
+<div class="text-sm text-secondary mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-primary" data-icon="trending_up">trending_up</span>
+<span class="text-primary font-medium">+8.2%</span> this month
+                        </div>
+</div>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-2xl flex flex-col justify-between h-40 shadow-sm hover:-translate-y-1 transition-transform duration-300">
+<div class="flex items-start justify-between">
+<span class="font-label text-on-surface-variant text-sm uppercase tracking-wider">Active</span>
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-sm" data-icon="verified">verified</span>
+</div>
+</div>
+<div>
+<div class="font-headline text-4xl text-on-surface">11,200</div>
+<div class="text-sm text-secondary mt-1">Ready for bookings</div>
+</div>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-2xl flex flex-col justify-between h-40 shadow-sm hover:-translate-y-1 transition-transform duration-300">
+<div class="flex items-start justify-between">
+<span class="font-label text-on-surface-variant text-sm uppercase tracking-wider">Pending Review</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface text-sm" data-icon="pending_actions">pending_actions</span>
+</div>
+</div>
+<div>
+<div class="font-headline text-4xl text-on-surface">845</div>
+<div class="text-sm text-secondary mt-1">Requires manual verification</div>
+</div>
+</div>
+<!-- Stat Card 4 -->
+<div class="bg-surface-container-lowest p-6 rounded-2xl flex flex-col justify-between h-40 shadow-sm hover:-translate-y-1 transition-transform duration-300">
+<div class="flex items-start justify-between">
+<span class="font-label text-on-surface-variant text-sm uppercase tracking-wider">Suspended</span>
+<div class="w-8 h-8 rounded-full bg-error-container flex items-center justify-center">
+<span class="material-symbols-outlined text-error text-sm" data-icon="block">block</span>
+</div>
+</div>
+<div>
+<div class="font-headline text-4xl text-on-surface">405</div>
+<div class="text-sm text-secondary mt-1">Action required</div>
+</div>
+</div>
+</section>
+<!-- Data Table Section -->
+<section class="bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden flex flex-col">
+<!-- Table Toolbar -->
+<div class="p-6 border-b border-outline-variant/20 flex flex-col md:flex-row items-center justify-between gap-4">
+<!-- Search -->
+<div class="relative w-full md:w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface-bright border border-outline-variant/30 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm font-body transition-shadow" placeholder="Search providers by name, email, or ID..." type="text"/>
+</div>
+<!-- Filters -->
+<div class="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors text-sm font-label text-on-surface whitespace-nowrap">
+                            Category <span class="material-symbols-outlined text-xs">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors text-sm font-label text-on-surface whitespace-nowrap">
+                            Status <span class="material-symbols-outlined text-xs">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors text-sm font-label text-on-surface whitespace-nowrap">
+                            Location <span class="material-symbols-outlined text-xs">expand_more</span>
+</button>
+<button class="p-2 rounded-lg text-outline hover:text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
+</button>
+</div>
+</div>
+<!-- Table Content -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-bright/50">
+<th class="p-5 font-label text-xs uppercase tracking-wider text-on-surface-variant font-medium">Provider</th>
+<th class="p-5 font-label text-xs uppercase tracking-wider text-on-surface-variant font-medium">Primary Category</th>
+<th class="p-5 font-label text-xs uppercase tracking-wider text-on-surface-variant font-medium">Location</th>
+<th class="p-5 font-label text-xs uppercase tracking-wider text-on-surface-variant font-medium">Joined</th>
+<th class="p-5 font-label text-xs uppercase tracking-wider text-on-surface-variant font-medium">Status</th>
+<th class="p-5 font-label text-xs uppercase tracking-wider text-on-surface-variant font-medium text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10 text-sm font-body">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-lowest/50 transition-colors group cursor-pointer">
+<td class="p-5">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="Sarah Jenkins" class="w-10 h-10 rounded-xl object-cover" data-alt="A brightly lit portrait of a young female professional smiling warmly. She has dark curly hair and is wearing a crisp white blouse. The background is a soft, blurred office environment with natural light pouring in from a window. The overall tone is approachable and modern." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzN2_PXbhxm3B1tNyf9Sxhv-Ib8pEp8kLzEI_Go7h2W2_ijDE8W7s4ORy9CLgublz0ElLiVtRuxQNtBcC1brqYrH2W9PQh-UhYcJrpxBrVPEbmfewjMUCiFoRjJ1vF3WVe15t6moXiQHuX6s1J-rFtbiMfIM7uAwSP9sb1nXgX-Y3_t7peOuxIR7dixsidcApnmkzGB-AX6pjb5nMZcp-zx2faaDPZqCUGXKgg6GDBKCl53aXOs3eu9tGLoFZ_1wb9CnarXwCkgzy1"/>
+<div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-[#10b981] border-2 border-surface-container-lowest rounded-full"></div>
+</div>
+<div>
+<div class="font-medium text-on-surface group-hover:text-primary transition-colors">Sarah Jenkins</div>
+<div class="text-secondary text-xs">sarah.j@example.com</div>
+</div>
+</div>
+</td>
+<td class="p-5 text-on-surface">Home Cleaning</td>
+<td class="p-5 text-secondary">Seattle, WA</td>
+<td class="p-5 text-secondary">Oct 12, 2023</td>
+<td class="p-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-label text-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                                        Verified
+                                    </span>
+</td>
+<td class="p-5 text-right">
+<button class="p-2 text-outline hover:text-primary transition-colors rounded-lg hover:bg-primary-container/10">
+<span class="material-symbols-outlined text-sm" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-lowest/50 transition-colors group cursor-pointer bg-surface-container-low/30">
+<td class="p-5">
+<div class="flex items-center gap-4">
+<div class="relative">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-on-surface font-headline font-bold">MR</div>
+<div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-outline border-2 border-surface-container-lowest rounded-full"></div>
+</div>
+<div>
+<div class="font-medium text-on-surface group-hover:text-primary transition-colors">Marcus Rodriguez</div>
+<div class="text-secondary text-xs">m.rodriguez@example.com</div>
+</div>
+</div>
+</td>
+<td class="p-5 text-on-surface">Plumbing</td>
+<td class="p-5 text-secondary">Austin, TX</td>
+<td class="p-5 text-secondary">Nov 02, 2023</td>
+<td class="p-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label text-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                                        Pending
+                                    </span>
+</td>
+<td class="p-5 text-right">
+<button class="p-2 text-outline hover:text-primary transition-colors rounded-lg hover:bg-primary-container/10">
+<span class="material-symbols-outlined text-sm" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-lowest/50 transition-colors group cursor-pointer">
+<td class="p-5">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="David Chen" class="w-10 h-10 rounded-xl object-cover" data-alt="A moody, high-contrast portrait of a middle-aged male professional. He is looking off-camera with a serious expression. He wears a dark, textured jacket over a t-shirt. The lighting is cinematic, casting deep shadows on one side of his face. The background is an abstract, dark grey surface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbGwr68d7fmbpCTF-zmRZEY-QcHiwRF-W4VzYMQH6j5dkQNc8-PJ4SuhiPRXTQFgLVo1E6UTjjS9G3aRfgjjOVH_QWbozphPGBoiunl8tV_cUiCJMGeCYba_yPInPDlCOnZDBrvFldxaG5VKf_WGoK0QMeVFyvxlEL3dMglr4MV4C9QnBmOoSYYAUWxg6MC4OpdTL7OpD5hwN049wtLiq5Qer1z5-Pz06uqiKVThYsM8aL6cyvLlkqLoOiIx6meDyGW-RzDGoKl5tJ"/>
+<div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-[#10b981] border-2 border-surface-container-lowest rounded-full"></div>
+</div>
+<div>
+<div class="font-medium text-on-surface group-hover:text-primary transition-colors">David Chen</div>
+<div class="text-secondary text-xs">dchen.services@example.com</div>
+</div>
+</div>
+</td>
+<td class="p-5 text-on-surface">Electrical</td>
+<td class="p-5 text-secondary">San Francisco, CA</td>
+<td class="p-5 text-secondary">Sep 28, 2023</td>
+<td class="p-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-label text-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                                        Verified
+                                    </span>
+</td>
+<td class="p-5 text-right">
+<button class="p-2 text-outline hover:text-primary transition-colors rounded-lg hover:bg-primary-container/10">
+<span class="material-symbols-outlined text-sm" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-lowest/50 transition-colors group cursor-pointer bg-surface-container-low/30">
+<td class="p-5">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="Elena Rostova" class="w-10 h-10 rounded-xl object-cover" data-alt="A vibrant, clear headshot of a young woman with light brown hair pulled back. She is smiling confidently. She is wearing a teal collared shirt. The lighting is outdoor natural daylight, creating a soft, even tone across her features. The background is a very blurred, abstract natural setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuPMR9vyGWFXceZSeMkL_3RA_fMO2UBpPs3D5fC68YZAMNnrR52cLzOCb08XC6YYhARWAiPSF1x-Dr2AAR6BVZ38t09Y9kckX9qIiAx5nbVdZf4jXZKSqOGf3GhZAbm_udYFjjzhzsVZcbTZFqtKXrxXNVDtI66E9NBQeEIhZHtx7GI9mbIjeJUCaSw99TN9hmsF3u5R3JNVTkdt5VH8KPIUHAJz1DOuOOL28QRJSSNMSMU---XiG0736cT2LU0MKw9QtQenvkkPAc"/>
+<div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-error border-2 border-surface-container-lowest rounded-full"></div>
+</div>
+<div>
+<div class="font-medium text-on-surface group-hover:text-primary transition-colors">Elena Rostova</div>
+<div class="text-secondary text-xs">elena.r@example.com</div>
+</div>
+</div>
+</td>
+<td class="p-5 text-on-surface">Pet Care</td>
+<td class="p-5 text-secondary">Denver, CO</td>
+<td class="p-5 text-secondary">Aug 15, 2023</td>
+<td class="p-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-error-container text-on-error-container font-label text-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                                        Inactive
+                                    </span>
+</td>
+<td class="p-5 text-right">
+<button class="p-2 text-outline hover:text-primary transition-colors rounded-lg hover:bg-primary-container/10">
+<span class="material-symbols-outlined text-sm" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="p-5 border-t border-outline-variant/20 flex items-center justify-between bg-surface-bright">
+<span class="text-sm text-secondary font-body">Showing 1 to 4 of 12,450 entries</span>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-lg border border-outline-variant/30 text-secondary hover:bg-surface-container hover:text-on-surface transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-primary text-on-primary font-label text-sm flex items-center justify-center">1</button>
+<button class="w-8 h-8 rounded-lg text-secondary hover:bg-surface-container hover:text-on-surface font-label text-sm flex items-center justify-center transition-colors">2</button>
+<button class="w-8 h-8 rounded-lg text-secondary hover:bg-surface-container hover:text-on-surface font-label text-sm flex items-center justify-center transition-colors">3</button>
+<span class="text-secondary px-1">...</span>
+<button class="p-2 rounded-lg border border-outline-variant/30 text-secondary hover:bg-surface-container hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>

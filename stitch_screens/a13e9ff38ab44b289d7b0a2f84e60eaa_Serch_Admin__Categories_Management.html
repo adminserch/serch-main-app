@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Serch Admin - Categories &amp; Taxonomy</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400&amp;family=Public+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#524600",
+                    "on-secondary-fixed-variant": "#42474b",
+                    "surface-container": "#efedee",
+                    "surface-bright": "#faf9fa",
+                    "on-primary-fixed-variant": "#00419d",
+                    "primary-fixed-dim": "#b1c5ff",
+                    "inverse-surface": "#303031",
+                    "tertiary-fixed-dim": "#dcc661",
+                    "on-secondary-container": "#606569",
+                    "on-tertiary-fixed": "#211b00",
+                    "on-secondary": "#ffffff",
+                    "inverse-primary": "#b1c5ff",
+                    "on-error": "#ffffff",
+                    "tertiary": "#6d5e00",
+                    "secondary-fixed": "#dfe3e8",
+                    "primary-container": "#3366cc",
+                    "surface-container-high": "#e9e8e9",
+                    "surface": "#faf9fa",
+                    "on-error-container": "#93000a",
+                    "primary-fixed": "#d9e2ff",
+                    "tertiary-fixed": "#f9e37a",
+                    "secondary-container": "#dfe3e8",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-container": "#4a3f00",
+                    "secondary-fixed-dim": "#c2c7cc",
+                    "surface-dim": "#dbdadb",
+                    "outline": "#737784",
+                    "on-secondary-fixed": "#171c20",
+                    "on-primary-fixed": "#001946",
+                    "error": "#ba1a1a",
+                    "surface-tint": "#2259bf",
+                    "outline-variant": "#c3c6d5",
+                    "tertiary-container": "#bfab49",
+                    "inverse-on-surface": "#f2f0f1",
+                    "primary": "#094cb2",
+                    "on-primary-container": "#e7ebff",
+                    "on-primary": "#ffffff",
+                    "on-surface": "#1b1c1d",
+                    "error-container": "#ffdad6",
+                    "surface-container-low": "#f5f3f4",
+                    "surface-variant": "#e3e2e3",
+                    "background": "#faf9fa",
+                    "secondary": "#5a5f63",
+                    "surface-container-highest": "#e3e2e3",
+                    "on-background": "#1b1c1d",
+                    "on-surface-variant": "#434653"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Noto Serif", "serif"],
+                    "display": ["Noto Serif", "serif"],
+                    "body": ["Inter", "sans-serif"],
+                    "label": ["Public Sans", "sans-serif"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Custom Utilities */
+        .glass-panel {
+            background-color: rgba(250, 249, 250, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .ghost-border {
+            border: 1px solid rgba(195, 198, 213, 0.15); /* outline-variant at 15% */
+        }
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 300,
+          'GRAD' 0,
+          'opsz' 24
+        }
+        .icon-fill {
+           font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen flex antialiased">
+<!-- SideNavBar Component -->
+<aside class="h-full w-72 flex flex-col fixed left-0 top-0 bg-surface-container-lowest z-40 transition-transform md:translate-x-0 -translate-x-full" id="mobile-menu">
+<div class="p-6 space-y-4 h-full flex flex-col">
+<!-- Header -->
+<div class="mb-8 flex items-center space-x-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-high overflow-hidden ghost-border flex-shrink-0">
+<img alt="Admin profile" class="w-full h-full object-cover" data-alt="A close-up portrait of a professional individual looking slightly off-camera, rendered in a crisp, high-contrast black and white style. The lighting is soft and diffused, highlighting the subject's features against a completely stark white background. The mood is serious, analytical, and highly curated, fitting a high-end editorial aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDM3Wp5M5qDLvGwsN0dcfb6aJ0LpJ1swwZIc2qiOV9sWosd77SwTqeBx8Gd9WzdM93pEwV7bF7O4B2Q7LhqCj73z8T4mywkYODzg11IwG9Kj8ase02HQJwN5WaxOjQr460wnBr_6Xy3HzombGo9mhuQi-Qiq1DIoodevxUoljTW0Bng2F-Ht18xr9F4rnKMcslychUJbRy2LPluzGTbP_L2owraFZxB3KfKXlzsXyIggtUGZxN0fM3HUGoQDINFxlWiqJdUa6Xw0zB9"/>
+</div>
+<div>
+<h1 class="font-display text-xl font-bold text-on-surface">Serch Admin</h1>
+<p class="font-label text-sm text-secondary">Operations Portal</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-4 py-3 text-secondary hover:bg-surface-container-high transition-all duration-300 rounded-lg group" href="#">
+<span class="material-symbols-outlined mr-4 group-hover:text-primary transition-colors" data-icon="dashboard">dashboard</span>
+<span class="font-body text-label-lg">Dashboard</span>
+</a>
+<a class="flex items-center px-4 py-3 text-secondary hover:bg-surface-container-high transition-all duration-300 rounded-lg group" href="#">
+<span class="material-symbols-outlined mr-4 group-hover:text-primary transition-colors" data-icon="how_to_reg">how_to_reg</span>
+<span class="font-body text-label-lg">Registrations</span>
+</a>
+<a class="flex items-center px-4 py-3 text-secondary hover:bg-surface-container-high transition-all duration-300 rounded-lg group" href="#">
+<span class="material-symbols-outlined mr-4 group-hover:text-primary transition-colors" data-icon="group">group</span>
+<span class="font-body text-label-lg">Providers</span>
+</a>
+<a class="flex items-center px-4 py-3 text-secondary hover:bg-surface-container-high transition-all duration-300 rounded-lg group" href="#">
+<span class="material-symbols-outlined mr-4 group-hover:text-primary transition-colors" data-icon="map">map</span>
+<span class="font-body text-label-lg">Locations</span>
+</a>
+<!-- Active State Example (Assuming Categories falls under Settings/Config for Admin, or highlight none if strictly adhering to exact match, but we'll leave Settings inactive and create a conceptual active state for the sake of the exercise if 'Categories' was an option. Since it's not in the JSON, none are technically active based on strict rules. We will leave them all inactive as none perfectly match 'Categories' and we cannot hallucinate.) -->
+<a class="flex items-center px-4 py-3 text-secondary hover:bg-surface-container-high transition-all duration-300 rounded-lg group" href="#">
+<span class="material-symbols-outlined mr-4 group-hover:text-primary transition-colors" data-icon="settings">settings</span>
+<span class="font-body text-label-lg">Settings</span>
+</a>
+</nav>
+<!-- Status & Footer -->
+<div class="mt-auto space-y-4 pt-6 bg-surface-container-lowest">
+<button class="w-full flex items-center justify-center px-4 py-3 bg-surface-container-low text-primary font-label text-sm rounded-lg hover:bg-surface-container transition-colors ghost-border">
+<span class="material-symbols-outlined mr-2 text-sm" data-icon="check_circle">check_circle</span>
+                    System Status
+                </button>
+<div class="space-y-1">
+<a class="flex items-center px-4 py-2 text-secondary hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="help_outline">help_outline</span>
+<span class="font-label text-sm">Support</span>
+</a>
+<a class="flex items-center px-4 py-2 text-secondary hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="logout">logout</span>
+<span class="font-label text-sm">Logout</span>
+</a>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-72 flex flex-col min-h-screen bg-surface-container-low relative">
+<!-- Mobile Header Toggle -->
+<div class="md:hidden flex items-center justify-between p-4 bg-surface-container-lowest sticky top-0 z-30 ghost-border">
+<h1 class="font-display text-lg font-bold text-on-surface">Serch Admin</h1>
+<button class="text-on-surface p-2" id="menu-toggle">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+<!-- Page Header -->
+<header class="px-8 md:px-12 pt-12 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
+<div class="max-w-2xl">
+<p class="font-label text-sm text-tertiary tracking-widest uppercase mb-2">Taxonomy Management</p>
+<h1 class="font-headline text-4xl md:text-5xl text-on-surface leading-tight mb-4">Categories &amp; Taxonomy</h1>
+<p class="font-body text-on-surface-variant text-lg">Curate and structure the platform's service offerings. Ensure clarity and alignment with the editorial standard.</p>
+</div>
+<div class="flex-shrink-0">
+<button class="group flex items-center justify-center px-6 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl hover:opacity-90 transition-opacity font-label font-medium shadow-sm">
+<span class="material-symbols-outlined mr-2" data-icon="add">add</span>
+                    Add New Category
+                </button>
+</div>
+</header>
+<!-- Content Area -->
+<div class="px-8 md:px-12 pb-24 flex-1 relative z-10">
+<!-- Filters / Search (Minimalist) -->
+<div class="mb-10 flex items-center justify-between">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full pl-12 pr-4 py-3 bg-surface-container-lowest ghost-border rounded-xl font-body text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition-colors" placeholder="Search categories..." type="text"/>
+</div>
+<div class="hidden md:flex space-x-2">
+<span class="px-4 py-2 bg-surface-container-lowest text-on-surface font-label text-sm rounded-lg ghost-border cursor-pointer hover:bg-surface transition-colors">All</span>
+<span class="px-4 py-2 text-secondary font-label text-sm rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors">Active</span>
+<span class="px-4 py-2 text-secondary font-label text-sm rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors">Drafts</span>
+</div>
+</div>
+<!-- Bento Grid Layout for Categories -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-fr">
+<!-- Category Card 1: Archival Services (Featured/Large) -->
+<div class="md:col-span-2 lg:col-span-2 bg-surface-container-lowest rounded-xl p-8 flex flex-col justify-between group hover:bg-surface transition-colors duration-300 ghost-border relative overflow-hidden">
+<div class="absolute -right-12 -top-12 text-surface-container w-48 h-48 opacity-50 pointer-events-none transition-transform group-hover:scale-110 duration-500">
+<span class="material-symbols-outlined text-[12rem] leading-none" data-icon="inventory_2" data-weight="fill">inventory_2</span>
+</div>
+<div class="relative z-10 mb-8">
+<div class="w-12 h-12 bg-primary-container/10 text-primary rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+</div>
+<h2 class="font-headline text-2xl text-on-surface mb-2">Archival Services</h2>
+<p class="font-body text-on-surface-variant text-sm max-w-sm line-clamp-2">Professional curation, preservation, and digitization of historical documents, rare books, and analog media.</p>
+</div>
+<div class="relative z-10 flex items-center justify-between mt-auto border-t border-surface-container-high/50 pt-6">
+<div class="flex items-center space-x-2 text-secondary">
+<span class="material-symbols-outlined text-sm" data-icon="group">group</span>
+<span class="font-label text-sm font-medium">142 Providers</span>
+</div>
+<button class="font-label text-sm text-primary hover:underline underline-offset-4 decoration-primary/30 flex items-center">
+                            Manage
+                            <span class="material-symbols-outlined ml-1 text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Category Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 flex flex-col group hover:bg-surface transition-colors duration-300 ghost-border">
+<div class="w-10 h-10 bg-surface-container text-on-surface rounded-lg flex items-center justify-center mb-5">
+<span class="material-symbols-outlined" data-icon="self_improvement">self_improvement</span>
+</div>
+<h2 class="font-headline text-lg text-on-surface mb-2">Somatic Therapy</h2>
+<p class="font-body text-on-surface-variant text-sm mb-6 flex-1 line-clamp-3">Body-centric psychological therapeutic approaches that focus on the connection of mind and body.</p>
+<div class="flex items-center justify-between pt-4 border-t border-surface-container-high/50">
+<span class="font-label text-xs text-secondary">87 Providers</span>
+<button class="font-label text-xs text-primary hover:underline">Manage</button>
+</div>
+</div>
+<!-- Category Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 flex flex-col group hover:bg-surface transition-colors duration-300 ghost-border">
+<div class="w-10 h-10 bg-surface-container text-on-surface rounded-lg flex items-center justify-center mb-5">
+<span class="material-symbols-outlined" data-icon="restaurant_menu">restaurant_menu</span>
+</div>
+<h2 class="font-headline text-lg text-on-surface mb-2">Culinary Arts</h2>
+<p class="font-body text-on-surface-variant text-sm mb-6 flex-1 line-clamp-3">Private chefs, artisanal workshops, and curated dining experiences.</p>
+<div class="flex items-center justify-between pt-4 border-t border-surface-container-high/50">
+<span class="font-label text-xs text-secondary">215 Providers</span>
+<button class="font-label text-xs text-primary hover:underline">Manage</button>
+</div>
+</div>
+<!-- Category Card 4 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 flex flex-col group hover:bg-surface transition-colors duration-300 ghost-border">
+<div class="w-10 h-10 bg-surface-container text-on-surface rounded-lg flex items-center justify-center mb-5">
+<span class="material-symbols-outlined" data-icon="architecture">architecture</span>
+</div>
+<h2 class="font-headline text-lg text-on-surface mb-2">Spatial Design</h2>
+<p class="font-body text-on-surface-variant text-sm mb-6 flex-1 line-clamp-3">Interior architecture, landscape curation, and bespoke environmental design consultations.</p>
+<div class="flex items-center justify-between pt-4 border-t border-surface-container-high/50">
+<span class="font-label text-xs text-secondary">64 Providers</span>
+<button class="font-label text-xs text-primary hover:underline">Manage</button>
+</div>
+</div>
+<!-- Category Card 5 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 flex flex-col group hover:bg-surface transition-colors duration-300 ghost-border">
+<div class="flex justify-between items-start mb-5">
+<div class="w-10 h-10 bg-tertiary/10 text-tertiary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="diamond">diamond</span>
+</div>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed px-2 py-1 rounded text-[10px] font-label font-bold uppercase tracking-wider">New</span>
+</div>
+<h2 class="font-headline text-lg text-on-surface mb-2">Horology Repair</h2>
+<p class="font-body text-on-surface-variant text-sm mb-6 flex-1 line-clamp-3">Restoration and maintenance of vintage timepieces and complicated mechanisms.</p>
+<div class="flex items-center justify-between pt-4 border-t border-surface-container-high/50">
+<span class="font-label text-xs text-secondary">12 Providers</span>
+<button class="font-label text-xs text-primary hover:underline">Manage</button>
+</div>
+</div>
+<!-- Add New Placeholder Card -->
+<div class="border-2 border-dashed border-outline-variant/50 rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-primary/50 hover:bg-surface-container-lowest transition-all duration-300 min-h-[240px] group">
+<div class="w-12 h-12 bg-surface-container text-secondary rounded-full flex items-center justify-center mb-4 group-hover:bg-primary-container/20 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</div>
+<span class="font-label font-medium text-on-surface-variant group-hover:text-primary transition-colors">Create Classification</span>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Simple mobile menu toggle
+        document.getElementById('menu-toggle')?.addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('-translate-x-full')) {
+                menu.classList.remove('-translate-x-full');
+            } else {
+                menu.classList.add('-translate-x-full');
+            }
+        });
+    </script>
+</body></html>

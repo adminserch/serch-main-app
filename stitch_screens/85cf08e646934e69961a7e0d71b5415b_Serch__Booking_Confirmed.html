@@ -1,0 +1,212 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Booking Confirmation</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Design System Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#6d5e00",
+                    "surface-container-highest": "#e3e2e3",
+                    "error": "#ba1a1a",
+                    "surface-tint": "#2259bf",
+                    "secondary-fixed-dim": "#c2c7cc",
+                    "error-container": "#ffdad6",
+                    "inverse-surface": "#303031",
+                    "secondary-container": "#dfe3e8",
+                    "on-background": "#1b1c1d",
+                    "surface": "#faf9fa",
+                    "on-primary": "#ffffff",
+                    "primary-fixed": "#d9e2ff",
+                    "on-primary-container": "#e7ebff",
+                    "surface-container-low": "#f5f3f4",
+                    "on-secondary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e3e2e3",
+                    "surface-bright": "#faf9fa",
+                    "on-surface": "#1b1c1d",
+                    "on-tertiary-fixed": "#211b00",
+                    "background": "#faf9fa",
+                    "surface-container-high": "#e9e8e9",
+                    "on-tertiary-fixed-variant": "#524600",
+                    "on-tertiary": "#ffffff",
+                    "on-surface-variant": "#434653",
+                    "tertiary-fixed": "#f9e37a",
+                    "secondary-fixed": "#dfe3e8",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed-variant": "#00419d",
+                    "outline-variant": "#c3c6d5",
+                    "primary-container": "#3366cc",
+                    "outline": "#737784",
+                    "tertiary-fixed-dim": "#dcc661",
+                    "primary-fixed-dim": "#b1c5ff",
+                    "inverse-primary": "#b1c5ff",
+                    "on-tertiary-container": "#4a3f00",
+                    "on-secondary-container": "#606569",
+                    "on-secondary-fixed-variant": "#42474b",
+                    "tertiary-container": "#bfab49",
+                    "inverse-on-surface": "#f2f0f1",
+                    "surface-container": "#efedee",
+                    "on-secondary-fixed": "#171c20",
+                    "primary": "#094cb2",
+                    "on-error-container": "#93000a",
+                    "surface-dim": "#dbdadb",
+                    "on-primary-fixed": "#001946",
+                    "secondary": "#5a5f63"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Noto Serif", "serif"],
+                    "display": ["Noto Serif", "serif"],
+                    "body": ["Inter", "sans-serif"],
+                    "label": ["Public Sans", "sans-serif"]
+            },
+            "keyframes": {
+              "elastic-pop": {
+                "0%": { transform: "scale(0)" },
+                "70%": { transform: "scale(1.1)" },
+                "100%": { transform: "scale(1)" }
+              },
+              "slide-up-fade": {
+                "0%": { transform: "translateY(20px)", opacity: "0" },
+                "100%": { transform: "translateY(0)", opacity: "1" }
+              }
+            },
+            "animation": {
+              "elastic-pop": "elastic-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards",
+              "slide-up-fade-1": "slide-up-fade 0.6s ease-out 0.1s forwards",
+              "slide-up-fade-2": "slide-up-fade 0.6s ease-out 0.2s forwards",
+              "slide-up-fade-3": "slide-up-fade 0.6s ease-out 0.3s forwards"
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Public+Sans:wght@500;600&display=swap');
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body min-h-screen flex items-center justify-center p-6 antialiased">
+<!-- Main Content Canvas (No Nav Shell per Transactional Rule) -->
+<main class="w-full max-w-xl">
+<!-- Confirmation Card using Tonal Layering -->
+<article class="bg-surface-container-low rounded-xl p-8 md:p-12 flex flex-col items-center text-center">
+<!-- Success Icon -->
+<div class="mb-8 relative motion-safe:opacity-0 motion-safe:animate-elastic-pop" id="success-icon-container">
+<div class="absolute inset-0 bg-primary-fixed opacity-50 rounded-full scale-150 animate-pulse"></div>
+<div class="relative bg-primary-container text-on-primary-container w-24 h-24 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="absolute rounded-full pointer-events-none opacity-0" style="width: 5.72927px; height: 5.72927px; background-color: rgb(217, 226, 255); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 5.98368px; height: 5.98368px; background-color: rgb(217, 226, 255); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 9.28635px; height: 9.28635px; background-color: rgb(9, 76, 178); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 9.44416px; height: 9.44416px; background-color: rgb(194, 199, 204); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 4.18772px; height: 4.18772px; background-color: rgb(191, 171, 73); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 6.02614px; height: 6.02614px; background-color: rgb(191, 171, 73); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 6.72643px; height: 6.72643px; background-color: rgb(191, 171, 73); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 7.23812px; height: 7.23812px; background-color: rgb(217, 226, 255); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 7.09671px; height: 7.09671px; background-color: rgb(217, 226, 255); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 8.71621px; height: 8.71621px; background-color: rgb(194, 199, 204); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 4.47248px; height: 4.47248px; background-color: rgb(194, 199, 204); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 6.4546px; height: 6.4546px; background-color: rgb(217, 226, 255); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 6.14576px; height: 6.14576px; background-color: rgb(217, 226, 255); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 4.68916px; height: 4.68916px; background-color: rgb(9, 76, 178); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 5.30645px; height: 5.30645px; background-color: rgb(9, 76, 178); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 4.73304px; height: 4.73304px; background-color: rgb(194, 199, 204); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 4.42563px; height: 4.42563px; background-color: rgb(9, 76, 178); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 5.23129px; height: 5.23129px; background-color: rgb(9, 76, 178); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 5.0107px; height: 5.0107px; background-color: rgb(9, 76, 178); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 4.12924px; height: 4.12924px; background-color: rgb(9, 76, 178); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 8.03171px; height: 8.03171px; background-color: rgb(217, 226, 255); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 8.66795px; height: 8.66795px; background-color: rgb(217, 226, 255); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 9.66365px; height: 9.66365px; background-color: rgb(191, 171, 73); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div><div class="absolute rounded-full pointer-events-none opacity-0" style="width: 4.38099px; height: 4.38099px; background-color: rgb(9, 76, 178); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div></div>
+<!-- Header -->
+<header class="mb-10 space-y-4 motion-safe:opacity-0 motion-safe:animate-slide-up-fade-1">
+<h1 class="font-headline text-4xl md:text-5xl text-primary leading-tight font-bold tracking-tight">
+                    Booking Request Sent
+                </h1>
+<p class="font-body text-lg text-on-surface-variant max-w-md mx-auto leading-relaxed">
+                    Provider will review and confirm shortly. We've sent a preliminary receipt to your email.
+                </p>
+</header>
+<!-- Summary Bento/Card -->
+<div class="w-full bg-surface-container-lowest rounded-xl p-6 md:p-8 space-y-6 text-left mb-10 motion-safe:opacity-0 motion-safe:animate-slide-up-fade-2">
+<!-- Provider Info -->
+<div class="flex items-center space-x-4">
+<div class="w-16 h-16 rounded-full overflow-hidden bg-surface-container-high shrink-0">
+<img alt="Provider Portrait" class="w-full h-full object-cover" data-alt="A professional headshot of a confident woman in her early 30s, warm ambient lighting. The background is a slightly blurred, high-end, minimalist architectural space featuring pristine white and deep blue tones to match the editorial UI. The mood is welcoming and scholarly." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVK9Ck1rzaTV_4aWHSygv2bOlXIUdRWBBwwHfx7_iy_VtoozoVndJg8k81OuXFUItwNmuTAud7zNCD_8A0RT8Ox3dZAeVIilRvLPuoYK5DJKM3Wc63alXQi9uqy_eM5yrTWxkLLGHe15EhVbcKYcRksVv3Gzejs3PQGDq1CH7QIFVc5x2LWXE_AsEL_IZB9DKjhEZ_rh-6KtKlY3dL7skbYH6AjUG83QP11zS7yJi9kmZhCaCdM9Ap6Zjpu57YybpiE-DPiWudVBI8">
+</div>
+<div>
+<span class="block font-label text-sm text-outline mb-1 uppercase tracking-wider">Provider</span>
+<h2 class="font-headline text-xl text-on-surface font-semibold">Dr. Eleanor Vance</h2>
+<p class="font-body text-sm text-on-surface-variant mt-0.5">Senior Archival Consultant</p>
+</div>
+</div>
+<!-- Spacer/Structural Separation (No Borders) -->
+<div class="w-full h-4 bg-surface-container-low rounded-lg opacity-50"></div>
+<!-- Service & Time Details -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<span class="flex items-center space-x-2 font-label text-sm text-outline mb-2">
+<span class="material-symbols-outlined text-base">work</span>
+<span class="">Service</span>
+</span>
+<p class="font-body text-base text-on-surface font-medium">Initial Collection Assessment</p>
+</div>
+<div>
+<span class="flex items-center space-x-2 font-label text-sm text-outline mb-2">
+<span class="material-symbols-outlined text-base">calendar_month</span>
+<span class="">Time Slot</span>
+</span>
+<p class="font-body text-base text-on-surface font-medium">Oct 24, 2023</p>
+<p class="font-body text-sm text-on-surface-variant mt-0.5">10:00 AM – 11:30 AM EST</p>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<footer class="w-full flex flex-col sm:flex-row gap-4 justify-center motion-safe:opacity-0 motion-safe:animate-slide-up-fade-3">
+<button class="w-full sm:w-auto px-8 py-4 bg-primary-container text-on-primary font-body font-medium rounded-xl hover:opacity-90 transition-all duration-150 active:scale-95 focus:ring-4 focus:ring-primary-fixed outline-none flex items-center justify-center space-x-2"><span class="material-symbols-outlined text-xl">event_note</span><span class="">View Bookings</span></button>
+<button class="w-full sm:w-auto px-8 py-4 bg-surface-container-high text-primary font-body font-medium rounded-xl hover:bg-surface-container-highest transition-all duration-150 active:scale-95 focus:ring-4 focus:ring-primary-fixed outline-none">
+                    Back to Search
+                </button>
+</footer>
+</article>
+</main>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        
+        const container = document.getElementById('success-icon-container');
+        if (!container) return;
+
+        const colors = ['#094cb2', '#d9e2ff', '#bfab49', '#c2c7cc'];
+        
+        for (let i = 0; i < 24; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'absolute rounded-full pointer-events-none opacity-0';
+            
+            const size = Math.random() * 6 + 4;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * 80 + 50;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance;
+            
+            particle.style.left = '50%';
+            particle.style.top = '50%';
+            particle.style.transform = `translate(-50%, -50%)`;
+            
+            container.appendChild(particle);
+            
+            const delay = Math.random() * 200 + 300;
+            const duration = Math.random() * 600 + 600;
+            
+            particle.animate([
+                { transform: `translate(-50%, -50%) scale(0)`, opacity: 1 },
+                { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(1)`, opacity: 0 }
+            ], {
+                duration: duration,
+                delay: delay,
+                easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                fill: 'forwards'
+            });
+        }
+    });
+</script>
+
+
+</body></html>

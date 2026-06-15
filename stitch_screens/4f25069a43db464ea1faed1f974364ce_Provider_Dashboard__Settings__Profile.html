@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Provider Settings - Alexandria</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Noto+Serif:wght@400;600;700;800&amp;family=Public+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#bfab49",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#3366cc",
+                        "surface-variant": "#e3e2e3",
+                        "secondary-fixed-dim": "#c2c7cc",
+                        "outline-variant": "#c3c6d5",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "primary": "#094cb2",
+                        "on-secondary-container": "#606569",
+                        "on-background": "#1b1c1d",
+                        "surface-dim": "#dbdadb",
+                        "outline": "#737784",
+                        "on-primary-container": "#e7ebff",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#f9e37a",
+                        "tertiary": "#6d5e00",
+                        "inverse-surface": "#303031",
+                        "inverse-primary": "#b1c5ff",
+                        "on-tertiary-fixed": "#211b00",
+                        "on-surface-variant": "#434653",
+                        "surface-container": "#efedee",
+                        "primary-fixed": "#d9e2ff",
+                        "secondary-fixed": "#dfe3e8",
+                        "on-primary-fixed-variant": "#00419d",
+                        "surface": "#faf9fa",
+                        "on-surface": "#1b1c1d",
+                        "on-tertiary-container": "#4a3f00",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f5f3f4",
+                        "surface-bright": "#faf9fa",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "surface-container-high": "#e9e8e9",
+                        "on-primary-fixed": "#001946",
+                        "secondary-container": "#dfe3e8",
+                        "on-tertiary": "#ffffff",
+                        "background": "#faf9fa",
+                        "on-secondary-fixed": "#171c20",
+                        "inverse-on-surface": "#f2f0f1",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#2259bf",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "surface-container-highest": "#e3e2e3",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary": "#5a5f63"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Serif", "serif"],
+                        "display": ["Noto Serif", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Public Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf9fa; color: #1b1c1d; }
+        .font-headline { font-family: 'Noto Serif', serif; }
+        .font-label { font-family: 'Public Sans', sans-serif; }
+        .ghost-border { border: 1px solid rgba(195, 198, 213, 0.15); }
+        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); }
+        
+        /* Map Pin Animation */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .map-pin { animation: float 3s ease-in-out infinite; cursor: grab; }
+        .map-pin:active { cursor: grabbing; animation: none; transform: scale(0.95); }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden bg-background">
+<!-- Global SideNavBar from JSON -->
+<nav class="h-full w-64 flex flex-col bg-surface-container-low dark:bg-surface-dim fixed left-0 top-0 py-6 px-4 z-40 border-r border-outline-variant/10 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+<div class="mb-10 px-4">
+<h1 class="font-headline text-xl font-bold text-primary">Provider Portal</h1>
+<p class="font-body text-sm text-on-surface-variant mt-1">Manage your business</p>
+</div>
+<button class="mb-8 w-full bg-gradient-to-r from-primary to-primary-container text-on-primary py-3 rounded-xl font-label font-bold text-sm shadow-[0_4px_14px_rgba(9,76,178,0.25)] hover:shadow-[0_6px_20px_rgba(9,76,178,0.3)] transition-all hover:-translate-y-0.5">
+            New Service
+        </button>
+<div class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-label font-medium text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">calendar_today</span>
+<span class="font-label font-medium text-sm">Bookings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">home_repair_service</span>
+<span class="font-label font-medium text-sm">Services</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">analytics</span>
+<span class="font-label font-medium text-sm">Analytics</span>
+</a>
+<!-- Active Tab -->
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-xl translate-x-1 transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-label font-bold text-sm">Settings</span>
+</a>
+</div>
+<div class="mt-auto pt-6 border-t border-outline-variant/10">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">help_outline</span>
+<span class="font-label font-medium text-sm">Help Center</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 h-full overflow-y-auto bg-surface-container pb-24">
+<!-- Header -->
+<header class="px-12 py-10 sticky top-0 z-30 glass-panel">
+<h2 class="font-headline text-3xl font-extrabold text-on-surface tracking-tight">System Settings</h2>
+<p class="font-body text-on-surface-variant mt-2 max-w-2xl">Configure your business profile, operating locations, and scheduling parameters.</p>
+</header>
+<div class="px-12 max-w-7xl mx-auto flex gap-12 mt-4">
+<!-- Secondary Settings Navigation -->
+<aside class="w-64 shrink-0">
+<nav class="sticky top-40 flex flex-col gap-1">
+<a class="px-5 py-3 rounded-xl bg-surface-container-highest text-primary font-label font-bold text-sm flex items-center justify-between group cursor-default" href="#profile">
+                        Profile &amp; Location
+                        <span class="material-symbols-outlined text-[18px] opacity-100 transition-opacity">chevron_right</span>
+</a>
+<a class="px-5 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label font-medium text-sm flex items-center justify-between group" href="#booking">
+                        Booking Configuration
+                        <span class="material-symbols-outlined text-[18px] opacity-0 group-hover:opacity-50 transition-opacity">chevron_right</span>
+</a>
+<a class="px-5 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label font-medium text-sm flex items-center justify-between group" href="#notifications">
+                        Notifications
+                        <span class="material-symbols-outlined text-[18px] opacity-0 group-hover:opacity-50 transition-opacity">chevron_right</span>
+</a>
+<a class="px-5 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label font-medium text-sm flex items-center justify-between group" href="#billing">
+                        Billing &amp; Payouts
+                        <span class="material-symbols-outlined text-[18px] opacity-0 group-hover:opacity-50 transition-opacity">chevron_right</span>
+</a>
+</nav>
+</aside>
+<!-- Settings Canvas -->
+<div class="flex-1 space-y-12">
+<!-- Profile Section -->
+<section class="space-y-6" id="profile">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">storefront</span>
+<h3 class="font-headline text-2xl font-bold text-on-surface">Business Profile</h3>
+</div>
+<!-- Bento Grid for Identity -->
+<div class="grid grid-cols-2 gap-6">
+<div class="col-span-2 bg-surface-container-lowest rounded-[1.5rem] p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)] ghost-border">
+<label class="block font-label text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3">Business Legal Name</label>
+<input class="w-full bg-surface-container-low ghost-border rounded-xl px-5 py-4 font-body text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-lg placeholder-on-surface-variant/50" type="text" value="Apex Home Services LLC"/>
+</div>
+<div class="col-span-1 bg-surface-container-lowest rounded-[1.5rem] p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)] ghost-border">
+<label class="block font-label text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3">Support Email</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">mail</span>
+<input class="w-full bg-surface-container-low ghost-border rounded-xl pl-12 pr-5 py-4 font-body text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder-on-surface-variant/50" type="email" value="contact@apexservices.com"/>
+</div>
+</div>
+<div class="col-span-1 bg-surface-container-lowest rounded-[1.5rem] p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)] ghost-border">
+<label class="block font-label text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3">Primary Phone</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">call</span>
+<input class="w-full bg-surface-container-low ghost-border rounded-xl pl-12 pr-5 py-4 font-body text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder-on-surface-variant/50" type="tel" value="+1 (555) 019-2837"/>
+</div>
+</div>
+</div>
+<!-- Map Interface -->
+<div class="bg-surface-container-lowest rounded-[1.5rem] p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)] ghost-border">
+<div class="flex justify-between items-end mb-6">
+<div>
+<label class="block font-label text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Operating Base Location</label>
+<p class="font-body text-sm text-on-surface-variant">Drag the pin to set your exact operational hub for dispatching.</p>
+</div>
+<button class="bg-surface-container-high text-primary hover:bg-surface-variant px-4 py-2 rounded-lg font-label font-bold text-sm transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">my_location</span> Locate Me
+                            </button>
+</div>
+<div class="relative w-full h-[400px] rounded-xl overflow-hidden bg-surface-container-low ghost-border group">
+<!-- Map Background Placeholder -->
+<img alt="Map Interface" class="absolute inset-0 w-full h-full object-cover opacity-80 mix-blend-luminosity filter contrast-125" data-alt="A highly detailed, modern street map interface displaying a sprawling metropolitan grid from a top-down perspective. The map utilizes a minimalist, high-end editorial color palette consisting primarily of crisp whites, subtle architectural grays, and soft blue accents for waterways. The lighting is even and flat, typical of premium digital mapping software, emphasizing clarity and structural density. The overall aesthetic aligns with a sophisticated, scholarly digital dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRk-t_Ab3xdUottLFb4gLdjoR7L6JD3gs5cwJvkNrLmgC2bpP1Gshke0pyjoKMUN4IYBS_2BayT4nIRtUDYz76sStRd0_cD-2DWFnLeEpzsEDmwN3-oXervVxjXqULrX-Q3EH2JKYstJz8qSZo9ksh9It1ceT_c4ofjqZH85SC27hgNU3gB6pV6CvVP1LC-3PehdRt8EaLFchn6lu_jHrYab7P7iUemvMpqAnEvkkOc5MHJYfvKcSmC86eqcaIAovu8lZK81nvLlLt"/>
+<!-- Map Overlay Elements -->
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/80 to-transparent pointer-events-none"></div>
+<!-- Interactive Pin -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full map-pin z-10 flex flex-col items-center">
+<div class="bg-primary text-on-primary px-3 py-1.5 rounded-lg font-label text-xs font-bold shadow-lg mb-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    San Francisco, CA
+                                </div>
+<span class="material-symbols-outlined text-[48px] text-primary drop-shadow-[0_8px_16px_rgba(9,76,178,0.5)]" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<div class="w-4 h-1 bg-black/20 blur-[2px] rounded-[100%] mt-[-4px]"></div>
+</div>
+<!-- Map Controls -->
+<div class="absolute bottom-4 right-4 flex flex-col gap-2">
+<button class="w-10 h-10 bg-surface-container-lowest rounded-lg shadow-sm flex items-center justify-center text-on-surface hover:text-primary transition-colors ghost-border">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="w-10 h-10 bg-surface-container-lowest rounded-lg shadow-sm flex items-center justify-center text-on-surface hover:text-primary transition-colors ghost-border">
+<span class="material-symbols-outlined">remove</span>
+</button>
+</div>
+</div>
+<div class="mt-4 flex items-center gap-3 px-4 py-3 bg-tertiary-fixed/30 rounded-xl ghost-border">
+<span class="material-symbols-outlined text-tertiary">info</span>
+<p class="font-body text-sm text-on-tertiary-fixed-variant">Changes to your base location may affect travel time calculations for existing bookings.</p>
+</div>
+</div>
+</section>
+<!-- Divider -->
+<div class="h-px w-full bg-outline-variant/20"></div>
+<!-- Booking Configuration Section -->
+<section class="space-y-6" id="booking">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">tune</span>
+<h3 class="font-headline text-2xl font-bold text-on-surface">Booking Parameters</h3>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<!-- Slot Interval -->
+<div class="bg-surface-container-lowest rounded-[1.5rem] p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)] ghost-border relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[100px] pointer-events-none"></div>
+<label class="block font-label text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Slot Interval</label>
+<p class="font-body text-sm text-on-surface-variant mb-5 h-10">The default duration blocks your services will consume on the calendar.</p>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-low ghost-border rounded-xl px-5 py-4 font-body text-on-surface font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer">
+<option value="15">15 Minutes</option>
+<option selected="" value="30">30 Minutes (Default)</option>
+<option value="45">45 Minutes</option>
+<option value="60">1 Hour</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+</div>
+</div>
+<!-- Booking Notice -->
+<div class="bg-surface-container-lowest rounded-[1.5rem] p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)] ghost-border relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-tertiary/5 rounded-bl-[100px] pointer-events-none"></div>
+<label class="block font-label text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Minimum Notice</label>
+<p class="font-body text-sm text-on-surface-variant mb-5 h-10">How far in advance a client must book before the start time.</p>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-low ghost-border rounded-xl px-5 py-4 font-body text-on-surface font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer">
+<option value="1">1 Hour</option>
+<option selected="" value="2">2 Hours (Default)</option>
+<option value="12">12 Hours</option>
+<option value="24">24 Hours</option>
+<option value="48">48 Hours</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Extra padding for scroll space -->
+<div class="h-12"></div>
+</div>
+</div>
+</main>
+<!-- Floating Save Action Bar -->
+<div class="fixed bottom-8 left-[calc(256px+3rem)] right-12 z-50 pointer-events-none">
+<div class="max-w-7xl mx-auto flex justify-end pointer-events-auto">
+<div class="glass-panel ghost-border rounded-2xl p-4 shadow-[0_8px_32px_rgba(0,0,0,0.08)] flex items-center gap-6">
+<span class="font-body text-sm text-on-surface-variant pl-2">Unsaved changes to Profile</span>
+<div class="flex gap-3">
+<button class="px-6 py-3 rounded-xl font-label font-bold text-sm text-on-surface hover:bg-surface-container-high transition-colors">
+                        Discard
+                    </button>
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary px-8 py-3 rounded-xl font-label font-bold text-sm shadow-[0_4px_14px_rgba(9,76,178,0.25)] hover:shadow-[0_6px_20px_rgba(9,76,178,0.3)] transition-all hover:-translate-y-0.5 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">save</span>
+                        Save Configuration
+                    </button>
+</div>
+</div>
+</div>
+</div>
+</body></html>

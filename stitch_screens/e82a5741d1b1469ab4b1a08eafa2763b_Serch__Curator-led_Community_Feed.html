@@ -1,0 +1,359 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Serch - Community Feed</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Public+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS & Config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#f2f0f1",
+                        "outline-variant": "#c3c6d5",
+                        "surface-container-highest": "#e3e2e3",
+                        "on-primary": "#ffffff",
+                        "outline": "#737784",
+                        "on-tertiary-container": "#4a3f00",
+                        "surface-container": "#efedee",
+                        "inverse-primary": "#b1c5ff",
+                        "primary-container": "#3366cc",
+                        "error": "#ba1a1a",
+                        "background": "#faf9fa",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#2259bf",
+                        "on-tertiary-fixed": "#211b00",
+                        "secondary-fixed-dim": "#c2c7cc",
+                        "on-surface": "#1b1c1d",
+                        "secondary": "#5a5f63",
+                        "on-primary-fixed-variant": "#00419d",
+                        "on-primary-fixed": "#001946",
+                        "on-background": "#1b1c1d",
+                        "on-secondary-fixed": "#171c20",
+                        "surface-container-high": "#e9e8e9",
+                        "tertiary-container": "#bfab49",
+                        "on-secondary-container": "#606569",
+                        "secondary-fixed": "#dfe3e8",
+                        "secondary-container": "#dfe3e8",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "surface-dim": "#dbdadb",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#303031",
+                        "primary-fixed": "#d9e2ff",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e3e2e3",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#434653",
+                        "surface": "#faf9fa",
+                        "tertiary": "#6d5e00",
+                        "tertiary-fixed": "#f9e37a",
+                        "error-container": "#ffdad6",
+                        "primary": "#094cb2",
+                        "surface-container-low": "#f5f3f4",
+                        "on-secondary": "#ffffff",
+                        "surface-bright": "#faf9fa",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "on-primary-container": "#e7ebff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Serif", "serif"],
+                        "display": ["Noto Serif", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Public Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<header class="w-full top-0 sticky z-50 bg-surface-container-lowest font-body text-body-md leading-relaxed shadow-[0_4px_32px_-12px_rgba(0,0,0,0.05)]">
+<div class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto">
+<!-- Brand Logo -->
+<a class="font-headline text-2xl font-bold text-primary tracking-tight" href="#">
+                Serch
+            </a>
+<!-- Navigation Links (Web) -->
+<nav class="hidden md:flex items-center gap-8">
+<!-- Active Link: Explore -->
+<a class="text-primary font-bold border-b-2 border-primary pb-1 active:opacity-80 transition-opacity" href="#">
+                    Explore
+                </a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300 active:opacity-80" href="#">
+                    Services
+                </a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300 active:opacity-80" href="#">
+                    Collections
+                </a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300 active:opacity-80" href="#">
+                    Concierge
+                </a>
+</nav>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-4 text-primary">
+<button aria-label="notifications" class="p-2 rounded-full hover:bg-surface-container-low transition-colors duration-300">
+<span class="material-symbols-outlined text-xl">notifications</span>
+</button>
+<button aria-label="favorite" class="p-2 rounded-full hover:bg-surface-container-low transition-colors duration-300">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+<button aria-label="Seeker profile menu" class="ml-2 w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="Seeker profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzOrIChCBPECgo-lOn-72uz2EqDa6HSoTeM_H5RdiiC39Gmo3l0OkNvkEiq0bPyG36uKSMPedgQViScOpwdUCAEd87SlzMF4N1WBAg79aLiiUW2AtCX-OXl9MqAE8thHpnfJNoxpI0BrI36DftZQYTAGtJVZiedD0CGd-UUJMkBBv6VY_uUp00dSI-iVmKBLuUMoYm7sdtLvdBOG-D4jdYm2Y1qp1wBczBD9_VBHQzmmmk2rO2oDKMont85oiHEVNubWDe3B87DUy3">
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-screen-2xl mx-auto px-4 md:px-8 py-12 md:py-20 flex flex-col gap-24">
+<!-- Editorial Hero Section -->
+<section class="relative w-full rounded-xl overflow-hidden bg-surface-container-lowest flex flex-col lg:flex-row shadow-[0_24px_60px_-16px_rgba(0,0,0,0.03)]">
+<div class="lg:w-3/5 h-[400px] lg:h-[600px] relative">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="A high-end editorial photograph of a minimalist architectural interior featuring a curated collection of mid-century modern furniture. Soft, diffused natural light streams through large floor-to-ceiling windows, casting subtle shadows on the polished concrete floor. The color palette consists of neutral tones, crisp whites, and deep wood textures, creating a serene and scholarly atmosphere suitable for a premium digital magazine cover." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcTuSxcAmm5xgnv4WQ1FdCJWczeHxPMYe2K_VXNnvrR3OHVzj7OA-9dOx0GBI5YFDUDlRhc8LucfcaZAKpHq1PyMX_0ne7wCg3fpV1Bcr2HgGgjgiLLOalaOc2iI71MDvQ5P2jJje_CP9q17IQJLpY1Ro5tADWZy7dlm0wAZfteN7wf3YR0DnN-EwKmUeT5suxwRShtspOets2bDVSYbsNBSyFxXbDhOKN8fxNRftsreG6gT3j-jEb1Ur74ckw7v3Mt-HSMduKfFRx">
+</div>
+<div class="lg:w-2/5 p-10 md:p-16 flex flex-col justify-center bg-surface-container-lowest">
+<div class="flex items-center gap-3 mb-6">
+<span class="font-label text-xs uppercase tracking-[0.2em] text-tertiary font-semibold">Curator's Choice</span>
+<div class="h-[1px] w-12 bg-tertiary/30"></div>
+</div>
+<h1 class="font-headline text-4xl md:text-5xl font-bold text-on-surface leading-[1.1] mb-6 tracking-tight">
+                    The Architecture of Silence: Designing for Deep Focus
+                </h1>
+<p class="font-body text-body-md text-on-surface-variant leading-relaxed mb-10">
+                    An archival exploration into spaces curated specifically to mitigate digital noise. Dr. Eleanor Vance examines the historical precedent of monastery cloisters and their modern translation into the residential sanctum.
+                </p>
+<div class="mt-auto flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden">
+<img alt="Author" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUZcrV8d34uAgW3so__6WVgLvxKH5p_5em8wUOFxgYsZjLkrTTSRuaGXYlIFVjX1pe5XTMhViD9WfTLflF4DfcDNSw0Ay_uSXYDxpWzvCYwR2lZSqy62DqyAcrO98sWG6k_aIFdReIO1D4UwkokPSaV_jL3YbExrh37ujOfiSPnVvhzq8qGmtS-xXWG2gLzH3UjAfnEirq3D0gGmtpqEyTap9e04zSCF7jt8t77vh26uzLRHQrf-V7NnMpWgEwawx6xrAmnp9oG95D">
+</div>
+<div>
+<p class="font-label text-sm font-semibold text-on-surface">Dr. Eleanor Vance</p>
+<p class="font-label text-xs text-on-surface-variant">Spatial Historian</p>
+</div>
+</div>
+<button class="group flex items-center gap-2 text-primary font-medium hover:opacity-80 transition-opacity">
+<span class="font-label uppercase tracking-wider text-xs">Read</span>
+<span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_right_alt</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Feed & Sidebar Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+<!-- The Feed (Main Column) -->
+<div class="lg:col-span-8 flex flex-col gap-12">
+<div class="flex items-center justify-between mb-4">
+<h2 class="font-headline text-3xl font-bold text-on-surface">The Dispatch</h2>
+<div class="flex gap-4 font-label text-sm text-on-surface-variant">
+<button class="text-primary font-semibold">Latest</button>
+<button class="hover:text-on-surface transition-colors">Curated</button>
+</div>
+</div>
+<!-- Feed Item: Expert Insight -->
+<article class="group bg-surface-container-lowest p-8 rounded-xl transition-all duration-500 hover:bg-surface-container-low/50">
+<div class="flex flex-col md:flex-row gap-8">
+<div class="md:w-1/3 aspect-[4/3] rounded-lg overflow-hidden relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A close-up, highly detailed photograph of hands carefully examining an ancient, illuminated manuscript on a pristine white table. The lighting is focused and warm, highlighting the intricate gold leaf details and faded ink of the text. The composition conveys a sense of scholarly research, archival preservation, and deep intellectual focus, aligning with a high-end academic journal aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5__VLJ6MkX0os1UFALvyNf_iBMur3TwsVjnpSE2AC1FdzEHlcmiZEQwmB6y5uTi-yF9rb2wKRKCot_G9hFr94-Gv1CEX_jUwWmUlA7dsfiXA2RX6YQjF3hNo2uZjQYXk5ujYN4Ep2XRUVHJXy-TaXvWi8aZbQ4qH1gmDLO0CHYwWnDA9th-KUHmc9oyqXEz6pzaY-Jr729eGaHhBCkplnowKYYST3lTJXArmEAU1tM1DbRBxVH97yAKqQSqkg-baqnrO0LvSl7z1l">
+</div>
+<div class="md:w-2/3 flex flex-col justify-center">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-sm text-primary">verified</span>
+<span class="font-label text-xs uppercase tracking-widest text-primary font-semibold">Expert Insight</span>
+</div>
+<h3 class="font-headline text-2xl font-bold text-on-surface mb-3 leading-snug group-hover:text-primary transition-colors">
+                                Material Integrity in Artisan Restoration
+                            </h3>
+<p class="font-body text-on-surface-variant leading-relaxed mb-6 line-clamp-2">
+                                In our pursuit of returning historical artifacts to their former glory, the ethical boundaries of material substitution must be continuously debated. This paper proposes a new standard for documentation.
+                            </p>
+<div class="flex items-center gap-4 text-xs font-label text-on-surface-variant mt-auto">
+<span class="">12 min read</span>
+<span class="">•</span>
+<span class="">By Julian Thorne</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Feed Item: Community Thread -->
+<article class="bg-surface-container p-8 rounded-xl border border-outline-variant/15">
+<div class="flex items-start gap-4 mb-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest overflow-hidden shrink-0">
+<img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr_x9AEgTdPS87TN1e-CurIkktvtInyjUqKBkdnQipN7MEW9Ts1PO8f_rfM96FQwYGTWvOFLA7JuUltz2NHDc7qyb8WTGKba55UgaMSLrzFcjyOJYeLHlJqk-yur5sTlDRFfPWXlgZ64SFxV3jjVjHAE1syJGFqzZB47_H7Xp9rd7uKUYHY747dKgWeKAXpb6_7_fL3G08UP0BqhCJ3fsfOBSX8nmxtM9VcL6MK7ErINQgYMealgZOJB9dKHaL4_a_xNzJDnechOqj">
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label text-xs uppercase tracking-widest text-secondary font-semibold">Community Thread</span>
+</div>
+<h3 class="font-headline text-xl font-bold text-on-surface mt-1">
+                                Sourcing authentic pigments for 19th-century oil restorations?
+                            </h3>
+</div>
+</div>
+<div class="pl-16">
+<p class="font-body text-on-surface-variant mb-6">
+                            I'm currently engaged in restoring a minor landscape from the Barbizon school. The client insists on strictly period-accurate pigments, specifically finding a true contemporary equivalent for Scheele's Green that won't compromise the canvas over the next century. Recommendations for purveyors?
+                        </p>
+<div class="flex items-center gap-6">
+<button class="flex items-center gap-2 text-sm font-label text-primary hover:opacity-80">
+<span class="material-symbols-outlined text-lg">forum</span>
+                                14 Responses
+                            </button>
+<button class="flex items-center gap-2 text-sm font-label text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined text-lg">bookmark_add</span>
+                                Save for later
+                            </button>
+</div>
+</div>
+</article>
+<!-- Feed Item: Archival Highlight -->
+<article class="group bg-surface-container-lowest p-8 rounded-xl transition-all duration-500 hover:bg-surface-container-low/50">
+<div class="flex flex-col md:flex-row-reverse gap-8">
+<div class="md:w-1/3 aspect-square rounded-lg overflow-hidden relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 grayscale hover:grayscale-0" data-alt="A black and white photograph of a beautifully preserved antique pocket watch resting on a piece of dark, textured velvet. The lighting is dramatic and directional, casting deep shadows that emphasize the intricate engravings on the watch casing. The overall mood is timeless, historical, and highly curated, fitting for an archival collection highlight in a premium interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBi5GZiNGfbwlLLK3LWGAezgjBTfiCN9NP-IcBR--4zPbejqAAKQ5i0BbOiCBhiR1yzpuI7BzKKQ4T__uRd8lQnIZZJvNcjPEx_yCz0EHaA3nZih1BHXY6FHigWGQJ2Pei68unkUTDoxNbpxS9xUQpHQZKa45qsh5rg64RoCFzRTae6bUmIgoHKzAA9w053WbiaMGG6WC56O7dbMmgFawV5tc49wvIHyi0CUm7pvsaMjXvc0eL0SHfUrVGcp0cgaE7lP3lgiVTQ40mc">
+<div class="absolute inset-0 bg-tertiary/10 mix-blend-overlay"></div>
+</div>
+<div class="md:w-2/3 flex flex-col justify-center">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-sm text-tertiary icon-filled">inventory_2</span>
+<span class="font-label text-xs uppercase tracking-widest text-tertiary font-semibold">Archival Highlight</span>
+</div>
+<h3 class="font-headline text-2xl font-bold text-on-surface mb-3 leading-snug group-hover:text-tertiary transition-colors">
+                                The Geneva Horology Collection: 1850-1920
+                            </h3>
+<p class="font-body text-on-surface-variant leading-relaxed mb-6">
+                                A meticulously documented retrospective of 42 distinct timepieces restored by the Serch network over the past decade. This collection highlights the evolution of escapement mechanisms during the industrial pivot.
+                            </p>
+<button class="w-fit px-6 py-2 bg-surface-container-high text-on-surface font-label text-xs uppercase tracking-wider rounded-full hover:bg-tertiary-container hover:text-on-tertiary-container transition-colors">
+                                View Collection
+                            </button>
+</div>
+</div>
+</article>
+</div>
+<!-- Sidebar -->
+<aside class="lg:col-span-4 flex flex-col gap-12">
+<!-- Top Curators -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_40px_-16px_rgba(0,0,0,0.03)]">
+<h3 class="font-headline text-xl font-bold text-on-surface mb-6 border-b border-surface-container-high pb-4">Prominent Curators</h3>
+<div class="flex flex-col gap-6">
+<!-- Curator 1 -->
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container overflow-hidden">
+<img alt="Curator" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbwQ0MWDs2lVtqzhx3-AMUBglCGRLTVOBlRi15-8RVzNOQAoGExnqoPkMfigZezhLDT_fsL-yETud_8Tugq3jq5k3QrGyDOvmIPQkvahSVMmlCxf8Z2-0MGoHOhxhEP_ERKYBpH1JovYR0Of1rhBB6_CL7vtPFl1Pivz4NUo4RfZcbIjnRnvf9YXibW-N0h31f-mwCocMpe91l65ZWfnymqUAIBwytcgQzCpz1rLda3VGcmV3PQFnP07rT_4fYzAFi_gjxgcpm54zN">
+</div>
+<div>
+<p class="font-label text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">Arthur Pendelton</p>
+<p class="font-label text-xs text-on-surface-variant">Rare Books &amp; Manuscripts</p>
+</div>
+</div>
+<button class="text-xs font-label uppercase tracking-wider text-primary hover:bg-primary/10 px-3 py-1.5 rounded-full transition-colors">
+                                Follow
+                            </button>
+</div>
+<!-- Curator 2 -->
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container overflow-hidden">
+<img alt="Curator" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgOGj5RpRhE_NucOKNKgW5XhWDAItMIqlQMHKOV1gknQOwemCMno5q4FjIZOXf4OW-NfA5l3bLhCR2lLjwZB_t12DrrPpyKWeGexGtjKar-wTj5MiFuMQoECVblUDOEFBiTFCn35kHee17dr6-GQo1jgEvYBpR9HeFeXEur4RO9_lFg6x1my9HNM4fY8NewJsDj-D30jpXgiXouLLTGivJqJg6LpOQ8xUuYfbbWXTU0GAjTnYdh4buyUmlCDU3TRs4Nn0x5gI2__5t">
+</div>
+<div>
+<p class="font-label text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">Dr. Sarah Lin</p>
+<p class="font-label text-xs text-on-surface-variant">Mid-Century Ceramics</p>
+</div>
+</div>
+<button class="text-xs font-label uppercase tracking-wider text-primary hover:bg-primary/10 px-3 py-1.5 rounded-full transition-colors">
+                                Follow
+                            </button>
+</div>
+</div>
+</div>
+<!-- Trending Topics -->
+<div>
+<h3 class="font-label text-xs uppercase tracking-[0.2em] text-on-surface-variant font-semibold mb-4 ml-2">Syllabus Indices</h3>
+<div class="flex flex-wrap gap-2">
+<a class="px-4 py-2 bg-surface-container text-on-surface-variant font-label text-sm rounded-full hover:bg-surface-container-high transition-colors" href="#">#Modernism</a>
+<a class="px-4 py-2 bg-surface-container text-on-surface-variant font-label text-sm rounded-full hover:bg-surface-container-high transition-colors" href="#">#ArtisanCraft</a>
+<a class="px-4 py-2 bg-surface-container text-on-surface-variant font-label text-sm rounded-full hover:bg-surface-container-high transition-colors" href="#">#Horology</a>
+<a class="px-4 py-2 bg-surface-container text-on-surface-variant font-label text-sm rounded-full hover:bg-surface-container-high transition-colors" href="#">#SustainableRestoration</a>
+<a class="px-4 py-2 bg-surface-container text-on-surface-variant font-label text-sm rounded-full hover:bg-surface-container-high transition-colors" href="#">#Brutalism</a>
+</div>
+</div>
+<!-- Upcoming Salon -->
+<div class="relative bg-primary text-on-primary rounded-xl p-8 overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-container rounded-bl-full opacity-50"></div>
+<div class="relative z-10">
+<span class="font-label text-xs uppercase tracking-widest text-primary-fixed-dim font-semibold mb-2 block">Live Salon</span>
+<h3 class="font-headline text-xl font-bold mb-4 leading-tight">The Ethics of AI in Provenance Research</h3>
+<p class="font-body text-sm text-primary-fixed-dim mb-6">
+                            Join a panel of lead curators discussing the implications of algorithmic authentication in the fine arts sector.
+                        </p>
+<div class="flex items-center justify-between">
+<span class="font-label text-sm font-medium">Thu, Oct 24 • 18:00 GMT</span>
+<button class="w-10 h-10 rounded-full bg-on-primary text-primary flex items-center justify-center hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-dim font-label text-xs uppercase tracking-widest text-tertiary w-full py-16">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 px-12 max-w-7xl mx-auto">
+<!-- Left Column: Branding & Copyright -->
+<div class="flex flex-col justify-between gap-8">
+<span class="font-headline text-lg italic text-on-surface normal-case">
+                    Serch
+                </span>
+<p class="text-on-surface-variant normal-case tracking-normal">© 2026 Serch Digital Curators. All rights reserved.</p>
+</div>
+<!-- Right Column: Links -->
+<div class="flex flex-col md:items-end gap-4">
+<a class="text-on-surface-variant hover:underline decoration-tertiary underline-offset-4 cursor-pointer transition-all" href="#">
+                    The Manifesto
+                </a>
+<a class="text-on-surface-variant hover:underline decoration-tertiary underline-offset-4 cursor-pointer transition-all" href="#">
+                    Scholarly Standards
+                </a>
+<a class="text-on-surface-variant hover:underline decoration-tertiary underline-offset-4 cursor-pointer transition-all" href="#">
+                    Provider Ethics
+                </a>
+<a class="text-on-surface-variant hover:underline decoration-tertiary underline-offset-4 cursor-pointer transition-all" href="#">
+                    Privacy Registry
+                </a>
+<a class="text-on-surface-variant hover:underline decoration-tertiary underline-offset-4 cursor-pointer transition-all" href="#">
+                    Terms of Engagement
+                </a>
+</div>
+</div>
+</footer>
+
+
+</body></html>

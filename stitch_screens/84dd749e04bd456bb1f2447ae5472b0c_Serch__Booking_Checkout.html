@@ -1,0 +1,366 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Serch - Bookings Checkout</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&amp;family=Inter:wght@400;500;600&amp;family=Public+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary": "#6d5e00",
+                      "surface-container-highest": "#e3e2e3",
+                      "error": "#ba1a1a",
+                      "surface-tint": "#2259bf",
+                      "secondary-fixed-dim": "#c2c7cc",
+                      "error-container": "#ffdad6",
+                      "inverse-surface": "#303031",
+                      "secondary-container": "#dfe3e8",
+                      "on-background": "#1b1c1d",
+                      "surface": "#faf9fa",
+                      "on-primary": "#ffffff",
+                      "primary-fixed": "#d9e2ff",
+                      "on-primary-container": "#e7ebff",
+                      "surface-container-low": "#f5f3f4",
+                      "on-secondary": "#ffffff",
+                      "on-error": "#ffffff",
+                      "surface-variant": "#e3e2e3",
+                      "surface-bright": "#faf9fa",
+                      "on-surface": "#1b1c1d",
+                      "on-tertiary-fixed": "#211b00",
+                      "background": "#faf9fa",
+                      "surface-container-high": "#e9e8e9",
+                      "on-tertiary-fixed-variant": "#524600",
+                      "on-tertiary": "#ffffff",
+                      "on-surface-variant": "#434653",
+                      "tertiary-fixed": "#f9e37a",
+                      "secondary-fixed": "#dfe3e8",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-fixed-variant": "#00419d",
+                      "outline-variant": "#c3c6d5",
+                      "primary-container": "#3366cc",
+                      "outline": "#737784",
+                      "tertiary-fixed-dim": "#dcc661",
+                      "primary-fixed-dim": "#b1c5ff",
+                      "inverse-primary": "#b1c5ff",
+                      "on-tertiary-container": "#4a3f00",
+                      "on-secondary-container": "#606569",
+                      "on-secondary-fixed-variant": "#42474b",
+                      "tertiary-container": "#bfab49",
+                      "inverse-on-surface": "#f2f0f1",
+                      "surface-container": "#efedee",
+                      "on-secondary-fixed": "#171c20",
+                      "primary": "#094cb2",
+                      "on-error-container": "#93000a",
+                      "surface-dim": "#dbdadb",
+                      "on-primary-fixed": "#001946",
+                      "secondary": "#5a5f63"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Noto Serif"
+                      ],
+                      "display": [
+                              "Noto Serif"
+                      ],
+                      "body": [
+                              "Inter"
+                      ],
+                      "label": [
+                              "Public Sans"
+                      ]
+              },
+              "fontSize": {}
+      },
+          },
+        }
+      </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #faf9fa; /* background */
+            color: #1b1c1d; /* on-background */
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .font-headline { font-family: 'Noto Serif', serif; }
+        .font-display { font-family: 'Noto Serif', serif; }
+        .font-body { font-family: 'Inter', sans-serif; }
+        .font-label { font-family: 'Public Sans', sans-serif; }
+
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e3e2e3; /* surface-variant */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c2c7cc; /* secondary-fixed-dim */
+        }
+        
+        .ghost-border {
+            border: 1px solid rgba(195, 198, 213, 0.15); /* outline-variant at 15% opacity */
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Animations */
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-slide-up-1 { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; animation-delay: 0.1s; }
+        .animate-slide-up-2 { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; animation-delay: 0.2s; }
+        .animate-slide-up-3 { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; animation-delay: 0.3s; }
+        .animate-slide-up-4 { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; animation-delay: 0.4s; }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .shimmer-bg {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .shimmer-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes fadeOutScale {
+            to {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+
+        .page-transition-out {
+            animation: fadeOutScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col transition-opacity duration-300" id="main-body">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl shadow-sm dark:shadow-none bg-surface-container-low/60 dark:bg-surface-container-high/60 transition-all duration-300">
+<div class="flex justify-between items-center px-8 h-20 w-full mx-auto max-w-7xl">
+<!-- Brand -->
+<a class="font-display text-2xl font-bold tracking-tight text-primary dark:text-primary-fixed hover:opacity-80 transition-opacity" href="#">
+                Serch
+            </a>
+<!-- Navigation Links (Hidden on Mobile) -->
+<div class="hidden md:flex space-x-8 items-center font-body text-label-md tracking-tight">
+<a class="text-on-surface-variant dark:text-outline hover:text-primary hover:bg-surface-container-highest/50 transition-all duration-200 px-3 py-2 rounded-lg" href="#">Explore</a>
+<a class="text-on-surface-variant dark:text-outline hover:text-primary hover:bg-surface-container-highest/50 transition-all duration-200 px-3 py-2 rounded-lg" href="#">Compare</a>
+<a class="dark:text-primary-fixed font-semibold border-b-2 px-3 py-2 hover:bg-surface-container-highest/30 transition-all duration-200 border-primary-container text-primary-container" href="#">Bookings</a>
+<a class="text-on-surface-variant dark:text-outline hover:text-primary hover:bg-surface-container-highest/50 transition-all duration-200 px-3 py-2 rounded-lg" href="#">Messages</a>
+</div>
+<!-- Trailing Icons -->
+<div class="flex items-center space-x-4">
+<button class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-highest/50 transition-all duration-200 p-2 rounded-full scale-95 hover:scale-100">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-highest/50 transition-all duration-200 p-2 rounded-full scale-95 hover:scale-100">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">favorite</span>
+</button>
+<img alt="Seeker profile menu" class="w-10 h-10 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all duration-200" data-alt="A sophisticated close-up portrait of a diverse woman with a calm, professional expression, set against a pristine white studio background. The lighting is soft and flattering, creating a high-end, modern editorial aesthetic. The subtle neutral tones of her clothing align with a refined digital curator visual style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCa-jMg1Qy_QSmLQLfWj0OkPxfLhJp_vOCCJpflJ2xBz281pi8So6ae2EgpdvQ3g5181QEYI3HzPqEfBn0RYrnxSjrm-0_g97H91mOO29sb4dJQei1LrlKi8ghnyM-Gzrvis10OEVNIlvI9im0894Uy-1dpB39Brnqxq5l3e4ertB34hjWR5_hLCur648EN_V8w9iSRBq9AupTwMtwn6JVPIz2uR44EatLTHpaWa8AhRZ3l0IEOCoN1ARuAVlqGmBO33btLc8XsUTuu">
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full" id="page-content">
+<!-- Header -->
+<div class="mb-12 max-w-3xl animate-slide-up-1">
+<a class="inline-flex items-center space-x-2 text-on-surface-variant hover:text-primary transition-colors duration-200 mb-6 font-label text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+<span class="">Back to Profile</span>
+</a>
+<h1 class="font-headline text-4xl lg:text-5xl font-bold text-on-surface mb-4 leading-tight tracking-tight">Complete your booking</h1>
+<p class="font-body text-on-surface-variant text-lg">Review your details and confirm to secure your appointment.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+<!-- Left Column: Details & Form -->
+<div class="lg:col-span-7 space-y-12">
+<!-- Service Summary Card (Bento style) -->
+<section class="bg-surface-container-lowest rounded-xl p-8 lg:p-10 animate-slide-up-2 shadow-sm border border-surface-container hover:shadow-md transition-shadow duration-300">
+<div class="flex flex-col sm:flex-row gap-8 items-start">
+<div class="w-full sm:w-1/3 aspect-square rounded-lg overflow-hidden bg-surface-container-low flex-shrink-0 relative group">
+<img alt="Service Image" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A beautifully lit, high-end interior workspace setting featuring clean lines, modern furniture, and natural light streaming through large windows. The scene exudes professionalism and calm, rendered in soft neutral tones of white, beige, and warm wood. The overall mood is sophisticated and carefully curated, matching a premium digital experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaexbUQIpBp_iUHaBr4dctKdmdwvnZYftCuHfedPo7i1NEsHnQTkQcOtcnMWBa8PpgQgogJhtyiqmWlbJGTnXaWosM6KvexMem9oolfo8WnXtF_eORj2ZKBZa2AkljBz2NacObqO6hvng2uWedQDclQ2cZBVY6Md3ld7_6Dg5LPGMrXAvqONR73uGf2ec8HoQi_976lbF4Or-C2Ff2PRcpg0h-PVarcr5EzoMLHncq7T1maRcrJu5zwA1gZGtQi2L84wTAGzE6KdVM">
+<div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+</div>
+<div class="flex-1 space-y-4">
+<div class="inline-flex items-center space-x-2 bg-surface-container px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label text-sm font-semibold text-on-surface">Premium Service</span>
+</div>
+<h2 class="font-headline text-2xl font-bold text-on-surface">Executive Career Coaching</h2>
+<p class="font-body text-on-surface-variant leading-relaxed">A comprehensive 90-minute session focusing on leadership development, strategic career transitions, and personal brand refinement.</p>
+<div class="pt-4 grid grid-cols-2 gap-6">
+<div>
+<span class="font-label text-xs uppercase tracking-widest text-outline block mb-1">Date</span>
+<p class="font-body font-medium text-on-surface">Thursday, Oct 24</p>
+</div>
+<div>
+<span class="font-label text-xs uppercase tracking-widest text-outline block mb-1">Time</span>
+<p class="font-body font-medium text-on-surface">10:00 AM - 11:30 AM</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Contact Details Form -->
+<section class="space-y-6 animate-slide-up-3">
+<h3 class="font-headline text-2xl font-bold text-on-surface border-b border-surface-container pb-4">Contact Details</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="font-label text-sm font-medium text-on-surface" for="firstName">First Name</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all duration-200" id="firstName" name="firstName" required="" type="text" value="Eleanor">
+</div>
+<div class="space-y-2">
+<label class="font-label text-sm font-medium text-on-surface" for="lastName">Last Name</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all duration-200" id="lastName" name="lastName" required="" type="text" value="Vance">
+</div>
+<div class="space-y-2 sm:col-span-2">
+<label class="font-label text-sm font-medium text-on-surface" for="email">Email Address</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all duration-200" id="email" name="email" required="" type="email" value="eleanor.vance@example.com">
+</div>
+<div class="space-y-2 sm:col-span-2">
+<label class="font-label text-sm font-medium text-on-surface" for="phone">Phone Number</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all duration-200" id="phone" name="phone" placeholder="+1 (555) 000-0000" type="tel">
+</div>
+</div>
+</section>
+<!-- Special Instructions -->
+<section class="space-y-6 animate-slide-up-3 group" id="notes-section">
+<h3 class="font-headline text-2xl font-bold text-on-surface border-b border-surface-container pb-4 transition-colors duration-300 group-focus-within:border-primary/50 group-focus-within:text-primary">Special Instructions</h3>
+<div class="space-y-2 relative rounded-xl transition-all duration-300 group-focus-within:bg-primary/5 group-focus-within:-m-4 group-focus-within:p-4">
+<label class="font-label text-sm font-medium text-on-surface transition-colors duration-300 group-focus-within:text-primary" for="instructions">Notes for the provider (Optional)</label>
+<textarea class="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all duration-200 resize-none placeholder:text-outline shadow-sm focus:shadow-md" id="instructions" name="instructions" placeholder="Any specific topics you'd like to cover?" rows="4"></textarea>
+</div>
+</section>
+</div>
+<!-- Right Column: Price Breakdown & CTA -->
+<div class="lg:col-span-5 relative animate-slide-up-4">
+<!-- Sticky Container -->
+<div class="top-32 space-y-8 lg:sticky">
+<div class="bg-surface-container-low rounded-xl p-8 shadow-sm border border-surface-container transition-all duration-300 hover:shadow-md">
+<h3 class="font-headline text-xl font-bold text-on-surface mb-6">Price Breakdown</h3>
+<div class="space-y-4 font-body text-sm">
+<div class="flex justify-between items-center group cursor-default">
+<span class="text-on-surface-variant group-hover:text-on-surface transition-colors duration-200">Executive Coaching (90 mins)</span>
+<span class="font-medium text-on-surface">$250.00</span>
+</div>
+<div class="flex justify-between items-center group cursor-default">
+<span class="text-on-surface-variant group-hover:text-on-surface transition-colors duration-200">Platform Fee</span>
+<span class="font-medium text-on-surface">$12.50</span>
+</div>
+<div class="flex justify-between items-center text-primary bg-primary/5 -mx-4 px-4 py-2 rounded-lg">
+<span class="flex items-center space-x-1">
+<span class="material-symbols-outlined text-[18px]">sell</span>
+<span class="">Promo Code Applied</span>
+</span>
+<span class="font-medium">-$25.00</span>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-surface-container-high">
+<div class="flex justify-between items-end">
+<span class="font-headline text-lg font-bold text-on-surface">Total</span>
+<div class="text-right">
+<span class="font-display text-3xl font-bold text-on-surface block leading-none">$237.50</span>
+<span class="font-label text-xs text-on-surface-variant">USD</span>
+</div>
+</div>
+</div>
+<div class="mt-8">
+<button class="w-full bg-gradient-to-r to-primary-container text-on-primary font-label font-semibold text-lg py-4 rounded-xl hover:opacity-95 hover:shadow-lg transition-all duration-300 shadow-md flex justify-center items-center space-x-2 relative overflow-hidden group from-primary-container" id="confirm-btn" onclick="handleConfirm(this)"><span class="transition-transform duration-300 group-hover:-translate-x-1" id="btn-text">Confirm Booking</span><span class="material-symbols-outlined text-[20px] transition-transform duration-300 group-hover:translate-x-1" id="btn-icon" style="font-variation-settings: &quot;FILL&quot; 0;">arrow_forward</span></button>
+<p class="font-body text-xs text-center text-on-surface-variant mt-4">
+                                By confirming, you agree to our <a class="text-primary hover:underline hover:text-primary-container transition-colors duration-200" href="#">Terms of Service</a> and <a class="text-primary hover:underline hover:text-primary-container transition-colors duration-200" href="#">Cancellation Policy</a>.
+                            </p>
+</div>
+</div>
+<!-- Trust Badge -->
+<div class="flex items-start space-x-4 p-4 rounded-lg bg-surface-container-lowest border border-surface-container-high/50 hover:border-primary/20 transition-colors duration-300 cursor-default">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 0;">verified_user</span>
+<div>
+<h4 class="font-label font-semibold text-sm text-on-surface">Secure Checkout</h4>
+<p class="font-body text-xs text-on-surface-variant mt-1">Your payment information is encrypted and processed securely.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+    function handleConfirm(btn) {
+        if(btn.classList.contains('shimmer-bg')) return; // Prevent double clicks
+        
+        const btnText = document.getElementById('btn-text');
+        const btnIcon = document.getElementById('btn-icon');
+        const pageContent = document.getElementById('page-content');
+        
+        // Change state to Finalizing
+        btn.classList.add('shimmer-bg');
+        btnText.textContent = 'Finalizing...';
+        btnIcon.textContent = 'hourglass_empty';
+        btnIcon.classList.add('animate-spin');
+        
+        // Simulate API call and transition
+        setTimeout(() => {
+            // Success state
+            btn.classList.remove('shimmer-bg');
+            btn.classList.replace('from-primary', 'from-emerald-600');
+            btn.classList.replace('to-primary-container', 'to-emerald-500');
+            btnText.textContent = 'Confirmed!';
+            btnIcon.classList.remove('animate-spin');
+            btnIcon.textContent = 'check_circle';
+            
+            // Trigger page out animation after brief delay
+            setTimeout(() => {
+                pageContent.classList.add('page-transition-out');
+            }, 800);
+            
+        }, 2000);
+    }
+</script>
+
+
+</body></html>

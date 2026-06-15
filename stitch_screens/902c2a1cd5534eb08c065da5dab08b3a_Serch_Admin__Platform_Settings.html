@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Platform Settings | Serch Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;family=Public+Sans:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "surface-container": "#efedee",
+                        "surface-bright": "#faf9fa",
+                        "on-primary-fixed-variant": "#00419d",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "inverse-surface": "#303031",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "on-secondary-container": "#606569",
+                        "on-tertiary-fixed": "#211b00",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#b1c5ff",
+                        "on-error": "#ffffff",
+                        "tertiary": "#6d5e00",
+                        "secondary-fixed": "#dfe3e8",
+                        "primary-container": "#3366cc",
+                        "surface-container-high": "#e9e8e9",
+                        "surface": "#faf9fa",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#d9e2ff",
+                        "tertiary-fixed": "#f9e37a",
+                        "secondary-container": "#dfe3e8",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#4a3f00",
+                        "secondary-fixed-dim": "#c2c7cc",
+                        "surface-dim": "#dbdadb",
+                        "outline": "#737784",
+                        "on-secondary-fixed": "#171c20",
+                        "on-primary-fixed": "#001946",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#2259bf",
+                        "outline-variant": "#c3c6d5",
+                        "tertiary-container": "#bfab49",
+                        "inverse-on-surface": "#f2f0f1",
+                        "primary": "#094cb2",
+                        "on-primary-container": "#e7ebff",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#1b1c1d",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f5f3f4",
+                        "surface-variant": "#e3e2e3",
+                        "background": "#faf9fa",
+                        "secondary": "#5a5f63",
+                        "surface-container-highest": "#e3e2e3",
+                        "on-background": "#1b1c1d",
+                        "on-surface-variant": "#434653"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Noto Serif"],
+                        "display": ["Noto Serif"],
+                        "body": ["Inter"],
+                        "label": ["Public Sans"]
+                    },
+                    "fontSize": {}
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf9fa; color: #1b1c1d; }
+        h1, h2, h3, h4, h5, h6, .font-headline, .font-display { font-family: 'Noto Serif', serif; }
+        .font-label { font-family: 'Public Sans', sans-serif; }
+        
+        /* Custom UI Elements based on Design System */
+        .glass-panel {
+            background-color: rgba(250, 249, 250, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .ghost-border {
+            border: 1px solid rgba(195, 198, 213, 0.15); /* outline-variant @ 15% */
+        }
+        .input-base {
+            background-color: #ffffff;
+            border: 1px solid rgba(195, 198, 213, 0.15);
+            border-radius: 0.25rem;
+            padding: 0.75rem 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+        }
+        .input-base:focus {
+            outline: none;
+            border-color: #094cb2;
+            box-shadow: 0 0 0 1px #094cb2;
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #094cb2, #3366cc);
+            color: #ffffff;
+            border-radius: 0.25rem;
+            padding: 0.75rem 1.5rem;
+            font-family: 'Public Sans', sans-serif;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+        .btn-secondary {
+            background-color: #e9e8e9;
+            color: #094cb2;
+            border-radius: 0.25rem;
+            padding: 0.75rem 1.5rem;
+            font-family: 'Public Sans', sans-serif;
+            font-weight: 600;
+        }
+        
+        /* Depth through tonal layering, no shadows */
+        .elevation-1 { background-color: #f5f3f4; } /* surface-container-low */
+        .elevation-2 { background-color: #efedee; } /* surface-container */
+        .elevation-3 { background-color: #e9e8e9; } /* surface-container-high */
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- TopNavBar (Responsive for Mobile, Hidden on md+) -->
+<nav class="md:hidden glass-panel fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 w-full mx-auto border-b border-surface-container">
+<div class="font-display text-xl font-bold tracking-tight text-primary">Serch Admin</div>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</nav>
+<!-- SideNavBar (Hidden on Mobile, Visible on md+) -->
+<aside class="hidden md:flex h-screen w-72 flex-col fixed left-0 top-0 bg-surface-container-lowest border-r border-surface-container p-6 space-y-4">
+<div class="mb-8 mt-2 flex items-center space-x-3">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
+</div>
+<div>
+<h1 class="font-display text-xl font-bold text-on-surface leading-tight">Serch Admin</h1>
+<p class="font-label text-sm text-on-surface-variant">Operations Portal</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1 mt-6">
+<!-- Active Tab Logic: Settings is Active -->
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-all duration-300" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body text-label-lg">Dashboard</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-all duration-300" href="#">
+<span class="material-symbols-outlined">how_to_reg</span>
+<span class="font-body text-label-lg">Registrations</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-all duration-300" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body text-label-lg">Providers</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-all duration-300" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="font-body text-label-lg">Locations</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-primary-container/20 text-primary font-bold transition-all duration-300 translate-x-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-body text-label-lg">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-surface-container space-y-2">
+<button class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-tertiary">check_circle</span>
+<span class="font-label text-sm font-medium">System Status: Optimal</span>
+</button>
+<a class="flex items-center space-x-3 px-4 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="font-body text-sm">Support</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors mt-2" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body text-sm">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-72 pt-20 md:pt-8 p-6 md:p-12 max-w-7xl mx-auto w-full">
+<!-- Page Header -->
+<header class="mb-12">
+<h2 class="font-display text-4xl font-extrabold tracking-tight text-on-surface mb-2">Platform Settings</h2>
+<p class="font-body text-lg text-on-surface-variant max-w-2xl leading-relaxed">Configure core system parameters, financial structures, and administrative compliance for the Serch network.</p>
+</header>
+<!-- Layout Wrapper: Inner Nav + Content -->
+<div class="flex flex-col lg:flex-row gap-12 items-start">
+<!-- Inner Vertical Tab Navigation -->
+<nav class="w-full lg:w-64 shrink-0 flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-4 lg:pb-0 sticky top-24">
+<button aria-current="page" class="flex items-center space-x-3 px-5 py-4 rounded-lg bg-surface-container-highest text-primary font-bold text-left transition-colors whitespace-nowrap lg:whitespace-normal w-full">
+<span class="material-symbols-outlined">toggle_on</span>
+<span class="font-label text-sm tracking-wide">General</span>
+</button>
+<button class="flex items-center space-x-3 px-5 py-4 rounded-lg text-on-surface-variant hover:bg-surface-container-low font-medium text-left transition-colors whitespace-nowrap lg:whitespace-normal w-full group">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">account_balance</span>
+<span class="font-label text-sm tracking-wide group-hover:text-primary transition-colors">Financials</span>
+</button>
+<button class="flex items-center space-x-3 px-5 py-4 rounded-lg text-on-surface-variant hover:bg-surface-container-low font-medium text-left transition-colors whitespace-nowrap lg:whitespace-normal w-full group">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">shield_lock</span>
+<span class="font-label text-sm tracking-wide group-hover:text-primary transition-colors">Security</span>
+</button>
+<button class="flex items-center space-x-3 px-5 py-4 rounded-lg text-on-surface-variant hover:bg-surface-container-low font-medium text-left transition-colors whitespace-nowrap lg:whitespace-normal w-full group">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">gavel</span>
+<span class="font-label text-sm tracking-wide group-hover:text-primary transition-colors">Legal</span>
+</button>
+</nav>
+<!-- Settings Content Area -->
+<div class="flex-1 w-full space-y-12">
+<!-- Section: General Identity -->
+<section class="bg-surface-container-lowest p-8 lg:p-10 rounded-xl elevation-1 ghost-border">
+<div class="mb-8 border-b border-surface-container-high pb-6">
+<h3 class="font-display text-2xl font-bold text-on-surface mb-2">Platform Identity</h3>
+<p class="font-body text-on-surface-variant">Manage the outward-facing brand details and localization preferences.</p>
+</div>
+<div class="space-y-8">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-2">
+<label class="block font-label text-sm font-semibold text-on-surface uppercase tracking-wider">Platform Name</label>
+<input class="w-full input-base" placeholder="Enter platform name" type="text" value="Serch"/>
+</div>
+<div class="space-y-2">
+<label class="block font-label text-sm font-semibold text-on-surface uppercase tracking-wider">Support Email</label>
+<input class="w-full input-base" placeholder="Enter support email" type="email" value="support@serch.com"/>
+</div>
+</div>
+<div class="space-y-4">
+<label class="block font-label text-sm font-semibold text-on-surface uppercase tracking-wider">Global Logo Assets</label>
+<div class="flex items-start space-x-6 bg-surface p-6 rounded-lg ghost-border">
+<div class="w-24 h-24 bg-surface-container-high rounded-lg flex items-center justify-center border border-outline-variant border-dashed">
+<span class="material-symbols-outlined text-outline text-3xl">image</span>
+</div>
+<div class="flex-1 space-y-3">
+<p class="font-body text-sm text-on-surface-variant">Upload a high-resolution SVG or PNG. This will be used across client apps and provider dashboards.</p>
+<div class="flex space-x-3">
+<button class="btn-secondary text-sm py-2 px-4">Replace</button>
+<button class="text-error font-label text-sm font-semibold hover:underline px-2">Remove</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Regional Settings -->
+<section class="bg-surface-container-lowest p-8 lg:p-10 rounded-xl elevation-1 ghost-border">
+<div class="mb-8 border-b border-surface-container-high pb-6">
+<h3 class="font-display text-2xl font-bold text-on-surface mb-2">Regional Configurations</h3>
+<p class="font-body text-on-surface-variant">Set default operational zones and base currencies.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-2">
+<label class="block font-label text-sm font-semibold text-on-surface uppercase tracking-wider">Base Currency</label>
+<select class="w-full input-base appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23737784%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[position:right_1rem_center] bg-[length:1.2em_1.2em] pr-10">
+<option selected="" value="USD">USD ($)</option>
+<option value="EUR">EUR (€)</option>
+<option value="GBP">GBP (£)</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="block font-label text-sm font-semibold text-on-surface uppercase tracking-wider">Default Timezone</label>
+<select class="w-full input-base appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23737784%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[position:right_1rem_center] bg-[length:1.2em_1.2em] pr-10">
+<option selected="" value="UTC">UTC (Coordinated Universal Time)</option>
+<option value="EST">EST (Eastern Standard Time)</option>
+<option value="PST">PST (Pacific Standard Time)</option>
+</select>
+</div>
+</div>
+</section>
+<!-- Action Bar -->
+<div class="flex justify-end space-x-4 pt-6 border-t border-surface-container">
+<button class="px-6 py-3 font-label font-semibold text-on-surface-variant hover:text-on-surface transition-colors">Discard Changes</button>
+<button class="btn-primary flex items-center space-x-2">
+<span class="material-symbols-outlined text-sm">save</span>
+<span>Save Configuration</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

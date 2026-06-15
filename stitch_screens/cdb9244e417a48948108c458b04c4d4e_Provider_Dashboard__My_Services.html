@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Provider Portal - Services</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400..700;1,400..700&amp;family=Inter:wght@400;500;600&amp;family=Public+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "outline-variant": "#c3c6d5",
+                      "on-secondary-fixed-variant": "#42474b",
+                      "on-primary-container": "#e7ebff",
+                      "on-tertiary-fixed": "#211b00",
+                      "surface-container": "#efedee",
+                      "on-primary-fixed": "#001946",
+                      "surface-dim": "#dbdadb",
+                      "secondary-fixed-dim": "#c2c7cc",
+                      "on-secondary-container": "#606569",
+                      "inverse-on-surface": "#f2f0f1",
+                      "tertiary-container": "#bfab49",
+                      "on-surface-variant": "#434653",
+                      "on-secondary-fixed": "#171c20",
+                      "on-secondary": "#ffffff",
+                      "on-error": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "primary-container": "#3366cc",
+                      "inverse-primary": "#b1c5ff",
+                      "background": "#faf9fa",
+                      "surface-container-highest": "#e3e2e3",
+                      "tertiary-fixed-dim": "#dcc661",
+                      "on-tertiary": "#ffffff",
+                      "primary": "#094cb2",
+                      "surface-container-high": "#e9e8e9",
+                      "error": "#ba1a1a",
+                      "secondary": "#5a5f63",
+                      "outline": "#737784",
+                      "primary-fixed-dim": "#b1c5ff",
+                      "on-tertiary-fixed-variant": "#524600",
+                      "tertiary-fixed": "#f9e37a",
+                      "surface": "#faf9fa",
+                      "secondary-fixed": "#dfe3e8",
+                      "surface-container-low": "#f5f3f4",
+                      "surface-bright": "#faf9fa",
+                      "inverse-surface": "#303031",
+                      "on-primary": "#ffffff",
+                      "tertiary": "#6d5e00",
+                      "on-primary-fixed-variant": "#00419d",
+                      "primary-fixed": "#d9e2ff",
+                      "on-tertiary-container": "#4a3f00",
+                      "on-surface": "#1b1c1d",
+                      "surface-tint": "#2259bf",
+                      "on-background": "#1b1c1d",
+                      "error-container": "#ffdad6",
+                      "surface-variant": "#e3e2e3",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary-container": "#dfe3e8"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Noto Serif"
+                      ],
+                      "display": [
+                              "Noto Serif"
+                      ],
+                      "body": [
+                              "Inter"
+                      ],
+                      "label": [
+                              "Public Sans"
+                      ]
+              },
+              "fontSize": {}
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex h-full w-64 flex-col bg-surface-container-low fixed left-0 top-0 h-screen py-6 px-4 z-40">
+<div class="mb-8 px-4 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-variant flex-shrink-0">
+<img alt="Provider Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a confident, well-dressed individual looking slightly off-camera, representing a high-end service provider. Soft, natural lighting highlights the face against a clean, minimal background. The aesthetic is modern, trustworthy, and editorial, aligning perfectly with the premium Alexandria design language. Deep blues and warm tones dominate the subtle color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFJD_sa6bcVl4IAe3JzIGURYGm_Zh1U75Z9lP1WSfhEWJ5kQRxN44de0XqP9W7A8x-gVmto4BxAm628CyG_cjK6wHbzrgznUUA_zdA8wlhjUNqe3WUP-eyArCKhDXpi33TFISrtQefdee6-tUFaokJfvUcofD5q6G1rPDXKTTuksCJz-DwVqhajx5eoiYKp_4Xlgs3BaKEQxMKDfDKjjnsYK6fUnDSoLJ8FbV2G4Uh77ZoH1mq6jttWZ6yHNKEAB-lbYgwUqko0tZh"/>
+</div>
+<div>
+<h2 class="font-headline text-xl font-bold text-primary leading-tight">Provider Portal</h2>
+<p class="text-on-surface-variant font-label text-sm leading-tight mt-1">Manage your business</p>
+</div>
+</div>
+<button class="w-full mb-8 bg-gradient-to-r from-primary to-primary-container text-on-primary font-label font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">add</span>
+            New Service
+        </button>
+<div class="flex-1 flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-label font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">calendar_today</span>
+<span class="font-label font-medium">Bookings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-xl transition-all translate-x-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home_repair_service</span>
+<span class="font-label font-bold">Services</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">analytics</span>
+<span class="font-label font-medium">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label font-medium">Settings</span>
+</a>
+</div>
+<div class="mt-auto">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">help_outline</span>
+<span class="font-label font-medium">Help Center</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 p-8 min-h-screen">
+<div class="max-w-6xl mx-auto">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+<div>
+<h1 class="font-headline text-4xl text-on-surface font-semibold mb-2">Services</h1>
+<p class="text-on-surface-variant text-lg">Curate and manage your high-end service offerings.</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl py-2 pl-10 pr-4 font-body focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-64 transition-all" placeholder="Search services..." type="text"/>
+</div>
+</div>
+</div>
+<!-- Bento Grid Services -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Service Card 1 -->
+<div class="group bg-surface-container-lowest rounded-xl overflow-hidden flex flex-col transition-all duration-300 hover:bg-surface-container-low hover:-translate-y-1">
+<div class="h-48 w-full relative overflow-hidden bg-surface-variant">
+<img alt="Interior Architecture" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A meticulously designed, high-end modern living room serving as the visual representation for an interior architecture service. The space is flooded with natural daylight pouring through large windows, illuminating minimalist furniture and clean lines. The aesthetic is luxurious, editorial, and curated, with a color palette of crisp whites, subtle grays, and warm wood tones, reflecting the Alexandria design ethos." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvyxeBKThlzTUEiC0okSmZZ4oOXlOGwKvVSuG2SqjdHYjAfNTOVTZq57VYL5azAEgAq2UHe8dW9Ph_o7tItUOHOlgYjf2q9E8igMTXiqnlAh56V-CGXxvZ1yPb5od0xKOw4FOeiNgFpmtb3LdJrgOOieo5qkRw5O5aWxCCMmqRrzpiPe_8PjSnAMp9cwv7YC9o_ebNIhpOncjj0t0yWk6yumWrUTtmjjtoNdgnpFgEHjG5wW0vKN_zfd6lOV_RDDuuqiCaypYTPLfH"/>
+<div class="absolute top-4 right-4 bg-surface-container-lowest/90 backdrop-blur px-3 py-1 rounded-full flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label text-xs font-bold text-on-surface uppercase tracking-wider">Active</span>
+</div>
+</div>
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline text-2xl text-on-surface font-semibold mb-1">Master Interior Architect</h3>
+<p class="text-primary font-label text-sm font-medium">Design &amp; Consultation</p>
+</div>
+<div class="text-right">
+<p class="font-headline text-xl text-on-surface">$250<span class="text-on-surface-variant text-sm font-body">/hr</span></p>
+<p class="text-on-surface-variant font-label text-sm">2 hr minimum</p>
+</div>
+</div>
+<p class="text-on-surface-variant font-body mb-6 flex-1">Comprehensive spatial planning, material selection, and bespoke design curation for luxury residential spaces. Includes detailed schematic presentations and procurement management.</p>
+<div class="flex items-center gap-4 pt-4 border-t border-outline-variant/15">
+<button class="flex-1 text-center font-label text-sm text-on-surface font-medium hover:text-primary transition-colors py-2">Edit</button>
+<div class="w-px h-4 bg-outline-variant/30"></div>
+<button class="flex-1 text-center font-label text-sm text-on-surface-variant hover:text-error transition-colors py-2">Archive</button>
+</div>
+</div>
+</div>
+<!-- Service Card 2 -->
+<div class="group bg-surface-container-lowest rounded-xl overflow-hidden flex flex-col transition-all duration-300 hover:bg-surface-container-low hover:-translate-y-1">
+<div class="h-48 w-full relative overflow-hidden bg-surface-variant">
+<img alt="Master Electrician" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A close-up, premium shot of architectural lighting being installed or adjusted, representing high-end electrical services. The focus is on a sleek, modern light fixture against a dark, textured wall, creating a dramatic, cinematic mood. The lighting is precise, highlighting craftsmanship and technical expertise. The colors are rich and moody, fitting the sophisticated Alexandria visual identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGE3Kz-vfLFgccGv5k13GpniBD_a0A3xLXB5rNBFwYURTuTJ_J-L1i-cnWYhHMCS_nklbAt0O0JtHbEmmM31DxQqnzEZLmFwSOjna8SnBcBHrqOdji_CgXFfzrY_2t8nU0ecHlVDNEqWFl-HmLnEPqnIqSnO2j5TyqRHg9PEbMXlYki2PBj4PXnWFjnZ5CjfEIINYdcExea0Q8oi8_L1qfVMpDUqe_aBrZlbx5iNm9IVlMf_Ln_SZxmzfSQGZ4rfDXMMa5PID7rwNX"/>
+<div class="absolute top-4 right-4 bg-surface-container-lowest/90 backdrop-blur px-3 py-1 rounded-full flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label text-xs font-bold text-on-surface uppercase tracking-wider">Active</span>
+</div>
+</div>
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline text-2xl text-on-surface font-semibold mb-1">Licensed Master Electrician</h3>
+<p class="text-primary font-label text-sm font-medium">Installation &amp; Repair</p>
+</div>
+<div class="text-right">
+<p class="font-headline text-xl text-on-surface">$180<span class="text-on-surface-variant text-sm font-body">/hr</span></p>
+<p class="text-on-surface-variant font-label text-sm">Fixed rate available</p>
+</div>
+</div>
+<p class="text-on-surface-variant font-body mb-6 flex-1">Specialized in smart home integration, custom architectural lighting installations, and complex electrical system diagnostics for modern estates.</p>
+<div class="flex items-center gap-4 pt-4 border-t border-outline-variant/15">
+<button class="flex-1 text-center font-label text-sm text-on-surface font-medium hover:text-primary transition-colors py-2">Edit</button>
+<div class="w-px h-4 bg-outline-variant/30"></div>
+<button class="flex-1 text-center font-label text-sm text-on-surface-variant hover:text-error transition-colors py-2">Archive</button>
+</div>
+</div>
+</div>
+<!-- Service Card 3 (Inactive Example) -->
+<div class="group bg-surface-container-lowest rounded-xl overflow-hidden flex flex-col transition-all duration-300 hover:bg-surface-container-low hover:-translate-y-1 opacity-75 grayscale-[20%]">
+<div class="h-48 w-full relative overflow-hidden bg-surface-variant">
+<img alt="Consultation" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A serene, abstract shot of architectural blueprints rolled up next to a pair of premium drafting tools resting on a clean, light wood desk. The image represents a design consultation service currently on hold. Soft, diffused lighting creates a calm, contemplative atmosphere. The color palette is minimal, utilizing whites, soft grays, and pale wood tones, maintaining the scholarly Alexandria feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBt_pL5GBxCj7j-B8KG6wn44TbODt7CFFuilLJwPYSqHDOZjlUgfFDv0jcvjBeHDcbBcxdeq9cfQcdmvQpHrwyD_yRsYQyFqCTOfScgyggzQbgyLBXujZQtAj5Fj2osAEr_XHqwnf9GIu7t5pkEpo8pzjuC7afBCOiReIVeNTpq8ARpnP5OUEVLG6cuxbvTFsRsl849S791Y62296zck521IM9MgyC-PEYIE3oVO5HarM9jIwilnUFLovCm5YBxwSNNbgku2MxUBKNl"/>
+<div class="absolute top-4 right-4 bg-surface-container-lowest/90 backdrop-blur px-3 py-1 rounded-full flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span class="font-label text-xs font-bold text-on-surface-variant uppercase tracking-wider">Draft</span>
+</div>
+</div>
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline text-2xl text-on-surface font-semibold mb-1">Initial Site Consultation</h3>
+<p class="text-outline font-label text-sm font-medium">Evaluation</p>
+</div>
+<div class="text-right">
+<p class="font-headline text-xl text-on-surface">$500<span class="text-on-surface-variant text-sm font-body"></span></p>
+<p class="text-on-surface-variant font-label text-sm">Flat fee</p>
+</div>
+</div>
+<p class="text-on-surface-variant font-body mb-6 flex-1">On-site evaluation of structural potential, preliminary budget estimation, and scope of work definition prior to full contract engagement.</p>
+<div class="flex items-center gap-4 pt-4 border-t border-outline-variant/15">
+<button class="flex-1 text-center font-label text-sm text-on-surface font-medium hover:text-primary transition-colors py-2">Edit</button>
+<div class="w-px h-4 bg-outline-variant/30"></div>
+<button class="flex-1 text-center font-label text-sm text-on-surface-variant hover:text-primary transition-colors py-2">Publish</button>
+</div>
+</div>
+</div>
+<!-- Add New Card Slot -->
+<button class="group bg-surface-container-low rounded-xl border border-dashed border-outline-variant/50 flex flex-col items-center justify-center p-8 hover:bg-surface-container transition-all duration-300 hover:border-primary/50 min-h-[400px]">
+<div class="w-16 h-16 rounded-full bg-surface-container-highest flex items-center justify-center mb-4 group-hover:scale-110 transition-transform group-hover:bg-primary-container group-hover:text-primary">
+<span class="material-symbols-outlined text-3xl">add</span>
+</div>
+<h3 class="font-headline text-xl text-on-surface mb-2">Create New Service</h3>
+<p class="text-on-surface-variant font-body text-center max-w-xs">Define a new offering, set pricing, and publish it to your provider profile.</p>
+</button>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full bg-surface-container-lowest/90 backdrop-blur-md z-50 px-6 py-3 flex justify-between items-center shadow-[0_-4px_24px_rgba(0,0,0,0.05)]">
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 0;">calendar_today</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">home_repair_service</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 0;">settings</span>
+</a>
+</nav>
+</body></html>
