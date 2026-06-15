@@ -165,7 +165,7 @@ function SearchContent() {
 
         if (!error && dbProviders && dbProviders.length > 0) {
           const formatted = await Promise.all(
-            dbProviders.map(async (p) => {
+            dbProviders.map(async (p: any) => {
               const { data: revData } = await supabase
                 .from('reviews')
                 .select('rating')
@@ -173,7 +173,7 @@ function SearchContent() {
 
               const count = revData?.length || 0;
               const avg = count > 0 
-                ? Number((revData!.reduce((acc, curr) => acc + curr.rating, 0) / count).toFixed(2)) 
+                ? Number((revData!.reduce((acc: number, curr: any) => acc + curr.rating, 0) / count).toFixed(2)) 
                 : 5.0;
 
               return {

@@ -2,12 +2,20 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+interface MapMarker {
+  id: string;
+  business_name: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
 interface MapProps {
   latitude: number | null;
   longitude: number | null;
   onLocationChange?: (lat: number, lng: number) => void;
   address?: string;
   viewOnly?: boolean;
+  markers?: MapMarker[];
 }
 
 export default function Map({
@@ -16,12 +24,14 @@ export default function Map({
   onLocationChange,
   address,
   viewOnly = false,
+  markers = [],
 }: MapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [mapInstance, setMapInstance] = useState<any>(null);
   const [markerInstance, setMarkerInstance] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const LRef = useRef<any>(null);
+  const markersContainerRef = useRef<any[]>([]);
 
   // Initialize Leaflet Map
   useEffect(() => {
@@ -54,16 +64,19 @@ export default function Map({
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(map);
 
-      const marker = L.marker([defaultLat, defaultLng], {
-        draggable: !viewOnly,
-      }).addTo(map);
-      setMarkerInstance(marker);
+      // Only add a single main marker if we don't have multiple markers
+      if (!markers || markers.length === 0) {
+        const marker = L.marker([defaultLat, defaultLng], {
+          draggable: !viewOnly,
+        }).addTo(map);
+        setMarkerInstance(marker);
 
-      if (!viewOnly && onLocationChange) {
-        marker.on('dragend', () => {
-          const position = marker.getLatLng();
-          onLocationChange(position.lat, position.lng);
-        });
+        if (!viewOnly && onLocationChange) {
+          marker.on('dragend', () => {
+            const position = marker.getLatLng();
+            onLocationChange(position.lat, position.lng);
+          });
+        }
       }
     });
 
@@ -75,11 +88,34 @@ export default function Map({
     };
   }, []);
 
+  // Update multiple markers on the map when the markers array or mapInstance changes
+  useEffect(() => {
+    if (!mapInstance || !LRef.current || !markers) return;
+
+    const L = LRef.current;
+    
+    // Clear existing markers
+    markersContainerRef.current.forEach((m) => m.remove());
+    markersContainerRef.current = [];
+
+    // Add new markers
+    markers.forEach((markerData) => {
+      if (markerData.latitude && markerData.longitude) {
+        const marker = L.marker([markerData.latitude, markerData.longitude])
+          .addTo(mapInstance)
+          .bindPopup(`<b>${markerData.business_name}</b>`);
+        markersContainerRef.current.push(marker);
+      }
+    });
+  }, [markers, mapInstance]);
+
   // Update map view when coordinates change from parent
   useEffect(() => {
-    if (mapInstance && markerInstance && latitude && longitude) {
+    if (mapInstance && latitude && longitude) {
       mapInstance.setView([latitude, longitude], 14);
-      markerInstance.setLatLng([latitude, longitude]);
+      if (markerInstance) {
+        markerInstance.setLatLng([latitude, longitude]);
+      }
     }
   }, [latitude, longitude, mapInstance, markerInstance]);
 

@@ -94,7 +94,7 @@ export default function LandingPage() {
         if (!pError && providersData && providersData.length > 0) {
           // Fetch average ratings for these providers
           const providersWithRatings = await Promise.all(
-            providersData.map(async (prov) => {
+            providersData.map(async (prov: any) => {
               const { data: revData } = await supabase
                 .from('reviews')
                 .select('rating')
@@ -102,7 +102,7 @@ export default function LandingPage() {
 
               const count = revData?.length || 0;
               const avg = count > 0 
-                ? Number((revData!.reduce((acc, curr) => acc + curr.rating, 0) / count).toFixed(2)) 
+                ? Number((revData!.reduce((acc: number, curr: any) => acc + curr.rating, 0) / count).toFixed(2)) 
                 : 5.0;
 
               return {
