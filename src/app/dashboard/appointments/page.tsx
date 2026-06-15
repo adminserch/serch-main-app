@@ -277,7 +277,7 @@ export default function ProviderAppointments() {
                 <div className="flex flex-wrap items-center gap-4 text-stone-500 text-xs mt-3 font-sans">
                   <span className="flex items-center gap-0.5"><Calendar className="w-3.5 h-3.5" /> {appt.booking_date}</span>
                   <span className="flex items-center gap-0.5"><Clock className="w-3.5 h-3.5" /> {formatTime(appt.start_time)} - {formatTime(appt.end_time)}</span>
-                  <span className="font-bold text-slate-700">{appt.services.price} PHP</span>
+                  <span className="font-bold text-slate-700">{appt.services.price} CAD</span>
                 </div>
 
                 {appt.notes && (

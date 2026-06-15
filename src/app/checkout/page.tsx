@@ -8,6 +8,8 @@ import { supabase, getSupabaseClient } from '@/lib/supabase';
 import { useToast } from '@/components/Providers';
 import { Calendar, Clock, DollarSign, ArrowLeft, NotepadText } from 'lucide-react';
 import Link from 'next/link';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 interface Service {
   id: string;
@@ -97,11 +99,30 @@ function CheckoutContent() {
 
       // 1. Get user uuid from our custom users table based on clerk_user_id
       const supabaseClient = getSupabaseClient(token);
-      const { data: dbUser, error: userError } = await supabaseClient
+      let { data: dbUser, error: userError } = await supabaseClient
         .from('users')
         .select('id')
         .eq('clerk_user_id', user?.id)
         .single();
+
+      if (userError || !dbUser) {
+        try {
+          const syncRes = await fetch('/api/users/sync', { method: 'POST' });
+          if (syncRes.ok) {
+            const retryRes = await supabaseClient
+              .from('users')
+              .select('id')
+              .eq('clerk_user_id', user?.id)
+              .single();
+            if (retryRes.data) {
+              dbUser = retryRes.data;
+              userError = null;
+            }
+          }
+        } catch (syncErr) {
+          console.error('Failed self-healing user sync:', syncErr);
+        }
+      }
 
       if (userError || !dbUser) {
         throw new Error('User record not found in local database.');
@@ -171,10 +192,12 @@ function CheckoutContent() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto w-full px-6 py-12 flex-grow">
-      <Link href={`/providers/${providerId}`} className="inline-flex items-center gap-1 text-xs font-semibold text-stone-500 hover:text-accent mb-8 transition-colors">
-        <ArrowLeft className="w-3.5 h-3.5" /> Back to Profile
-      </Link>
+    <div className="flex flex-col min-h-screen bg-stone-50/50">
+      <Navbar />
+      <main className="flex-grow pt-28 pb-16 max-w-3xl mx-auto w-full px-6">
+        <Link href={`/providers/${providerId}`} className="inline-flex items-center gap-1 text-xs font-semibold text-stone-500 hover:text-accent mb-8 transition-colors">
+          <ArrowLeft className="w-3.5 h-3.5" /> Back to Profile
+        </Link>
 
       <h1 className="font-display text-3xl font-bold text-espresso mb-8">Review and Book</h1>
 
@@ -233,7 +256,7 @@ function CheckoutContent() {
           <h2 className="font-display font-semibold text-espresso text-base mb-4">Pricing Breakdown</h2>
           <div className="flex justify-between items-center text-sm mb-4 font-sans text-stone-600">
             <span>Service Base Price</span>
-            <span>{service.price} PHP</span>
+            <span>{service.price} CAD</span>
           </div>
           <div className="flex justify-between items-center text-sm mb-6 font-sans text-stone-600">
             <span>Platform Service Fee</span>
@@ -242,7 +265,7 @@ function CheckoutContent() {
 
           <div className="border-t border-champagne/60 pt-4 mb-8 flex justify-between items-end">
             <span className="text-xs font-bold text-slate-700 uppercase">Total Amount</span>
-            <span className="text-2xl font-bold font-display text-espresso">{service.price} PHP</span>
+            <span className="text-2xl font-bold font-display text-espresso">{service.price} CAD</span>
           </div>
 
           <button
@@ -260,6 +283,8 @@ function CheckoutContent() {
           </p>
         </div>
       </form>
+      </main>
+      <Footer />
     </div>
   );
 }

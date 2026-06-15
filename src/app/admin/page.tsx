@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useAuth, useUser, UserButton } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { supabase, getSupabaseClient } from '@/lib/supabase';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import { useToast } from '@/components/Providers';
 import { 
   Users, 
@@ -243,27 +245,7 @@ export default function AdminDashboard() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Top Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-champagne/50 shadow-sm">
-        <div className="flex justify-between items-center px-6 md:px-12 h-20 max-w-7xl mx-auto w-full">
-          <div className="flex items-center gap-10">
-            <Link href="/" className="font-display text-2xl font-bold text-primary tracking-tight">
-              Serch
-            </Link>
-            <div className="hidden md:flex gap-8 items-center">
-              <Link href="/search" className="text-stone-600 font-medium hover:text-accent transition-colors text-sm tracking-wide">
-                Find Professionals
-              </Link>
-              <Link href="/admin" className="text-accent font-semibold hover:text-accent transition-colors text-sm tracking-wide">
-                Admin Panel
-              </Link>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <UserButton />
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Main Panel Content */}
       <div className="flex-grow pt-28 pb-16">
@@ -516,24 +498,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-espresso text-stone-300 w-full py-16 mt-auto border-t border-stone-800">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
-          <div>
-            <div className="font-display text-xl font-bold text-white mb-2 tracking-tight">Serch</div>
-            <p className="text-xs text-stone-400 max-w-sm">
-              Connecting premium local service professionals with seeking clients. Verified quality, transparent calendars, secure bookings.
-            </p>
-          </div>
-          <div className="flex flex-wrap justify-center gap-8 text-xs font-medium font-sans">
-            <Link href="#" className="hover:text-white transition-colors">Trust &amp; Safety</Link>
-            <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-6 md:px-12 border-t border-stone-800 mt-8 pt-8 text-center text-xs text-stone-500 font-sans">
-          &copy; 2026 Serch Technologies. All rights reserved.
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

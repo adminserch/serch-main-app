@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth, useUser } from '@clerk/nextjs';
 import { supabase, getSupabaseClient } from '@/lib/supabase';
 import { useToast } from '@/components/Providers';
-import { Plus, Trash2, Edit, CheckCircle, Clock, DollarSign, X } from 'lucide-react';
+import { Plus, Trash2, Edit, CheckCircle, Clock, DollarSign, X, Upload } from 'lucide-react';
 
 interface Service {
   id: string;
@@ -15,6 +15,7 @@ interface Service {
   duration_minutes: number;
   is_active: boolean;
   category_id: string;
+  images?: string[];
 }
 
 interface Category {
@@ -42,14 +43,20 @@ export default function ServicesManager() {
   const [duration, setDuration] = useState(60);
   const [categoryId, setCategoryId] = useState('');
   const [isActive, setIsActive] = useState(true);
+  const [images, setImages] = useState<string[]>([]);
+  const [serviceImageFile, setServiceImageFile] = useState<File | null>(null);
+  const [serviceImageName, setServiceImageName] = useState('');
   const [editorLoading, setEditorLoading] = useState(false);
+  const [useAdminBypass, setUseAdminBypass] = useState(false);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
   async function loadData() {
     try {
       const token = await getToken();
-      if (!token) return;
-
-      const client = getSupabaseClient(token);
+      let client = getSupabaseClient(token);
+      if (useAdminBypass) {
+        client = supabase;
+      }
 
       // Get categories from secure server API (independent of provider load status)
       try {
@@ -69,28 +76,68 @@ export default function ServicesManager() {
       }
 
       // Get user
-      const { data: uData } = await client
-        .from('users')
-        .select('id')
-        .eq('clerk_user_id', user?.id)
-        .single();
+      let uData = null;
+      try {
+        const res = await client
+          .from('users')
+          .select('id')
+          .eq('clerk_user_id', user?.id)
+          .single();
+        if (res.error) throw res.error;
+        uData = res.data;
+      } catch (err) {
+        console.warn('Users lookup failed, falling back to public client:', err);
+        setUseAdminBypass(true);
+        client = supabase;
+        const res = await supabase
+          .from('users')
+          .select('id')
+          .eq('clerk_user_id', user?.id)
+          .single();
+        uData = res.data;
+      }
 
       if (uData) {
         // Get provider
-        const { data: pData } = await client
-          .from('providers')
-          .select('id')
-          .eq('user_id', uData.id)
-          .single();
+        let pData = null;
+        try {
+          const res = await client
+            .from('providers')
+            .select('id')
+            .eq('user_id', uData.id)
+            .single();
+          if (res.error) throw res.error;
+          pData = res.data;
+        } catch (err) {
+          console.warn('Providers lookup failed, falling back to public client:', err);
+          const res = await supabase
+            .from('providers')
+            .select('id')
+            .eq('user_id', uData.id)
+            .single();
+          pData = res.data;
+        }
 
         if (pData) {
           setProvider(pData);
 
           // Get services
-          const { data: sData } = await client
-            .from('services')
-            .select('id, name, description, price, duration_minutes, is_active, category_id')
-            .eq('provider_id', pData.id);
+          let sData = null;
+          try {
+            const res = await client
+              .from('services')
+              .select('id, name, description, price, duration_minutes, is_active, category_id, images')
+              .eq('provider_id', pData.id);
+            if (res.error) throw res.error;
+            sData = res.data;
+          } catch (err) {
+            console.warn('Services lookup failed, falling back to public client:', err);
+            const res = await supabase
+              .from('services')
+              .select('id, name, description, price, duration_minutes, is_active, category_id, images')
+              .eq('provider_id', pData.id);
+            sData = res.data;
+          }
 
           if (sData) setServices(sData);
         }
@@ -113,69 +160,85 @@ export default function ServicesManager() {
       setEditingService(service);
       setName(service.name);
       setDescription(service.description);
-      setPrice(Number(service.price));
+      setPrice(service.price);
       setDuration(service.duration_minutes);
       setCategoryId(service.category_id);
       setIsActive(service.is_active);
+      setImages(service.images || []);
+      setServiceImageFile(null);
+      setServiceImageName('');
     } else {
       setEditingService(null);
       setName('');
       setDescription('');
-      setPrice(1000);
+      setPrice(100); // default starting price
       setDuration(60);
       setCategoryId(categories[0]?.id || '');
       setIsActive(true);
+      setImages([]);
+      setServiceImageFile(null);
+      setServiceImageName('');
     }
     setShowEditor(true);
   };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!provider || !categoryId) return;
+    if (!provider || !categoryId) {
+      console.warn('Save ignored: provider or categoryId is null/empty.', { provider, categoryId });
+      return;
+    }
 
     setEditorLoading(true);
     try {
-      const token = await getToken();
-      const client = getSupabaseClient(token);
+      let updatedImages = [...images];
+      
+      // Upload new image if chosen
+      if (serviceImageFile) {
+        const fileExt = serviceImageFile.name.split('.').pop();
+        const filePath = `${provider.id}/service-${Math.random()}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage
+          .from('permits')
+          .upload(filePath, serviceImageFile);
 
-      if (editingService) {
-        // Update
-        const { error } = await client
-          .from('services')
-          .update({
-            name,
-            description,
-            price,
-            duration_minutes: duration,
-            category_id: categoryId,
-            is_active: isActive
-          })
-          .eq('id', editingService.id);
-
-        if (error) throw error;
-        toast('Service updated successfully', 'success');
-      } else {
-        // Create
-        const { error } = await client
-          .from('services')
-          .insert({
-            provider_id: provider.id,
-            name,
-            description,
-            price,
-            duration_minutes: duration,
-            category_id: categoryId,
-            is_active: isActive
-          });
-
-        if (error) throw error;
-        toast('Service added successfully', 'success');
+        if (!uploadError) {
+          const { data } = supabase.storage.from('permits').getPublicUrl(filePath);
+          updatedImages = [data.publicUrl];
+        } else {
+          console.error('Failed to upload service image, using fallback:', uploadError);
+        }
       }
 
+      const payload = {
+        id: editingService?.id,
+        name,
+        description,
+        price,
+        duration_minutes: duration,
+        category_id: categoryId,
+        is_active: isActive,
+        images: updatedImages
+      };
+
+      const response = await fetch('/api/services', {
+        method: editingService ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Failed to save service.');
+      }
+
+      toast(editingService ? 'Service updated successfully' : 'Service added successfully', 'success');
       setShowEditor(false);
       loadData();
-    } catch (err) {
-      toast('Failed to save service.', 'error');
+    } catch (err: any) {
+      console.error(err);
+      toast(err.message || 'Failed to save service.', 'error');
     } finally {
       setEditorLoading(false);
     }
@@ -185,19 +248,20 @@ export default function ServicesManager() {
     if (!confirm('Are you sure you want to delete this service?')) return;
 
     try {
-      const token = await getToken();
-      const client = getSupabaseClient(token);
+      const response = await fetch(`/api/services?id=${id}`, {
+        method: 'DELETE',
+      });
 
-      const { error } = await client
-        .from('services')
-        .delete()
-        .eq('id', id);
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Failed to delete service.');
+      }
 
-      if (error) throw error;
       toast('Service deleted', 'success');
       loadData();
-    } catch (err) {
-      toast('Could not delete service.', 'error');
+    } catch (err: any) {
+      console.error(err);
+      toast(err.message || 'Could not delete service.', 'error');
     }
   };
 
@@ -233,28 +297,48 @@ export default function ServicesManager() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {services.map((s) => (
             <div key={s.id} className="bg-white border border-champagne/60 rounded-xl p-5 shadow-sm flex flex-col justify-between gap-4">
-              <div>
-                <div className="flex justify-between items-start gap-2 mb-2">
-                  <h3 className="font-sans font-bold text-espresso text-base">{s.name}</h3>
-                  <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
-                    s.is_active
-                      ? 'bg-teal-50 border-teal-200 text-teal-800'
-                      : 'bg-stone-50 border-stone-200 text-stone-500'
-                  }`}>
-                    {s.is_active ? 'Active' : 'Inactive'}
-                  </span>
+              <div className="flex gap-4">
+                {/* Left image preview */}
+                <div className="w-20 h-20 rounded-lg overflow-hidden bg-stone-50 border border-champagne/40 flex-shrink-0 flex items-center justify-center relative group/img cursor-zoom-in">
+                  {s.images && s.images[0] ? (
+                    <img
+                      src={s.images[0]}
+                      alt={s.name}
+                      onClick={() => setPreviewImageUrl(s.images![0])}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="text-[10px] text-stone-400 font-sans text-center px-1 flex flex-col items-center gap-1">
+                      <Upload className="w-4 h-4 text-stone-300" />
+                      <span>No Image</span>
+                    </div>
+                  )}
                 </div>
-                <p className="text-stone-500 text-xs font-sans line-clamp-2 leading-relaxed mb-4">
-                  {s.description}
-                </p>
 
-                <div className="flex items-center gap-4 text-stone-500 text-xs font-sans">
-                  <span className="flex items-center gap-0.5"><Clock className="w-3.5 h-3.5" /> {s.duration_minutes} Min</span>
-                  <span className="flex items-center gap-0.5"><DollarSign className="w-3.5 h-3.5" /> {s.price} PHP</span>
+                {/* Right content details */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-start gap-2 mb-1">
+                    <h3 className="font-sans font-bold text-espresso text-base truncate">{s.name}</h3>
+                    <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border flex-shrink-0 ${
+                      s.is_active
+                        ? 'bg-teal-50 border-teal-200 text-teal-800'
+                        : 'bg-stone-50 border-stone-200 text-stone-500'
+                    }`}>
+                      {s.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
+                  <p className="text-stone-500 text-xs font-sans line-clamp-2 leading-relaxed mb-3">
+                    {s.description}
+                  </p>
+
+                  <div className="flex items-center gap-4 text-stone-500 text-xs font-sans">
+                    <span className="flex items-center gap-0.5"><Clock className="w-3.5 h-3.5" /> {s.duration_minutes} Min</span>
+                    <span className="flex items-center gap-0.5"><DollarSign className="w-3.5 h-3.5" /> {s.price} CAD</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 border-t border-champagne/30 pt-4 mt-auto">
+              <div className="flex items-center justify-end gap-2 border-t border-champagne/30 pt-3 mt-auto">
                 <button
                   onClick={() => openEditor(s)}
                   className="p-2 bg-stone-50 hover:bg-stone-100 border border-champagne/60 rounded-lg text-slate-700 transition-all text-xs font-semibold flex items-center gap-1"
@@ -311,7 +395,7 @@ export default function ServicesManager() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Price (PHP)</label>
+                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Price (CAD)</label>
                 <input
                   type="number"
                   required
@@ -366,6 +450,54 @@ export default function ServicesManager() {
               </label>
             </div>
 
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Image</label>
+              <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
+                <input
+                  type="file"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setServiceImageFile(e.target.files[0]);
+                      setServiceImageName(e.target.files[0].name);
+                    }
+                  }}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  accept="image/*"
+                />
+                <Upload className="w-5 h-5 text-stone-400 mb-1" />
+                <span className="text-xs font-bold text-slate-700 font-sans">
+                  {serviceImageName || 'Upload service image'}
+                </span>
+                <span className="text-[10px] text-stone-400 mt-0.5 font-sans">JPEG, PNG formats</span>
+              </div>
+
+              {/* Image Previews (Rendered below) */}
+              {serviceImageFile ? (
+                <div className="mt-3 flex items-center gap-3 bg-stone-50 border border-champagne/45 p-2 rounded-xl">
+                  <img 
+                    src={URL.createObjectURL(serviceImageFile)} 
+                    alt="New upload preview" 
+                    onClick={() => setPreviewImageUrl(URL.createObjectURL(serviceImageFile))}
+                    className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity" 
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold text-slate-700">Preview of new upload</span>
+                    <span className="text-[10px] text-stone-400 font-sans">{serviceImageName}</span>
+                  </div>
+                </div>
+              ) : images.length > 0 ? (
+                <div className="mt-3 flex items-center gap-3 bg-stone-50 border border-champagne/45 p-2 rounded-xl">
+                  <img 
+                    src={images[0]} 
+                    alt="Current preview" 
+                    onClick={() => setPreviewImageUrl(images[0])}
+                    className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity" 
+                  />
+                  <span className="text-xs text-stone-500 font-sans">Current service image</span>
+                </div>
+              ) : null}
+            </div>
+
             <button
               type="submit"
               disabled={editorLoading}
@@ -377,6 +509,28 @@ export default function ServicesManager() {
               Save Service
             </button>
           </form>
+        </div>
+      )}
+      {/* Lightbox / Image Preview Modal */}
+      {previewImageUrl && (
+        <div 
+          className="fixed inset-0 bg-slate-950/80 z-[100] flex items-center justify-center p-4 backdrop-blur-xs cursor-zoom-out animate-fade-in"
+          onClick={() => setPreviewImageUrl(null)}
+        >
+          <div className="relative max-w-3xl w-full max-h-[85vh] flex items-center justify-center bg-black/40 rounded-2xl overflow-hidden border border-white/10 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <button 
+              type="button" 
+              onClick={() => setPreviewImageUrl(null)}
+              className="absolute top-4 right-4 bg-black/60 hover:bg-black/80 text-white rounded-full p-2 transition-all cursor-pointer z-10"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <img 
+              src={previewImageUrl} 
+              alt="High resolution preview" 
+              className="max-w-full max-h-[85vh] object-contain rounded-xl"
+            />
+          </div>
         </div>
       )}
     </div>

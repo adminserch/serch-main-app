@@ -16,6 +16,7 @@ interface MapProps {
   address?: string;
   viewOnly?: boolean;
   markers?: MapMarker[];
+  businessName?: string;
 }
 
 export default function Map({
@@ -25,6 +26,7 @@ export default function Map({
   address,
   viewOnly = false,
   markers = [],
+  businessName,
 }: MapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [mapInstance, setMapInstance] = useState<any>(null);
@@ -69,8 +71,13 @@ export default function Map({
         const marker = L.marker([defaultLat, defaultLng], {
           draggable: !viewOnly,
         }).addTo(map);
+        
+        if (businessName) {
+          marker.bindPopup(`<b>${businessName}</b>`).openPopup();
+        }
+        
         setMarkerInstance(marker);
-
+        
         if (!viewOnly && onLocationChange) {
           marker.on('dragend', () => {
             const position = marker.getLatLng();
@@ -115,9 +122,12 @@ export default function Map({
       mapInstance.setView([latitude, longitude], 14);
       if (markerInstance) {
         markerInstance.setLatLng([latitude, longitude]);
+        if (businessName) {
+          markerInstance.bindPopup(`<b>${businessName}</b>`).openPopup();
+        }
       }
     }
-  }, [latitude, longitude, mapInstance, markerInstance]);
+  }, [latitude, longitude, mapInstance, markerInstance, businessName]);
 
   // Geocode address when changed (for provider registration geocoding)
   useEffect(() => {

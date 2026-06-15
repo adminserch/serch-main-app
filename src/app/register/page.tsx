@@ -1,12 +1,14 @@
 'use strict';
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth, useUser } from '@clerk/nextjs';
 import { supabase, getSupabaseClient } from '@/lib/supabase';
 import { useToast } from '@/components/Providers';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import { 
   Building2, 
   MapPin, 
@@ -40,8 +42,30 @@ export default function RegisterProviderPage() {
   const [latitude, setLatitude] = useState<number | null>(14.5995);
   const [longitude, setLongitude] = useState<number | null>(120.9842);
 
+  const [houseBuildingNumber, setHouseBuildingNumber] = useState('');
+  const [streetName, setStreetName] = useState('');
+  const [stateProvinceRegion, setStateProvinceRegion] = useState('');
+  const [postalZipCode, setPostalZipCode] = useState('');
+  const [country, setCountry] = useState('');
+
+  useEffect(() => {
+    const parts = [
+      houseBuildingNumber,
+      streetName,
+      district,
+      city,
+      stateProvinceRegion,
+      postalZipCode,
+      country
+    ].filter(Boolean);
+    setAddress(parts.join(', '));
+  }, [houseBuildingNumber, streetName, district, city, stateProvinceRegion, postalZipCode, country]);
+
   const [permitFile, setPermitFile] = useState<File | null>(null);
   const [permitName, setPermitName] = useState('');
+
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoName, setLogoName] = useState('');
 
   const availableCategories = [
     'Home Cleaning',
@@ -85,11 +109,30 @@ export default function RegisterProviderPage() {
       const client = getSupabaseClient(token);
 
       // 1. Get user uuid
-      const { data: dbUser, error: userError } = await client
+      let { data: dbUser, error: userError } = await client
         .from('users')
         .select('id')
         .eq('clerk_user_id', user?.id)
         .single();
+
+      if (userError || !dbUser) {
+        try {
+          const syncRes = await fetch('/api/users/sync', { method: 'POST' });
+          if (syncRes.ok) {
+            const retryRes = await client
+              .from('users')
+              .select('id')
+              .eq('clerk_user_id', user?.id)
+              .single();
+            if (retryRes.data) {
+              dbUser = retryRes.data;
+              userError = null;
+            }
+          }
+        } catch (syncErr) {
+          console.error('Failed self-healing user sync:', syncErr);
+        }
+      }
 
       if (userError || !dbUser) {
         throw new Error('User record not found in database.');
@@ -110,6 +153,30 @@ export default function RegisterProviderPage() {
         }
       }
 
+      // 2.2 Upload company logo
+      let logoUrl = null;
+      if (logoFile) {
+        const fileExt = logoFile.name.split('.').pop();
+        const filePath = `${dbUser.id}/logo-${Math.random()}.${fileExt}`;
+        const { error: logoUploadError } = await client.storage
+          .from('logos')
+          .upload(filePath, logoFile);
+
+        if (!logoUploadError) {
+          const { data } = client.storage.from('logos').getPublicUrl(filePath);
+          logoUrl = data.publicUrl;
+        } else {
+          // Fallback to permits bucket if logos bucket is not configured
+          const { error: fallbackError } = await client.storage
+            .from('permits')
+            .upload(filePath, logoFile);
+          if (!fallbackError) {
+            const { data } = client.storage.from('permits').getPublicUrl(filePath);
+            logoUrl = data.publicUrl;
+          }
+        }
+      }
+
       // 3. Create provider
       const { data: provider, error: providerError } = await client
         .from('providers')
@@ -117,6 +184,7 @@ export default function RegisterProviderPage() {
           user_id: dbUser.id,
           business_name: businessName,
           description: description,
+          logo_url: logoUrl,
           service_categories: categories,
           service_city: city,
           service_district: district,
@@ -126,6 +194,11 @@ export default function RegisterProviderPage() {
           business_permit_url: permitUrl,
           status: 'pending', // awaits admin approval
           plan: 'free',
+          house_building_number: houseBuildingNumber,
+          street_name: streetName,
+          state_province_region: stateProvinceRegion,
+          postal_zip_code: postalZipCode,
+          country: country,
         })
         .select('id')
         .single();
@@ -157,8 +230,10 @@ export default function RegisterProviderPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto w-full px-6 py-16 flex-grow">
-      {/* Step Progress Bar */}
+    <div className="flex flex-col min-h-screen bg-stone-50/50">
+      <Navbar />
+      <main className="flex-grow pt-28 pb-16 max-w-2xl mx-auto w-full px-6">
+        {/* Step Progress Bar */}
       {step < 4 && (
         <div className="flex items-center justify-between mb-12">
           {[1, 2, 3].map((s) => (
@@ -243,6 +318,28 @@ export default function RegisterProviderPage() {
             />
           </div>
 
+          <div>
+            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Company Logo</label>
+            <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
+              <input
+                type="file"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    setLogoFile(e.target.files[0]);
+                    setLogoName(e.target.files[0].name);
+                  }
+                }}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                accept="image/*"
+              />
+              <Upload className="w-8 h-8 text-stone-400 mb-2" />
+              <span className="text-xs font-bold text-slate-700 font-sans">
+                {logoName || 'Click to upload company logo'}
+              </span>
+              <span className="text-[10px] text-stone-400 mt-1 font-sans">JPEG, PNG formats</span>
+            </div>
+          </div>
+
           <button
             type="button"
             disabled={!businessName || categories.length === 0}
@@ -262,14 +359,49 @@ export default function RegisterProviderPage() {
             <p className="text-stone-500 text-sm">Provide your business address. The map will locate you automatically.</p>
           </div>
 
+          <div>
+            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Place/Business Name</label>
+            <input
+              type="text"
+              required
+              value={businessName}
+              onChange={(e) => setBusinessName(e.target.value)}
+              placeholder="Enter place or business name for the map pin header..."
+              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+            />
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">City</label>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">House/Building Number</label>
+              <input
+                type="text"
+                value={houseBuildingNumber}
+                onChange={(e) => setHouseBuildingNumber(e.target.value)}
+                placeholder="e.g. 123"
+                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Street Name</label>
+              <input
+                type="text"
+                value={streetName}
+                onChange={(e) => setStreetName(e.target.value)}
+                placeholder="e.g. Stephen Avenue"
+                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">City/Locality</label>
               <input
                 type="text"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                placeholder="e.g. Manila"
+                placeholder="e.g. Calgary"
                 className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
               />
             </div>
@@ -279,19 +411,53 @@ export default function RegisterProviderPage() {
                 type="text"
                 value={district}
                 onChange={(e) => setDistrict(e.target.value)}
-                placeholder="e.g. Makati"
+                placeholder="e.g. Downtown"
+                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">State/Province/Region</label>
+              <input
+                type="text"
+                value={stateProvinceRegion}
+                onChange={(e) => setStateProvinceRegion(e.target.value)}
+                placeholder="e.g. Alberta"
+                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Postal/ZIP Code</label>
+              <input
+                type="text"
+                value={postalZipCode}
+                onChange={(e) => setPostalZipCode(e.target.value)}
+                placeholder="e.g. T2P 2M5"
                 className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Search Address</label>
+            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Country</label>
+            <input
+              type="text"
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              placeholder="e.g. Canada"
+              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Full Address (Geocoding Address Lookups)</label>
             <input
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="Enter full address to pin on map..."
+              placeholder="e.g. 123 Stephen Avenue, Calgary, Alberta"
               className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
             />
           </div>
@@ -303,6 +469,7 @@ export default function RegisterProviderPage() {
               longitude={longitude}
               address={address}
               onLocationChange={handleLocationChange}
+              businessName={businessName}
             />
           </div>
 
@@ -387,6 +554,8 @@ export default function RegisterProviderPage() {
           </Link>
         </div>
       )}
-    </div>
-  );
+    </main>
+    <Footer />
+  </div>
+);
 }

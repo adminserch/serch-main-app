@@ -103,6 +103,11 @@ CREATE TABLE providers (
   is_verified BOOLEAN NOT NULL DEFAULT false,
   status provider_status NOT NULL DEFAULT 'pending',
   plan provider_plan NOT NULL DEFAULT 'free',
+  house_building_number TEXT,
+  street_name TEXT,
+  state_province_region TEXT,
+  postal_zip_code TEXT,
+  country TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -720,6 +725,27 @@ WHERE NOT EXISTS (SELECT 1 FROM blocked)
   )
   AND gs.start_time >= now()::time + (SELECT booking_notice_hours FROM provider_settings WHERE provider_id = $2) * interval '1 hour'
 ORDER BY gs.start_time;
+```
+
+## 8.5 Storage Buckets & RLS Policies
+
+```sql
+-- 1. Create the 'permits' bucket (for business permits and service images)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('permits', 'permits', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. Create the 'logos' bucket (for provider company logos)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('logos', 'logos', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- 3. Set up RLS policies to allow public reads and uploads for both buckets
+CREATE POLICY "Public Read Access permits" ON storage.objects FOR SELECT USING (bucket_id = 'permits');
+CREATE POLICY "Allow Uploads permits" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'permits');
+
+CREATE POLICY "Public Read Access logos" ON storage.objects FOR SELECT USING (bucket_id = 'logos');
+CREATE POLICY "Allow Uploads logos" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'logos');
 ```
 
 ---

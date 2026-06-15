@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { UserButton, useUser, useAuth } from '@clerk/nextjs';
 import { supabase } from '@/lib/supabase';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import { 
   LayoutDashboard, 
   CalendarDays, 
@@ -104,27 +106,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex flex-col min-h-screen bg-stone-50/50">
       {/* Top Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-champagne/50 shadow-sm">
-        <div className="flex justify-between items-center px-6 md:px-12 h-20 max-w-7xl mx-auto w-full">
-          <div className="flex items-center gap-10">
-            <Link href="/" className="font-display text-2xl font-bold text-primary tracking-tight">
-              Serch
-            </Link>
-            <div className="hidden md:flex gap-8 items-center">
-              <Link href="/search" className="text-stone-600 font-medium hover:text-accent transition-colors text-sm tracking-wide">
-                Find Professionals
-              </Link>
-              <Link href="/dashboard" className="text-accent font-semibold hover:text-accent transition-colors text-sm tracking-wide">
-                Provider Dashboard
-              </Link>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <UserButton />
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Main Layout body with Sidebar and Content */}
       <div className="flex-grow pt-20 flex min-h-[calc(100vh-80px)]">
@@ -133,9 +115,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex flex-col gap-8">
             <div>
               <Link href="/" className="inline-flex items-center gap-1.5 font-sans font-bold text-xs text-stone-400 hover:text-stone-600 transition-colors uppercase tracking-wider mb-6">
-                <ArrowLeft className="w-3.5 h-3.5" /> Back to Serch
+                <ArrowLeft className="w-3.5 h-3.5" /> Back to Main
               </Link>
-              <h1 className="font-display text-xl font-bold text-espresso tracking-tight">Pro Dashboard</h1>
+              <h1 className="font-display text-xl font-bold text-espresso tracking-tight">Provider Dashboard</h1>
             </div>
 
             <nav className="flex flex-col gap-1">
@@ -172,9 +154,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <main className="flex-grow flex flex-col">
           {/* Mobile top nav header */}
           <header className="h-16 border-b border-champagne bg-white px-6 flex items-center justify-between md:hidden">
-            <h2 className="font-display text-base font-bold text-espresso">Pro Dashboard</h2>
+            <h2 className="font-display text-base font-bold text-espresso">Provider Dashboard</h2>
             <UserButton />
           </header>
+
+          {/* Mobile sub-navigation tabs */}
+          <div className="md:hidden bg-white border-b border-champagne/60 px-4 py-2.5 overflow-x-auto flex gap-2 scrollbar-none shrink-0">
+            {navItems.map((item) => {
+              const active = pathname === item.href;
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+                    active
+                      ? 'bg-primary text-white'
+                      : 'bg-stone-50 text-stone-600 border border-champagne/45'
+                  }`}
+                >
+                  {item.icon}
+                  <span>{item.name}</span>
+                </Link>
+              );
+            })}
+          </div>
 
           <div className="flex-grow p-6 md:p-10 max-w-5xl w-full mx-auto">
             {children}
@@ -183,24 +186,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
 
       {/* Footer */}
-      <footer className="bg-espresso text-stone-300 w-full py-16 mt-auto border-t border-stone-800 z-10">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
-          <div>
-            <div className="font-display text-xl font-bold text-white mb-2 tracking-tight">Serch</div>
-            <p className="text-xs text-stone-400 max-w-sm">
-              Connecting premium local service professionals with seeking clients. Verified quality, transparent calendars, secure bookings.
-            </p>
-          </div>
-          <div className="flex flex-wrap justify-center gap-8 text-xs font-medium font-sans">
-            <Link href="#" className="hover:text-white transition-colors">Trust &amp; Safety</Link>
-            <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-6 md:px-12 border-t border-stone-800 mt-8 pt-8 text-center text-xs text-stone-500 font-sans">
-          &copy; 2026 Serch Technologies. All rights reserved.
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

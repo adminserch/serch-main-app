@@ -13,6 +13,8 @@ import {
 } from '@clerk/nextjs';
 import { supabase } from '@/lib/supabase';
 import { Search, MapPin, Star, Award, ShieldCheck, Wrench, Sparkles, Home, ChevronRight } from 'lucide-react';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 interface FeaturedProvider {
   id: string;
@@ -139,7 +141,7 @@ export default function LandingPage() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push(`/search?query=${encodeURIComponent(query)}&location=${encodeURIComponent(location)}`);
+    router.push(`/search?query=${encodeURIComponent(query)}`);
   };
 
   const providersToShow = liveProviders.length > 0 ? liveProviders : STATIC_PROVIDERS;
@@ -147,61 +149,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Top Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-champagne/50 shadow-sm">
-        <div className="flex justify-between items-center px-6 md:px-12 h-20 max-w-7xl mx-auto w-full">
-          <div className="flex items-center gap-10">
-            <Link href="/" className="font-display text-2xl font-bold text-primary tracking-tight">
-              Serch
-            </Link>
-            <div className="hidden md:flex gap-8 items-center">
-              <Link href="/search" className="text-stone-600 font-medium hover:text-accent transition-colors text-sm tracking-wide">
-                Find Professionals
-              </Link>
-              {dbRole === 'provider' && (
-                <Link href="/dashboard" className="text-stone-600 font-medium hover:text-accent transition-colors text-sm tracking-wide">
-                  Provider Dashboard
-                </Link>
-              )}
-              {dbRole === 'admin' && (
-                <Link href="/admin" className="text-stone-600 font-medium hover:text-accent transition-colors text-sm tracking-wide">
-                  Admin Panel
-                </Link>
-              )}
-              {isSignedIn && dbRole === 'seeker' && (
-                <Link href="/bookings" className="text-stone-600 font-medium hover:text-accent transition-colors text-sm tracking-wide">
-                  My Bookings
-                </Link>
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {isSignedIn ? (
-              <div className="flex items-center gap-4">
-                {dbRole === 'seeker' && (
-                  <Link href="/register" className="hidden sm:inline-block bg-accent hover:bg-teal-700 text-white font-medium text-xs px-4 py-2 rounded-xl transition-all">
-                    Become a Pro
-                  </Link>
-                )}
-                <UserButton />
-              </div>
-            ) : (
-              <div className="flex items-center gap-3">
-                <SignInButton mode="modal">
-                  <button className="text-primary hover:bg-champagne/40 px-4 py-2 rounded-xl font-medium text-sm transition-all duration-200">
-                    Sign In
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <button className="bg-primary hover:bg-slate-800 text-white font-medium text-sm px-5 py-2 rounded-xl transition-all duration-200">
-                    Join as Pro
-                  </button>
-                </SignUpButton>
-              </div>
-            )}
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="relative pt-36 pb-32 px-6 overflow-hidden bg-gradient-to-b from-champagne/40 via-champagne/20 to-transparent">
@@ -230,19 +178,6 @@ export default function LandingPage() {
                 onChange={(e) => setQuery(e.target.value)}
               />
             </div>
-            
-            <div className="h-6 w-px bg-stone-200 hidden md:block"></div>
-            
-            <div className="flex-grow flex items-center bg-stone-50 rounded-xl md:rounded-full px-5 py-3 w-full border border-transparent focus-within:border-accent/40 transition-colors">
-              <MapPin className="text-stone-400 w-5 h-5 mr-3 flex-shrink-0" />
-              <input
-                className="w-full bg-transparent border-none focus:outline-none text-espresso font-sans placeholder:text-stone-400 p-0 text-md"
-                placeholder="City or district (e.g. Manila)"
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-              />
-            </div>
 
             <button type="submit" className="bg-primary hover:bg-slate-800 text-white font-semibold text-md px-8 py-3.5 rounded-xl md:rounded-full w-full md:w-auto transition-all shadow-sm flex-shrink-0">
               Search
@@ -269,7 +204,7 @@ export default function LandingPage() {
             </p>
           </div>
           <Link href="/search" className="font-sans font-semibold text-accent hover:text-teal-700 flex items-center gap-1 group transition-colors text-sm">
-            View All Experts <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+            View All Providers <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
@@ -279,7 +214,7 @@ export default function LandingPage() {
               <div className="h-52 bg-champagne/30 relative flex items-center justify-center overflow-hidden">
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm border border-champagne/40 z-10">
                   <ShieldCheck className="w-4 h-4 text-accent" />
-                  <span className="text-[10px] font-bold text-slate-700 uppercase tracking-wider">Verified Pro</span>
+                  <span className="text-[10px] font-bold text-slate-700 uppercase tracking-wider">Verified Provider</span>
                 </div>
                 
                 {prov.logo_url ? (
@@ -326,24 +261,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-espresso text-stone-300 w-full py-16 mt-auto border-t border-stone-800">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
-          <div>
-            <div className="font-display text-xl font-bold text-white mb-2 tracking-tight">Serch</div>
-            <p className="text-xs text-stone-400 max-w-sm">
-              Connecting premium local service professionals with seeking clients. Verified quality, transparent calendars, secure bookings.
-            </p>
-          </div>
-          <div className="flex flex-wrap justify-center gap-8 text-xs font-medium font-sans">
-            <Link href="#" className="hover:text-white transition-colors">Trust &amp; Safety</Link>
-            <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-6 md:px-12 border-t border-stone-800 mt-8 pt-8 text-center text-xs text-stone-500 font-sans">
-          &copy; 2026 Serch Technologies. All rights reserved.
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

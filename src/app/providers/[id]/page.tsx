@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { SignInButton, SignUpButton, UserButton, useAuth, useUser } from '@clerk/nextjs';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 
@@ -29,6 +31,7 @@ interface Service {
   description: string;
   price: number;
   duration_minutes: number;
+  images?: string[];
 }
 
 interface Review {
@@ -123,7 +126,7 @@ export default function ProviderProfilePage() {
         // 2. Fetch services
         const { data: sData } = await supabase
           .from('services')
-          .select('id, name, description, price, duration_minutes')
+          .select('id, name, description, price, duration_minutes, images')
           .eq('provider_id', providerId)
           .eq('is_active', true);
 
@@ -263,56 +266,7 @@ export default function ProviderProfilePage() {
   return (
     <div className="flex flex-col min-h-screen bg-stone-50/50">
       {/* Top Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-champagne/50 shadow-sm">
-        <div className="flex justify-between items-center px-6 md:px-12 h-20 max-w-7xl mx-auto w-full">
-          <div className="flex items-center gap-10">
-            <Link href="/" className="font-display text-2xl font-bold text-primary tracking-tight">
-              Serch
-            </Link>
-            <div className="hidden md:flex gap-8 items-center">
-              <Link href="/search" className="text-stone-600 font-medium hover:text-accent transition-colors text-sm tracking-wide">
-                Find Professionals
-              </Link>
-              {dbRole === 'provider' && (
-                <Link href="/dashboard" className="text-stone-600 font-medium hover:text-accent transition-colors text-sm tracking-wide">
-                  Provider Dashboard
-                </Link>
-              )}
-              {dbRole === 'admin' && (
-                <Link href="/admin" className="text-stone-600 font-medium hover:text-accent transition-colors text-sm tracking-wide">
-                  Admin Panel
-                </Link>
-              )}
-              {isSignedIn && dbRole === 'seeker' && (
-                <Link href="/bookings" className="text-stone-600 font-medium hover:text-accent transition-colors text-sm tracking-wide">
-                  My Bookings
-                </Link>
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {isSignedIn ? (
-              <div className="flex items-center gap-4">
-                <UserButton />
-              </div>
-            ) : (
-              <div className="flex items-center gap-4">
-                <SignInButton mode="modal">
-                  <button className="text-stone-600 font-semibold hover:text-accent transition-colors text-sm tracking-wide">
-                    Sign In
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <button className="bg-primary hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-sm">
-                    Become a Pro
-                  </button>
-                </SignUpButton>
-              </div>
-            )}
-          </div>
-        </div>
-      </nav>
+      <Navbar />
       {/* Main Content Body */}
       <main className="flex-grow pt-28 pb-16">
         <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row gap-10">
@@ -323,7 +277,7 @@ export default function ProviderProfilePage() {
                 <h1 className="font-display text-3xl font-bold text-espresso">{provider.business_name}</h1>
                 {provider.is_verified && (
                   <div className="bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
-                    <ShieldCheck className="w-4 h-4" /> Serch Verified
+                    <ShieldCheck className="w-4 h-4" /> Verified Provider
                   </div>
                 )}
               </div>
@@ -353,6 +307,46 @@ export default function ProviderProfilePage() {
                   </a>
                 </div>
               )}
+            </div>
+
+            {/* Services Provided Section */}
+            <div>
+              <h2 className="font-display text-xl font-bold text-espresso mb-4">Services Provided</h2>
+              <div className="flex flex-col gap-4">
+                {services.map((s) => (
+                  <div key={s.id} className="bg-white border border-champagne/60 rounded-xl p-5 shadow-sm flex items-start gap-4">
+                    {/* Service Image */}
+                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-stone-50 border border-champagne/40 flex-shrink-0 flex items-center justify-center relative">
+                      {s.images && s.images[0] ? (
+                        <img
+                          src={s.images[0]}
+                          alt={s.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="text-[10px] text-stone-400 font-sans text-center px-1 flex flex-col items-center gap-1">
+                          <span className="font-bold text-accent">Serch</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Service Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start gap-2 mb-1">
+                        <h3 className="font-sans font-bold text-espresso text-base truncate">{s.name}</h3>
+                        <span className="text-sm font-bold text-accent font-sans flex-shrink-0">{s.price} CAD</span>
+                      </div>
+                      <p className="text-stone-500 text-xs font-sans mb-3 leading-relaxed">
+                        {s.description}
+                      </p>
+                      <div className="flex items-center gap-2 text-[10px] font-semibold text-stone-400 font-sans">
+                        <Clock className="w-3.5 h-3.5" />
+                        <span>{s.duration_minutes} Minutes Duration</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Map Pinned Location */}
@@ -427,7 +421,7 @@ export default function ProviderProfilePage() {
                         <p className="text-[11px] text-stone-400 font-sans mt-0.5">{s.description}</p>
                         <div className="flex items-center gap-4 mt-2 text-xs text-stone-500">
                           <span className="flex items-center gap-0.5"><Clock className="w-3.5 h-3.5 text-stone-400" /> {s.duration_minutes} min</span>
-                          <span className="flex items-center gap-0.5"><DollarSign className="w-3.5 h-3.5 text-stone-400" /> {s.price} PHP</span>
+                          <span className="flex items-center gap-0.5"><DollarSign className="w-3.5 h-3.5 text-stone-400" /> {s.price} CAD</span>
                         </div>
                       </div>
                     </div>
@@ -496,24 +490,7 @@ export default function ProviderProfilePage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-espresso text-stone-300 w-full py-16 mt-auto border-t border-stone-800">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
-          <div>
-            <div className="font-display text-xl font-bold text-white mb-2 tracking-tight">Serch</div>
-            <p className="text-xs text-stone-400 max-w-sm">
-              Connecting premium local service professionals with seeking clients. Verified quality, transparent calendars, secure bookings.
-            </p>
-          </div>
-          <div className="flex flex-wrap justify-center gap-8 text-xs font-medium font-sans">
-            <Link href="#" className="hover:text-white transition-colors">Trust &amp; Safety</Link>
-            <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-6 md:px-12 border-t border-stone-800 mt-8 pt-8 text-center text-xs text-stone-500 font-sans">
-          &copy; 2026 Serch Technologies. All rights reserved.
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

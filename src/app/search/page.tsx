@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { UserButton, useAuth, useUser, SignInButton, SignUpButton } from '@clerk/nextjs';
 import { supabase } from '@/lib/supabase';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import { 
   Search as SearchIcon, 
   MapPin, 
@@ -121,6 +123,7 @@ function SearchContent() {
   const [compareList, setCompareList] = useState<Provider[]>([]);
   const [showCompareDrawer, setShowCompareDrawer] = useState(false);
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({ lat: 14.5995, lng: 120.9842 });
+  const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadUserRole() {
@@ -199,6 +202,7 @@ function SearchContent() {
           const withCoords = formatted.find(f => f.latitude && f.longitude);
           if (withCoords) {
             setMapCenter({ lat: withCoords.latitude!, lng: withCoords.longitude! });
+            setSelectedProviderId(withCoords.id);
           }
         } else {
           setProviders(STATIC_PROVIDERS);
@@ -251,56 +255,7 @@ function SearchContent() {
   return (
     <div className="flex flex-col min-h-screen bg-stone-50/50">
       {/* Top Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-champagne/50 shadow-sm">
-        <div className="flex justify-between items-center px-6 md:px-12 h-20 max-w-7xl mx-auto w-full">
-          <div className="flex items-center gap-10">
-            <Link href="/" className="font-display text-2xl font-bold text-primary tracking-tight">
-              Serch
-            </Link>
-            <div className="hidden md:flex gap-8 items-center">
-              <Link href="/search" className="text-accent font-semibold hover:text-accent transition-colors text-sm tracking-wide">
-                Find Professionals
-              </Link>
-              {dbRole === 'provider' && (
-                <Link href="/dashboard" className="text-stone-600 font-medium hover:text-accent transition-colors text-sm tracking-wide">
-                  Provider Dashboard
-                </Link>
-              )}
-              {dbRole === 'admin' && (
-                <Link href="/admin" className="text-stone-600 font-medium hover:text-accent transition-colors text-sm tracking-wide">
-                  Admin Panel
-                </Link>
-              )}
-              {isSignedIn && dbRole === 'seeker' && (
-                <Link href="/bookings" className="text-stone-600 font-medium hover:text-accent transition-colors text-sm tracking-wide">
-                  My Bookings
-                </Link>
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {isSignedIn ? (
-              <div className="flex items-center gap-4">
-                <UserButton />
-              </div>
-            ) : (
-              <div className="flex items-center gap-4">
-                <SignInButton mode="modal">
-                  <button className="text-stone-600 font-semibold hover:text-accent transition-colors text-sm tracking-wide">
-                    Sign In
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <button className="bg-primary hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-sm">
-                    Become a Pro
-                  </button>
-                </SignUpButton>
-              </div>
-            )}
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Main Content Body */}
       <div className="flex-grow pt-20 flex flex-col">
@@ -379,7 +334,7 @@ function SearchContent() {
             <div>
               <span className="text-[10px] font-bold text-accent uppercase tracking-wider block mb-1">Search Results</span>
               <h2 className="font-display text-2xl font-bold text-espresso">
-                {filteredProviders.length} Experts Available
+                {filteredProviders.length} Available Providers
               </h2>
             </div>
 
@@ -387,59 +342,98 @@ function SearchContent() {
               {filteredProviders.map((p) => {
                 const isCompared = compareList.some(item => item.id === p.id);
                 return (
-                  <div key={p.id} className="bg-white border border-champagne/60 rounded-2xl p-6 shadow-xs hover:shadow-md hover:border-gold/60 transition-all flex flex-col justify-between gap-4">
-                    <div>
-                      <div className="flex justify-between items-start gap-4 mb-2 flex-wrap">
-                        <h3 className="font-sans font-bold text-espresso text-base hover:text-accent transition-colors">
-                          <Link href={`/providers/${p.id}`}>{p.business_name}</Link>
-                        </h3>
-                        
-                        <div className="flex items-center gap-1.5">
-                          {p.is_verified && (
-                            <span className="bg-teal-50 border border-teal-200 text-teal-800 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                              <ShieldCheck className="w-3.5 h-3.5" /> Verified
+                  <div 
+                    key={p.id} 
+                    onClick={() => {
+                      if (p.latitude && p.longitude) {
+                        setMapCenter({ lat: p.latitude, lng: p.longitude });
+                        setSelectedProviderId(p.id);
+                      }
+                    }}
+                    className={`bg-white border p-6 shadow-xs hover:shadow-md hover:border-gold/60 transition-all flex flex-col justify-between gap-4 cursor-pointer rounded-2xl ${
+                      selectedProviderId === p.id 
+                        ? 'border-accent ring-2 ring-accent/20 bg-teal-50/5' 
+                        : 'border-champagne/60'
+                    }`}
+                  >
+                    <div className="flex gap-4">
+                      {/* Left: Company Logo */}
+                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-stone-50 border border-champagne/40 flex-shrink-0 flex items-center justify-center relative">
+                        {p.logo_url ? (
+                          <img
+                            src={p.logo_url}
+                            alt={p.business_name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-champagne/20 border border-champagne/40 rounded-xl flex items-center justify-center text-accent text-lg font-bold">
+                            {p.business_name.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Right: Provider Details */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start gap-4 mb-1 flex-wrap">
+                          <h3 className="font-sans font-bold text-espresso text-base hover:text-accent transition-colors truncate">
+                            <Link href={`/providers/${p.id}`} onClick={(e) => e.stopPropagation()}>{p.business_name}</Link>
+                          </h3>
+                          
+                          <div className="flex items-center gap-1.5 flex-shrink-0">
+                            {p.is_verified && (
+                              <span className="bg-teal-50 border border-teal-200 text-teal-800 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <ShieldCheck className="w-3.5 h-3.5" /> Verified
+                              </span>
+                            )}
+                            <span className="text-xs font-bold text-espresso bg-stone-50 border border-champagne/50 px-2 py-0.5 rounded-lg">
+                              {p.price_level || '$$'}
                             </span>
-                          )}
-                          <span className="text-xs font-bold text-espresso bg-stone-50 border border-champagne/50 px-2 py-0.5 rounded-lg">
-                            {p.price_level || '$$'}
-                          </span>
+                          </div>
                         </div>
-                      </div>
 
-                      <div className="flex items-center gap-4 text-xs text-stone-500 mb-4 font-sans">
-                        <div className="flex items-center gap-0.5">
-                          <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                          <span className="font-bold text-slate-800">{p.avg_rating}</span>
-                          <span>({p.review_count} reviews)</span>
+                        <div className="flex items-center gap-4 text-xs text-stone-500 mb-3 font-sans">
+                          <div className="flex items-center gap-0.5">
+                            <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                            <span className="font-bold text-slate-800">{p.avg_rating}</span>
+                            <span>({p.review_count} reviews)</span>
+                          </div>
+                          <span>•</span>
+                          <div className="flex items-center gap-0.5">
+                            <MapPin className="w-4 h-4" />
+                            <span>{p.service_district}, {p.service_city}</span>
+                          </div>
                         </div>
-                        <span>•</span>
-                        <div className="flex items-center gap-0.5">
-                          <MapPin className="w-4 h-4" />
-                          <span>{p.service_district}, {p.service_city}</span>
-                        </div>
-                      </div>
 
-                      <p className="text-stone-600 text-xs font-sans leading-relaxed line-clamp-2">
-                        {p.description}
-                      </p>
+                        <p className="text-stone-600 text-xs font-sans leading-relaxed line-clamp-2">
+                          {p.description}
+                        </p>
+                      </div>
                     </div>
 
                     <div className="flex items-center justify-between border-t border-champagne/30 pt-4 mt-1">
                       {/* Compare Switch */}
-                      <button
-                        onClick={() => toggleCompare(p)}
-                        className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1 ${
-                          isCompared
-                            ? 'bg-accent/10 border-accent text-accent'
-                            : 'bg-white border-champagne hover:border-gold text-slate-700'
-                        }`}
-                      >
-                        {isCompared ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
-                        Compare
-                      </button>
+                      {filteredProviders.length > 1 ? (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleCompare(p);
+                          }}
+                          className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1 ${
+                            isCompared
+                              ? 'bg-accent/10 border-accent text-accent'
+                              : 'bg-white border-champagne hover:border-gold text-slate-700'
+                          }`}
+                        >
+                          {isCompared ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                          Compare
+                        </button>
+                      ) : (
+                        <div />
+                      )}
 
                       <Link 
                         href={`/providers/${p.id}`} 
+                        onClick={(e) => e.stopPropagation()}
                         className="bg-primary hover:bg-slate-800 text-white text-xs font-bold py-2 px-4 rounded-xl transition-all shadow-xs"
                       >
                         View Profile
@@ -468,24 +462,7 @@ function SearchContent() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-espresso text-stone-300 w-full py-16 mt-auto border-t border-stone-800">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
-          <div>
-            <div className="font-display text-xl font-bold text-white mb-2 tracking-tight">Serch</div>
-            <p className="text-xs text-stone-400 max-w-sm">
-              Connecting premium local service professionals with seeking clients. Verified quality, transparent calendars, secure bookings.
-            </p>
-          </div>
-          <div className="flex flex-wrap justify-center gap-8 text-xs font-medium font-sans">
-            <Link href="#" className="hover:text-white transition-colors">Trust &amp; Safety</Link>
-            <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-6 md:px-12 border-t border-stone-800 mt-8 pt-8 text-center text-xs text-stone-500 font-sans">
-          &copy; 2026 Serch Technologies. All rights reserved.
-        </div>
-      </footer>
+      <Footer />
 
       {/* Slide-Up Comparison Drawer */}
       {showCompareDrawer && (

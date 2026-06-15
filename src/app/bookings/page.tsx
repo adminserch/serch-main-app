@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useAuth, useUser } from '@clerk/nextjs';
 import { supabase, getSupabaseClient } from '@/lib/supabase';
 import { useToast } from '@/components/Providers';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import { 
   Calendar, 
   Clock, 
@@ -316,8 +318,10 @@ export default function BookingsPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto w-full px-6 py-12 flex-grow relative">
-      <h1 className="font-display text-3xl font-bold text-espresso mb-8">My Bookings</h1>
+    <div className="flex flex-col min-h-screen bg-stone-50/50">
+      <Navbar />
+      <main className="flex-grow pt-28 pb-16 max-w-5xl mx-auto w-full px-6 relative">
+        <h1 className="font-display text-3xl font-bold text-espresso mb-8">My Bookings</h1>
 
       {bookings.length === 0 ? (
         <div className="bg-white border border-champagne rounded-2xl p-12 text-center shadow-sm">
@@ -325,7 +329,7 @@ export default function BookingsPage() {
           <h3 className="font-display font-semibold text-espresso text-base mb-1">No bookings found</h3>
           <p className="text-stone-500 text-sm mb-6">You haven&apos;t booked any services yet.</p>
           <Link href="/search" className="bg-primary hover:bg-slate-800 text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition-all">
-            Find Professionals
+            Find Providers
           </Link>
         </div>
       ) : (
@@ -343,7 +347,7 @@ export default function BookingsPage() {
                   <div className="flex flex-wrap items-center gap-4 text-stone-500 text-xs mt-3 font-sans">
                     <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" /> {booking.booking_date}</span>
                     <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {formatTime(booking.start_time)} - {formatTime(booking.end_time)}</span>
-                    <span className="font-bold text-slate-700">{booking.services.price} PHP</span>
+                    <span className="font-bold text-slate-700">{booking.services.price} CAD</span>
                   </div>
                 </div>
               </div>
@@ -588,6 +592,8 @@ export default function BookingsPage() {
           </div>
         )}
       </div>
-    </div>
-  );
+    </main>
+    <Footer />
+  </div>
+);
 }
