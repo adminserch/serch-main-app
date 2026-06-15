@@ -197,7 +197,7 @@ export default function CategoriesDashboard() {
                     </div>
                     <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
                       c.is_active
-                        ? 'bg-teal-50 border-teal-200 text-teal-800'
+                        ? 'bg-purple-50 border-purple-200 text-purple-800'
                         : 'bg-stone-50 border-stone-200 text-stone-500'
                     }`}>
                       {c.is_active ? 'Active' : 'Inactive'}

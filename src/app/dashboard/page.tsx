@@ -217,7 +217,7 @@ export default function DashboardOverview() {
         </div>
         <div className="bg-white border border-champagne/60 rounded-xl p-5 shadow-sm">
           <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block mb-1">Today&apos;s Visits</span>
-          <span className="text-2xl font-bold font-display text-teal-700 block">{stats.todayVisits}</span>
+          <span className="text-2xl font-bold font-display text-purple-700 block">{stats.todayVisits}</span>
         </div>
       </div>
 
@@ -250,7 +250,7 @@ export default function DashboardOverview() {
 
                   <span className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border w-max ${
                     appt.status === 'confirmed'
-                      ? 'bg-teal-50 border-teal-200 text-teal-800'
+                      ? 'bg-purple-50 border-purple-200 text-purple-800'
                       : 'bg-amber-50 border-amber-200 text-amber-800'
                   }`}>
                     {appt.status}

@@ -291,7 +291,7 @@ export default function ProviderAppointments() {
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 border-t md:border-t-0 border-champagne/40 pt-4 md:pt-0">
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border w-max ${
                   appt.status === 'confirmed'
-                    ? 'bg-teal-50 border-teal-200 text-teal-800'
+                    ? 'bg-purple-50 border-purple-200 text-purple-800'
                     : appt.status === 'completed'
                     ? 'bg-blue-50 border-blue-200 text-blue-800'
                     : appt.status === 'cancelled'
@@ -305,7 +305,7 @@ export default function ProviderAppointments() {
                   {appt.status === 'pending' && (
                     <button
                       onClick={() => updateStatus(appt.id, 'confirmed')}
-                      className="p-2 bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-700 rounded-lg transition-all"
+                      className="p-2 bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 rounded-lg transition-all"
                       title="Confirm Booking"
                     >
                       <Check className="w-4 h-4" />
@@ -359,8 +359,8 @@ export default function ProviderAppointments() {
                 <h3 className="font-display font-bold text-espresso text-base">
                   Chat with {activeChatBooking.users.full_name}
                 </h3>
-                <p className="text-[10px] text-teal-600 font-bold uppercase tracking-wide flex items-center gap-1 mt-0.5">
-                  <span className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-ping"></span> Active Chat
+                <p className="text-[10px] text-purple-600 font-bold uppercase tracking-wide flex items-center gap-1 mt-0.5">
+                  <span className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-ping"></span> Active Chat
                 </p>
               </div>
               <button onClick={() => setActiveChatBooking(null)} className="text-stone-400 hover:text-stone-600 font-bold text-lg">
@@ -408,7 +408,7 @@ export default function ProviderAppointments() {
                 placeholder="Type your message..."
                 className="flex-grow border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent"
               />
-              <button type="submit" className="p-2.5 bg-accent hover:bg-teal-700 text-white rounded-xl transition-all shadow-sm">
+              <button type="submit" className="p-2.5 bg-accent hover:bg-purple-700 text-white rounded-xl transition-all shadow-sm">
                 <Send className="w-4 h-4" />
               </button>
             </form>

@@ -199,7 +199,7 @@ export default function LandingPage() {
               Discover highly-rated experts, meticulously vetted for quality, reliability, and professional excellence.
             </p>
           </div>
-          <Link href="/search" className="font-sans font-semibold text-accent hover:text-teal-700 flex items-center gap-1 group transition-colors text-sm">
+          <Link href="/search" className="font-sans font-semibold text-accent hover:text-purple-700 flex items-center gap-1 group transition-colors text-sm">
             View All Providers <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>

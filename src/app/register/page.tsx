@@ -527,7 +527,7 @@ export default function RegisterProviderPage() {
               type="button"
               disabled={!permitFile && !loading}
               onClick={handleSubmit}
-              className="w-1/2 bg-accent hover:bg-teal-700 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
+              className="w-1/2 bg-accent hover:bg-purple-700 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -541,7 +541,7 @@ export default function RegisterProviderPage() {
       {/* Step 4: Submission Confirmation */}
       {step === 4 && (
         <div className="bg-white border border-champagne/60 rounded-2xl p-10 shadow-md text-center flex flex-col items-center gap-6">
-          <CheckCircle className="w-16 h-16 text-teal-600" />
+          <CheckCircle className="w-16 h-16 text-purple-600" />
           <div>
             <h1 className="font-display text-2xl font-bold text-espresso mb-2">Application Received</h1>
             <p className="text-stone-500 text-sm max-w-md mx-auto leading-relaxed">

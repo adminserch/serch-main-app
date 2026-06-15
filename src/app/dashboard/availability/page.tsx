@@ -350,7 +350,7 @@ export default function AvailabilityManager() {
           {!isEditingHours && (
             <button
               onClick={startEditing}
-              className="bg-accent hover:bg-teal-700 text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-sm"
+              className="bg-accent hover:bg-purple-700 text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-sm"
             >
               Edit Hours
             </button>

@@ -74,7 +74,7 @@ export default function Navbar() {
             {isSignedIn ? (
               <div className="flex items-center gap-4">
                 {dbRole === 'seeker' && (
-                  <Link href="/register" className="hidden sm:inline-block bg-accent hover:bg-teal-700 text-white font-medium text-xs px-4 py-2 rounded-xl transition-all">
+                  <Link href="/register" className="hidden sm:inline-block bg-accent hover:bg-purple-700 text-white font-medium text-xs px-4 py-2 rounded-xl transition-all">
                     Become a Provider
                   </Link>
                 )}

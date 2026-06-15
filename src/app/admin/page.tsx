@@ -263,7 +263,7 @@ export default function AdminDashboard() {
         <div className="flex items-center gap-3">
           <Link
             href="/search"
-            className="px-4 py-2 rounded-xl text-xs font-bold border border-accent text-accent hover:bg-teal-50 transition-all uppercase tracking-wider bg-white shadow-sm"
+            className="px-4 py-2 rounded-xl text-xs font-bold border border-accent text-accent hover:bg-purple-50 transition-all uppercase tracking-wider bg-white shadow-sm"
           >
             Find Providers
           </Link>
@@ -305,7 +305,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="bg-white border border-champagne/60 rounded-2xl p-6 shadow-sm flex items-center gap-4">
-            <CalendarDays className="w-8 h-8 text-teal-700" />
+            <CalendarDays className="w-8 h-8 text-purple-700" />
             <div>
               <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Total Bookings</span>
               <span className="text-3xl font-bold font-display text-espresso">{stats.bookingsCount}</span>
@@ -363,7 +363,7 @@ export default function AdminDashboard() {
                       {/* Status Badge */}
                       <span className={`text-[10px] font-bold uppercase px-3 py-1 rounded-full border ${
                         p.status === 'approved'
-                          ? 'bg-teal-50 border-teal-200 text-teal-800'
+                          ? 'bg-purple-50 border-purple-200 text-purple-800'
                           : p.status === 'rejected'
                           ? 'bg-red-50 border-red-200 text-red-800'
                           : 'bg-amber-50 border-amber-200 text-amber-800'
@@ -394,7 +394,7 @@ export default function AdminDashboard() {
                         <div className="flex items-center gap-1.5">
                           <button
                             onClick={() => handleUpdateStatus(p.id, 'approved')}
-                            className="p-2 bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-700 rounded-lg transition-all"
+                            className="p-2 bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 rounded-lg transition-all"
                             title="Approve Provider"
                           >
                             <Check className="w-4 h-4" />

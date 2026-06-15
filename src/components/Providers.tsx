@@ -97,7 +97,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
               key={t.id}
               className={`p-4 rounded-xl shadow-lg border text-sm flex items-center justify-between transition-all duration-300 transform translate-y-0 opacity-100 ${
                 t.type === 'success'
-                  ? 'bg-teal-50 border-teal-200 text-teal-800'
+                  ? 'bg-purple-50 border-purple-200 text-purple-800'
                   : t.type === 'error'
                   ? 'bg-red-50 border-red-200 text-red-800'
                   : 'bg-slate-50 border-slate-200 text-slate-800'

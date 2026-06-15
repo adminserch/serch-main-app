@@ -260,7 +260,7 @@ function CheckoutContent() {
           </div>
           <div className="flex justify-between items-center text-sm mb-6 font-sans text-stone-600">
             <span>Platform Service Fee</span>
-            <span className="text-teal-600 font-medium">FREE</span>
+            <span className="text-purple-600 font-medium">FREE</span>
           </div>
 
           <div className="border-t border-champagne/60 pt-4 mb-8 flex justify-between items-end">

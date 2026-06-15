@@ -276,7 +276,7 @@ export default function ProviderProfilePage() {
               <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
                 <h1 className="font-display text-3xl font-bold text-espresso">{provider.business_name}</h1>
                 {provider.is_verified && (
-                  <div className="bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+                  <div className="bg-purple-50 border border-purple-200 text-purple-800 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
                     <ShieldCheck className="w-4 h-4" /> Verified Provider
                   </div>
                 )}

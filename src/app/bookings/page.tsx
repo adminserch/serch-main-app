@@ -356,7 +356,7 @@ export default function BookingsPage() {
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 border-t md:border-t-0 border-champagne/40 pt-4 md:pt-0">
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border w-max ${
                   booking.status === 'confirmed'
-                    ? 'bg-teal-50 border-teal-200 text-teal-800'
+                    ? 'bg-purple-50 border-purple-200 text-purple-800'
                     : booking.status === 'completed'
                     ? 'bg-blue-50 border-blue-200 text-blue-800'
                     : booking.status === 'cancelled'
@@ -393,7 +393,7 @@ export default function BookingsPage() {
                   {booking.status === 'completed' && !booking.review && (
                     <button
                       onClick={() => setReviewBooking(booking)}
-                      className="bg-accent hover:bg-teal-700 text-white font-semibold text-xs px-4 py-2 rounded-lg transition-all"
+                      className="bg-accent hover:bg-purple-700 text-white font-semibold text-xs px-4 py-2 rounded-lg transition-all"
                     >
                       Leave Review
                     </button>
@@ -475,8 +475,8 @@ export default function BookingsPage() {
                 <h3 className="font-display font-bold text-espresso text-base">
                   {activeChatBooking.providers.business_name}
                 </h3>
-                <p className="text-[10px] text-teal-600 font-bold uppercase tracking-wide flex items-center gap-1 mt-0.5">
-                  <span className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-ping"></span> Active Chat
+                <p className="text-[10px] text-purple-600 font-bold uppercase tracking-wide flex items-center gap-1 mt-0.5">
+                  <span className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-ping"></span> Active Chat
                 </p>
               </div>
               <button onClick={() => setActiveChatBooking(null)} className="text-stone-400 hover:text-stone-600 font-bold text-lg">
@@ -524,7 +524,7 @@ export default function BookingsPage() {
                 placeholder="Type your message..."
                 className="flex-grow border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent"
               />
-              <button type="submit" className="p-2.5 bg-accent hover:bg-teal-700 text-white rounded-xl transition-all shadow-sm">
+              <button type="submit" className="p-2.5 bg-accent hover:bg-purple-700 text-white rounded-xl transition-all shadow-sm">
                 <Send className="w-4 h-4" />
               </button>
             </form>

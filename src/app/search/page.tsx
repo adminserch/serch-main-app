@@ -353,7 +353,7 @@ function SearchContent() {
                     }}
                     className={`bg-white border p-6 shadow-xs hover:shadow-md hover:border-gold/60 transition-all flex flex-col justify-between gap-4 cursor-pointer rounded-2xl ${
                       selectedProviderId === p.id 
-                        ? 'border-accent ring-2 ring-accent/20 bg-teal-50/5' 
+                        ? 'border-accent ring-2 ring-accent/20 bg-purple-50/5' 
                         : 'border-champagne/60'
                     }`}
                   >
@@ -382,7 +382,7 @@ function SearchContent() {
                           
                           <div className="flex items-center gap-1.5 flex-shrink-0">
                             {p.is_verified && (
-                              <span className="bg-teal-50 border border-teal-200 text-teal-800 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                              <span className="bg-purple-50 border border-purple-200 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                                 <ShieldCheck className="w-3.5 h-3.5" /> Verified Provider
                               </span>
                             )}
@@ -546,7 +546,7 @@ function SearchContent() {
               {compareList.map((p) => (
                 <div key={p.id} className="border border-champagne/80 rounded-2xl p-4 bg-stone-50 flex flex-col justify-between">
                   <div>
-                    <div className="flex items-center gap-1 bg-teal-50 border border-teal-200 text-teal-800 text-[10px] font-bold px-2 py-0.5 rounded-full w-max mb-3">
+                    <div className="flex items-center gap-1 bg-purple-50 border border-purple-200 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-full w-max mb-3">
                       <ShieldCheck className="w-3.5 h-3.5" /> VERIFIED
                     </div>
                     <h3 className="font-display font-bold text-espresso text-base mb-1">{p.business_name}</h3>
