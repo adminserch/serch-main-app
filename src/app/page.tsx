@@ -192,7 +192,7 @@ export default function LandingPage() {
               type="submit" 
               className={`flex-shrink-0 transition-all active:scale-95 hover:opacity-90 font-semibold text-md px-6 py-3.5 rounded-xl md:rounded-full shadow-sm flex items-center gap-2 cursor-pointer ${
                 isDark 
-                  ? 'bg-white hover:bg-slate-200 text-slate-950' 
+                  ? 'bg-accent hover:opacity-90 text-white' 
                   : 'bg-primary hover:bg-slate-800 text-white'
               }`}
             >
@@ -200,7 +200,7 @@ export default function LandingPage() {
                 src={searchButtonLogo}
                 alt="Search Icon"
                 height={24}
-                className={`h-6 w-6 object-cover rounded-full border-2 ${isDark ? 'border-slate-950' : 'border-white'}`}
+                className={`h-6 w-6 object-cover rounded-full border-2 ${isDark ? 'border-white' : 'border-white'}`}
                 priority
               />
               <span>Search</span>

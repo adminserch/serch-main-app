@@ -7,40 +7,60 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
+            primary: '#0F172A',
+            accent: '#7C3AED',
+            gold: '#D6C5B3',
+            espresso: '#1C1917',
+            champagne: '#F5F2EB',
+            cardBg: '#FFFFFF',
             navy: '#0F172A',
             purple: '#7C3AED',
             cool: '#F8FAFC',
-            espresso: '#1C1917',
-            champagne: '#F7F0E6',
-            blush: '#FDF2F2',
-            mocha: '#A48C7C',
           }
         }
       }
     }
   </script>
   <style>
-    body { font-family: 'Inter', sans-serif; background: #F8FAFC; }
+    body { font-family: 'Inter', sans-serif; background: #F8FAFC; transition: background-color 0.3s ease, color 0.3s ease; }
+    .dark body { background: #09090b; color: #fafafa; }
     .wf-box { border: 2px dashed #94a3b8; background: rgba(255,255,255,0.5); border-radius: 8px; padding: 12px; }
+    .dark .wf-box { border-color: #3f3f46; background: rgba(24,24,27,0.5); }
     .wf-label { font-size: 10px; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; margin-top: 4px; }
+    .dark .wf-label { color: #a1a1aa; }
     .ph-img { background: linear-gradient(135deg, #e2e8f0, #cbd5e1); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 12px; }
+    .dark .ph-img { background: linear-gradient(135deg, #27272a, #18181b); color: #71717a; }
     .card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .dark .card { background: #09090b; border-color: #27272a; }
     .tab-active { border-bottom: 2px solid #7C3AED; color: #7C3AED; font-weight: 600; }
+    .dark .tab-active { border-color: #a78bfa; color: #a78bfa; }
     .tab-inactive { color: #64748b; cursor: pointer; }
+    .dark .tab-inactive { color: #71717a; }
     .section-title { font-size: 14px; font-weight: 700; color: #0F172A; margin-bottom: 4px; }
+    .dark .section-title { color: #fafafa; }
     .section-subtitle { font-size: 11px; color: #94a3b8; margin-bottom: 12px; }
+    .dark .section-subtitle { color: #71717a; }
     .screen-label { position: absolute; top: -10px; left: 12px; font-size: 9px; font-weight: 600; color: #7C3AED; background: #F5F3FF; padding: 1px 8px; border-radius: 4px; letter-spacing: 0.3px; }
+    .dark .screen-label { color: #a78bfa; background: #1e1b4b; }
     .badge { font-size: 10px; padding: 2px 8px; border-radius: 999px; font-weight: 500; }
     .badge-pending { background: #FEF3C7; color: #D97706; }
+    .dark .badge-pending { background: #451a03; color: #fbbf24; }
     .badge-confirmed { background: #F5F3FF; color: #7C3AED; }
+    .dark .badge-confirmed { background: #1e1b4b; color: #a78bfa; }
     .badge-completed { background: #D1FAE5; color: #059669; }
+    .dark .badge-completed { background: #064e3b; color: #34d399; }
     .badge-cancelled { background: #FEE2E2; color: #DC2626; }
+    .dark .badge-cancelled { background: #450a0a; color: #f87171; }
     .sidebar-item { padding: 8px 12px; border-radius: 8px; font-size: 13px; color: #475569; cursor: pointer; }
+    .dark .sidebar-item { color: #a1a1aa; }
     .sidebar-item:hover { background: #F1F5F9; }
+    .dark .sidebar-item:hover { background: #18181b; }
     .sidebar-item.active { background: #F5F3FF; color: #7C3AED; font-weight: 600; }
+    .dark .sidebar-item.active { background: #1e1b4b; color: #a78bfa; }
   </style>
 </head>
 <body>

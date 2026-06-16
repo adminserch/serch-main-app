@@ -17,11 +17,15 @@ export default function Navbar() {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      setIsDark(true);
-      document.documentElement.classList.add('dark');
+    function checkTheme() {
+      if (typeof window !== 'undefined') {
+        const isDarkTheme = document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
+        setIsDark(isDarkTheme);
+      }
     }
+    checkTheme();
+    window.addEventListener('theme-change', checkTheme);
+    return () => window.removeEventListener('theme-change', checkTheme);
   }, []);
 
   const toggleTheme = () => {
