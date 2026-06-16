@@ -153,7 +153,7 @@ export default function LandingPage() {
           <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight text-espresso mb-6 leading-tight">
             Find Trusted Services Near You — <span className="text-purple-600">Fast</span>
           </h1>
-          <p className="font-sans text-lg md:text-xl text-stone-600 max-w-2xl mx-auto mb-12 leading-relaxed">
+          <p className="font-sans text-lg md:text-xl text-stone-600 max-w-2xl mx-auto mb-6 leading-relaxed">
             SERCH connects you with trusted local professionals and businesses anytime, anywhere.
           </p>
           <div className="font-display text-5xl md:text-7xl font-bold tracking-tight text-espresso mb-6 leading-tight">
