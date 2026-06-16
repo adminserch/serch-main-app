@@ -5,15 +5,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import searchButtonLogo from '@/images/serch-button-logo.png';
 import { useRouter } from 'next/navigation';
-import { 
-  SignInButton, 
-  SignUpButton, 
-  UserButton, 
-  useAuth,
-  useUser 
+import {
+  useUser
 } from '@clerk/nextjs';
 import { supabase } from '@/lib/supabase';
-import { Search, MapPin, Star, Award, ShieldCheck, Wrench, Sparkles, Home, ChevronRight } from 'lucide-react';
+import { Search, MapPin, Star, ShieldCheck, Sparkles, Home, ChevronRight } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -67,9 +63,8 @@ const STATIC_PROVIDERS: FeaturedProvider[] = [
 
 export default function LandingPage() {
   const router = useRouter();
-  const { isSignedIn } = useAuth();
   const { user } = useUser();
-  
+
   const [query, setQuery] = useState('');
   const [location, setLocation] = useState('');
   const [liveProviders, setLiveProviders] = useState<FeaturedProvider[]>([]);
@@ -104,8 +99,8 @@ export default function LandingPage() {
                 .eq('provider_id', prov.id);
 
               const count = revData?.length || 0;
-              const avg = count > 0 
-                ? Number((revData!.reduce((acc: number, curr: any) => acc + curr.rating, 0) / count).toFixed(2)) 
+              const avg = count > 0
+                ? Number((revData!.reduce((acc: number, curr: any) => acc + curr.rating, 0) / count).toFixed(2))
                 : 5.0;
 
               return {
@@ -155,14 +150,15 @@ export default function LandingPage() {
             <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse" />
             <span className="text-[11px] font-semibold tracking-wider text-slate-700 uppercase">Curated Local Marketplace</span>
           </div>
-          
           <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight text-espresso mb-6 leading-tight">
             Find Trusted Services Near You — <span className="text-purple-600">Fast</span>
           </h1>
           <p className="font-sans text-lg md:text-xl text-stone-600 max-w-2xl mx-auto mb-12 leading-relaxed">
             SERCH connects you with trusted local professionals and businesses anytime, anywhere.
           </p>
-
+          <div className="font-display text-5xl md:text-7xl font-bold tracking-tight text-espresso mb-6 leading-tight">
+            Find. <span className="text-purple-600">Book</span>. Trust.
+          </div>
           {/* Search Bar */}
           <form onSubmit={handleSearch} className="bg-white/95 backdrop-blur rounded-2xl md:rounded-full p-2.5 mx-auto max-w-4xl shadow-lg border border-champagne/60 flex flex-col md:flex-row items-center gap-2">
             <div className="flex-grow flex items-center bg-stone-50 rounded-xl md:rounded-full px-5 py-3 w-full border border-transparent focus-within:border-accent/40 transition-colors">
@@ -177,8 +173,8 @@ export default function LandingPage() {
             </div>
 
             <button type="submit" className="flex-shrink-0 transition-transform active:scale-95 hover:opacity-90 bg-primary hover:bg-slate-800 text-white font-semibold text-md px-6 py-3.5 rounded-xl md:rounded-full shadow-sm flex items-center gap-2">
-              <Image 
-                src={searchButtonLogo} 
+              <Image
+                src={searchButtonLogo}
                 alt="Search Icon"
                 height={24}
                 className="h-6 w-6 object-cover rounded-full border-2 border-white"
@@ -220,7 +216,7 @@ export default function LandingPage() {
                   <ShieldCheck className="w-4 h-4 text-accent" />
                   <span className="text-[10px] font-bold text-slate-700 uppercase tracking-wider">Verified Provider</span>
                 </div>
-                
+
                 {prov.logo_url ? (
                   <img src={prov.logo_url} alt={prov.business_name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 ) : (
@@ -229,7 +225,7 @@ export default function LandingPage() {
                   </div>
                 )}
               </div>
-              
+
               <div className="p-6 flex-grow flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-start gap-2 mb-2">
@@ -241,17 +237,17 @@ export default function LandingPage() {
                       <span className="text-xs font-bold text-slate-700">{prov.avg_rating}</span>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-1 text-stone-500 text-xs mb-4">
                     <MapPin className="w-3.5 h-3.5" />
                     <span>{prov.service_district}, {prov.service_city}</span>
                   </div>
-                  
+
                   <p className="text-stone-600 text-sm font-sans line-clamp-3 leading-relaxed">
                     {prov.description}
                   </p>
                 </div>
-                
+
                 <div className="mt-6 pt-4 border-t border-champagne/40 flex items-center justify-between">
                   <span className="text-xs text-stone-400 font-sans">{prov.review_count} Reviews</span>
                   <Link href={`/providers/${prov.id}`} className="text-xs font-semibold text-primary hover:text-accent transition-colors flex items-center gap-0.5">
