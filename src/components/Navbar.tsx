@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { SignInButton, SignUpButton, UserButton, useAuth } from '@clerk/nextjs';
 import { supabase } from '@/lib/supabase';
-import { Home, Search, CalendarDays, LayoutDashboard, ShieldCheck, User } from 'lucide-react';
+import { Home, Search, CalendarDays, LayoutDashboard, ShieldCheck, User, Lightbulb } from 'lucide-react';
 import Image from 'next/image';
 import logoImg from '@/images/SERCH Logo 6.png';
 
@@ -13,6 +13,29 @@ export default function Navbar() {
   const pathname = usePathname();
   const { isSignedIn, userId } = useAuth();
   const [dbRole, setDbRole] = useState<string | null>(null);
+
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      setIsDark(true);
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextDark = !isDark;
+    setIsDark(nextDark);
+    if (nextDark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+    window.dispatchEvent(new Event('theme-change'));
+  };
 
   useEffect(() => {
     async function loadRole() {
@@ -71,6 +94,16 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-4">
+            <button 
+              onClick={toggleTheme}
+              className={`p-2 rounded-xl transition-colors ${
+                isDark ? 'hover:bg-slate-800 text-amber-400' : 'hover:bg-stone-100 text-stone-500'
+              }`}
+              aria-label="Toggle Dark Mode"
+            >
+              <Lightbulb className="w-5 h-5" />
+            </button>
+
             {isSignedIn ? (
               <div className="flex items-center gap-4">
                 {dbRole === 'seeker' && (

@@ -70,6 +70,32 @@ export default function ProviderProfilePage() {
   const [isDark, setIsDark] = useState(false);
 
   const [provider, setProvider] = useState<Provider | null>(null);
+
+  // Sync theme with HTML class and global events
+  useEffect(() => {
+    function checkTheme() {
+      if (typeof window !== 'undefined') {
+        const isDarkTheme = document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
+        setIsDark(isDarkTheme);
+      }
+    }
+    checkTheme();
+    window.addEventListener('theme-change', checkTheme);
+    return () => window.removeEventListener('theme-change', checkTheme);
+  }, []);
+
+  const toggleTheme = () => {
+    const nextDark = !isDark;
+    setIsDark(nextDark);
+    if (nextDark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+    window.dispatchEvent(new Event('theme-change'));
+  };
   const [services, setServices] = useState<Service[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
@@ -302,7 +328,7 @@ export default function ProviderProfilePage() {
             {/* Dark mode toggle lightbulb button */}
             <div className="w-full flex justify-end mb-2">
               <button 
-                onClick={() => setIsDark(!isDark)}
+                onClick={toggleTheme}
                 className={`p-2 rounded-full transition-colors ${
                   isDark ? 'hover:bg-slate-800 text-amber-400' : 'hover:bg-stone-100 text-stone-500'
                 }`}
