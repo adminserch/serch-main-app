@@ -303,6 +303,7 @@ export default function ProviderProfilePage() {
               </p>
             </div>
             <SignIn 
+              routing="hash"
               appearance={{
                 elements: {
                   formButtonPrimary: 'bg-primary hover:bg-slate-800 text-sm normal-case',
