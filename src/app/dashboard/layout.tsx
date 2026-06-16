@@ -87,11 +87,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       icon: <Sparkles className="w-4 h-4" />
     },
     {
-      name: 'Categories',
-      href: '/dashboard/categories',
-      icon: <FolderHeart className="w-4 h-4" />
-    },
-    {
       name: 'Hours & Calendar',
       href: '/dashboard/availability',
       icon: <Activity className="w-4 h-4" />

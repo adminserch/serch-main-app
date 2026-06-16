@@ -4,7 +4,7 @@ import Providers from "@/components/Providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Serch - Find. Book. Trust.",
+  title: "Serch - Find Trusted Services Near You — Fast",
   description: "Curated local services marketplace for cleaning, repair, and renovations.",
 };
 

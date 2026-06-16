@@ -1,13 +1,11 @@
 'use strict';
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useAuth, useUser, UserButton } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase, getSupabaseClient } from '@/lib/supabase';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { useToast } from '@/components/Providers';
 import { 
   Users, 
@@ -21,11 +19,37 @@ import {
   XCircle,
   Eye,
   Sliders,
-  Star
+  Star,
+  Plus,
+  Upload,
+  X,
+  Search,
+  Hash,
+  Edit2,
+  FolderHeart
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
+
+const EMOJI_MAP: Record<string, string> = {
+  sparkles: '🧹',
+  snowflake: '❄️',
+  home: '🏠',
+  wrench: '🔧',
+  zap: '⚡',
+  brush: '🖌️',
+  bug: '🐛',
+  truck: '🚚',
+  flower: '🌱',
+  hammer: '🔨',
+};
+
+function getEmojiForIcon(icon: string | null): string {
+  if (!icon) return '📂';
+  const trimmed = icon.trim().toLowerCase();
+  return EMOJI_MAP[trimmed] || icon;
+}
 
 interface Provider {
   id: string;
@@ -40,6 +64,7 @@ interface Provider {
   is_verified: boolean;
   status: 'pending' | 'approved' | 'rejected' | 'suspended';
   logo_url: string | null;
+  service_categories?: string[];
 }
 
 interface Category {
@@ -47,6 +72,7 @@ interface Category {
   name: string;
   slug: string;
   icon: string | null;
+  is_active: boolean;
 }
 
 interface Review {
@@ -61,13 +87,15 @@ interface Review {
   };
 }
 
-export default function AdminDashboard() {
+function AdminDashboardContent() {
   const { getToken } = useAuth();
   const { user } = useUser();
   const router = useRouter();
   const { toast } = useToast();
+  const searchParams = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState<'stats' | 'providers' | 'categories' | 'reviews'>('stats');
+  const tabParam = searchParams.get('tab') || 'stats';
+  const activeTab = (['stats', 'providers', 'categories', 'reviews'].includes(tabParam) ? tabParam : 'stats') as 'stats' | 'providers' | 'categories' | 'reviews';
   const [loading, setLoading] = useState(true);
 
   // Data states
@@ -82,11 +110,223 @@ export default function AdminDashboard() {
 
   // Modal / Form States
   const [selectedProviderMap, setSelectedProviderMap] = useState<Provider | null>(null);
-  const [categoryName, setCategoryName] = useState('');
-  const [categorySlug, setCategorySlug] = useState('');
+  const [categorySearchQuery, setCategorySearchQuery] = useState('');
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [categoryFormName, setCategoryFormName] = useState('');
+  const [categoryFormSlug, setCategoryFormSlug] = useState('');
+  const [categoryFormIcon, setCategoryFormIcon] = useState('sparkles');
+  const [categoryFormActive, setCategoryFormActive] = useState(true);
   const [submittingCategory, setSubmittingCategory] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [currentCategoryPage, setCurrentCategoryPage] = useState(1);
+
+  // CRUD Form States
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    email: '',
+    full_name: '',
+    business_name: '',
+    description: '',
+    service_city: '',
+    service_district: '',
+    latitude: '',
+    longitude: '',
+    website: '',
+    logo_url: '',
+    is_verified: false,
+    status: 'pending' as 'pending' | 'approved' | 'rejected' | 'suspended',
+    categories: [] as string[]
+  });
+
+  const [editingProvider, setEditingProvider] = useState<Provider | null>(null);
+  const [editForm, setEditForm] = useState({
+    business_name: '',
+    description: '',
+    service_city: '',
+    service_district: '',
+    latitude: '',
+    longitude: '',
+    website: '',
+    logo_url: '',
+    is_verified: false,
+    status: 'pending' as 'pending' | 'approved' | 'rejected' | 'suspended',
+    categories: [] as string[]
+  });
+
+  // File Upload states for creating/editing provider logos
+  const [createLogoFile, setCreateLogoFile] = useState<File | null>(null);
+  const [createLogoName, setCreateLogoName] = useState('');
+  const [editLogoFile, setEditLogoFile] = useState<File | null>(null);
+  const [editLogoName, setEditLogoName] = useState('');
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+
+  const handleCreateProvider = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setUploadingLogo(true);
+    try {
+      let finalLogoUrl = createForm.logo_url;
+      if (createLogoFile) {
+        const token = await getToken();
+        const client = getSupabaseClient(token);
+        const fileExt = createLogoFile.name.split('.').pop();
+        const filePath = `admin-uploads/logo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+        
+        const { error: logoUploadError } = await client.storage
+          .from('logos')
+          .upload(filePath, createLogoFile);
+
+        if (!logoUploadError) {
+          const { data } = client.storage.from('logos').getPublicUrl(filePath);
+          finalLogoUrl = data.publicUrl;
+        } else {
+          // Fallback to permits bucket
+          const { error: fallbackError } = await client.storage
+            .from('permits')
+            .upload(filePath, createLogoFile);
+          if (!fallbackError) {
+            const { data } = client.storage.from('permits').getPublicUrl(filePath);
+            finalLogoUrl = data.publicUrl;
+          }
+        }
+      }
+
+      const response = await fetch('/api/admin/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'create_provider',
+          payload: {
+            ...createForm,
+            logo_url: finalLogoUrl,
+            latitude: createForm.latitude ? parseFloat(createForm.latitude) : null,
+            longitude: createForm.longitude ? parseFloat(createForm.longitude) : null,
+            service_categories: createForm.categories
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Failed to create provider');
+      }
+
+      toast('Provider created successfully', 'success');
+      setShowCreateModal(false);
+      setCreateLogoFile(null);
+      setCreateLogoName('');
+      setCreateForm({
+        email: '',
+        full_name: '',
+        business_name: '',
+        description: '',
+        service_city: '',
+        service_district: '',
+        latitude: '',
+        longitude: '',
+        website: '',
+        logo_url: '',
+        is_verified: false,
+        status: 'pending',
+        categories: []
+      });
+      checkAdminAndLoad();
+    } catch (err: any) {
+      toast(err.message || 'Failed to create provider', 'error');
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  const handleUpdateProvider = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProvider) return;
+
+    setUploadingLogo(true);
+    try {
+      let finalLogoUrl = editForm.logo_url;
+      if (editLogoFile) {
+        const token = await getToken();
+        const client = getSupabaseClient(token);
+        const fileExt = editLogoFile.name.split('.').pop();
+        const filePath = `${editingProvider.id}/logo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+        
+        const { error: logoUploadError } = await client.storage
+          .from('logos')
+          .upload(filePath, editLogoFile);
+
+        if (!logoUploadError) {
+          const { data } = client.storage.from('logos').getPublicUrl(filePath);
+          finalLogoUrl = data.publicUrl;
+        } else {
+          // Fallback to permits bucket
+          const { error: fallbackError } = await client.storage
+            .from('permits')
+            .upload(filePath, editLogoFile);
+          if (!fallbackError) {
+            const { data } = client.storage.from('permits').getPublicUrl(filePath);
+            finalLogoUrl = data.publicUrl;
+          }
+        }
+      }
+
+      const response = await fetch('/api/admin/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update_provider',
+          payload: {
+            providerId: editingProvider.id,
+            ...editForm,
+            logo_url: finalLogoUrl,
+            latitude: editForm.latitude ? parseFloat(editForm.latitude) : null,
+            longitude: editForm.longitude ? parseFloat(editForm.longitude) : null,
+            service_categories: editForm.categories
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Failed to update provider');
+      }
+
+      toast('Provider updated successfully', 'success');
+      setEditingProvider(null);
+      setEditLogoFile(null);
+      setEditLogoName('');
+      checkAdminAndLoad();
+    } catch (err: any) {
+      toast(err.message || 'Failed to update provider', 'error');
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  const [providerToDelete, setProviderToDelete] = useState<Provider | null>(null);
+
+  const handleDeleteProvider = async (providerId: string) => {
+    try {
+      const response = await fetch('/api/admin/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'delete_provider',
+          payload: { providerId }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete provider');
+      }
+
+      toast('Provider deleted successfully', 'success');
+      setProviderToDelete(null);
+      checkAdminAndLoad();
+    } catch (err: any) {
+      toast(err.message || 'Failed to delete provider', 'error');
+    }
+  };
 
   async function checkAdminAndLoad() {
     try {
@@ -136,6 +376,13 @@ export default function AdminDashboard() {
     }
   }, [user]);
 
+  // Auto-generate slug from name
+  useEffect(() => {
+    if (!editingCategory) {
+      setCategoryFormSlug(categoryFormName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
+    }
+  }, [categoryFormName, editingCategory]);
+
   const handleUpdateStatus = async (providerId: string, status: 'approved' | 'rejected') => {
     try {
       const response = await fetch('/api/admin/action', {
@@ -182,7 +429,7 @@ export default function AdminDashboard() {
 
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!categoryName || !categorySlug) return;
+    if (!categoryFormName || !categoryFormSlug) return;
 
     setSubmittingCategory(true);
     try {
@@ -192,8 +439,10 @@ export default function AdminDashboard() {
         body: JSON.stringify({
           action: 'add_category',
           payload: {
-            name: categoryName,
-            slug: categorySlug.toLowerCase().replace(/\s+/g, '-')
+            name: categoryFormName,
+            slug: categoryFormSlug.toLowerCase().replace(/\s+/g, '-'),
+            icon: categoryFormIcon || null,
+            is_active: categoryFormActive
           }
         })
       });
@@ -203,13 +452,81 @@ export default function AdminDashboard() {
       }
 
       toast('Category added successfully', 'success');
-      setCategoryName('');
-      setCategorySlug('');
+      setCategoryFormName('');
+      setCategoryFormSlug('');
+      setCategoryFormIcon('sparkles');
+      setCategoryFormActive(true);
+      setShowCategoryForm(false);
       checkAdminAndLoad();
-    } catch (err) {
-      toast('Could not add category.', 'error');
+    } catch (err: any) {
+      toast(err.message || 'Could not add category.', 'error');
     } finally {
       setSubmittingCategory(false);
+    }
+  };
+
+  const handleUpdateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCategory || !categoryFormName || !categoryFormSlug) return;
+
+    setSubmittingCategory(true);
+    try {
+      const response = await fetch('/api/admin/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update_category',
+          payload: {
+            categoryId: editingCategory.id,
+            name: categoryFormName,
+            slug: categoryFormSlug.toLowerCase().replace(/\s+/g, '-'),
+            icon: categoryFormIcon || null,
+            is_active: categoryFormActive
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update category');
+      }
+
+      toast('Category updated successfully', 'success');
+      setEditingCategory(null);
+      setCategoryFormName('');
+      setCategoryFormSlug('');
+      setCategoryFormIcon('sparkles');
+      setCategoryFormActive(true);
+      setShowCategoryForm(false);
+      checkAdminAndLoad();
+    } catch (err: any) {
+      toast(err.message || 'Could not update category.', 'error');
+    } finally {
+      setSubmittingCategory(false);
+    }
+  };
+
+  const handleDeleteCategory = async (categoryId: string) => {
+    if (!confirm('Are you sure you want to delete this category? This might impact services using it.')) return;
+
+    try {
+      const response = await fetch('/api/admin/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'delete_category',
+          payload: { categoryId }
+        })
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Failed to delete category');
+      }
+
+      toast('Category deleted successfully', 'success');
+      checkAdminAndLoad();
+    } catch (err: any) {
+      toast(err.message || 'Could not delete category.', 'error');
     }
   };
 
@@ -246,44 +563,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Top Navbar */}
-      <Navbar />
-
-      {/* Main Panel Content */}
-      <div className="flex-grow pt-28 pb-16">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-8">
-      <div className="flex justify-between items-center border-b border-champagne/60 pb-6 flex-wrap gap-4">
-        <div>
-          <h1 className="font-display text-3xl font-bold text-espresso">Admin Panel</h1>
-          <p className="text-stone-500 text-xs font-sans mt-1">Platform management console for Serch.</p>
-        </div>
-
-        {/* Tab Selection & Navigation */}
-        <div className="flex items-center gap-3">
-          <Link
-            href="/search"
-            className="px-4 py-2 rounded-xl text-xs font-bold border border-accent text-accent hover:bg-purple-50 transition-all uppercase tracking-wider bg-white shadow-sm"
-          >
-            Find Providers
-          </Link>
-          <div className="flex items-center gap-2">
-            {['stats', 'providers', 'categories', 'reviews'].map((t) => (
-              <button
-                key={t}
-                onClick={() => setActiveTab(t as any)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all uppercase tracking-wider ${
-                  activeTab === t
-                    ? 'bg-primary border-primary text-white shadow-sm'
-                    : 'bg-white border-champagne text-stone-600 hover:border-gold'
-                }`}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+    <div className="flex flex-col gap-8">
 
       {/* Tab 1: Stats Overview */}
       {activeTab === 'stats' && (
@@ -324,6 +604,31 @@ export default function AdminDashboard() {
 
         return (
           <div className="flex flex-col gap-6">
+            <div className="flex justify-end">
+              <button
+                onClick={() => {
+                  setCreateForm({
+                    email: '',
+                    full_name: '',
+                    business_name: '',
+                    description: '',
+                    service_city: '',
+                    service_district: '',
+                    latitude: '',
+                    longitude: '',
+                    website: '',
+                    logo_url: '',
+                    is_verified: false,
+                    status: 'pending',
+                    categories: []
+                  });
+                  setShowCreateModal(true);
+                }}
+                className="px-4 py-2.5 bg-primary hover:bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm"
+              >
+                <Plus className="w-4 h-4" /> Add Provider
+              </button>
+            </div>
             <div className="bg-white border border-champagne/60 rounded-2xl overflow-hidden shadow-sm">
               <div className="divide-y divide-champagne/30">
                 {currentProviders.map((p) => (
@@ -387,6 +692,39 @@ export default function AdminDashboard() {
                         title="Toggle Verification Badge"
                       >
                         <Award className="w-4 h-4" /> Verify
+                      </button>
+
+                      {/* Edit Button */}
+                      <button
+                        onClick={() => {
+                          setEditForm({
+                            business_name: p.business_name || '',
+                            description: p.description || '',
+                            service_city: p.service_city || '',
+                            service_district: p.service_district || '',
+                            latitude: p.latitude !== null && p.latitude !== undefined ? String(p.latitude) : '',
+                            longitude: p.longitude !== null && p.longitude !== undefined ? String(p.longitude) : '',
+                            website: p.website || '',
+                            logo_url: p.logo_url || '',
+                            is_verified: p.is_verified || false,
+                            status: p.status || 'pending',
+                            categories: p.service_categories || []
+                          });
+                          setEditingProvider(p);
+                        }}
+                        className="p-2 bg-stone-50 hover:bg-stone-100 border border-champagne/60 rounded-lg text-slate-700 hover:text-accent transition-colors flex items-center gap-1 font-semibold text-xs"
+                        title="Edit Provider Details"
+                      >
+                        <FolderEdit className="w-4 h-4" /> Edit
+                      </button>
+
+                      {/* Delete Button */}
+                      <button
+                        onClick={() => setProviderToDelete(p)}
+                        className="p-2 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg text-red-700 transition-all flex items-center gap-1 font-semibold text-xs"
+                        title="Delete Provider"
+                      >
+                        <Trash2 className="w-4 h-4" /> Delete
                       </button>
 
                       {/* Approve / Reject Actions */}
@@ -498,135 +836,781 @@ export default function AdminDashboard() {
                 </div>
               </div>
             )}
+
+            {/* Create Provider Modal */}
+            {showCreateModal && (
+              <div className="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center p-4 overflow-y-auto">
+                <form onSubmit={handleCreateProvider} className="bg-white border border-champagne rounded-2xl p-6 shadow-2xl max-w-2xl w-full flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
+                  <div className="flex justify-between items-center border-b border-champagne/45 pb-3">
+                    <h3 className="font-display font-bold text-espresso text-base flex items-center gap-1.5">
+                      <Plus className="w-5 h-5 text-accent" /> Add New Provider
+                    </h3>
+                    <button type="button" onClick={() => {
+                      setShowCreateModal(false);
+                      setCreateLogoFile(null);
+                      setCreateLogoName('');
+                    }} className="text-stone-400 hover:text-stone-600 font-bold text-lg">&times;</button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* User Account Details */}
+                    <div className="md:col-span-2 border-b border-champagne/40 pb-2">
+                      <h4 className="font-display font-bold text-xs text-stone-400 uppercase tracking-wider">User Account Settings</h4>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Owner Email</label>
+                      <input
+                        type="email"
+                        required
+                        value={createForm.email}
+                        onChange={(e) => setCreateForm(prev => ({ ...prev, email: e.target.value }))}
+                        placeholder="owner@example.com"
+                        className="w-full border border-champagne rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-accent"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Owner Full Name</label>
+                      <input
+                        type="text"
+                        required
+                        value={createForm.full_name}
+                        onChange={(e) => setCreateForm(prev => ({ ...prev, full_name: e.target.value }))}
+                        placeholder="John Doe"
+                        className="w-full border border-champagne rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-accent"
+                      />
+                    </div>
+
+                    {/* Business Details */}
+                    <div className="md:col-span-2 border-b border-champagne/40 pb-2 mt-2">
+                      <h4 className="font-display font-bold text-xs text-stone-400 uppercase tracking-wider">Business Details</h4>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Business Name</label>
+                      <input
+                        type="text"
+                        required
+                        value={createForm.business_name}
+                        onChange={(e) => setCreateForm(prev => ({ ...prev, business_name: e.target.value }))}
+                        placeholder="e.g. Acme Cleaning Services"
+                        className="w-full border border-champagne rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-accent"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Website URL</label>
+                      <input
+                        type="text"
+                        value={createForm.website}
+                        onChange={(e) => setCreateForm(prev => ({ ...prev, website: e.target.value }))}
+                        placeholder="e.g. www.acmecleaning.com"
+                        className="w-full border border-champagne rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-accent"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Description</label>
+                      <textarea
+                        value={createForm.description}
+                        onChange={(e) => setCreateForm(prev => ({ ...prev, description: e.target.value }))}
+                        placeholder="Provide details about the business, services offered, etc."
+                        rows={3}
+                        className="w-full border border-champagne rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-accent"
+                      />
+                    </div>
+
+                    {/* Location & Contact */}
+                    <div className="md:col-span-2 border-b border-champagne/40 pb-2 mt-2">
+                      <h4 className="font-display font-bold text-xs text-stone-400 uppercase tracking-wider">Location & Branding</h4>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service City</label>
+                      <input
+                        type="text"
+                        required
+                        value={createForm.service_city}
+                        onChange={(e) => setCreateForm(prev => ({ ...prev, service_city: e.target.value }))}
+                        placeholder="e.g. Manila"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service District</label>
+                      <input
+                        type="text"
+                        required
+                        value={createForm.service_district}
+                        onChange={(e) => setCreateForm(prev => ({ ...prev, service_district: e.target.value }))}
+                        placeholder="e.g. Makati"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Latitude</label>
+                      <input
+                        type="number"
+                        step="any"
+                        value={createForm.latitude}
+                        onChange={(e) => setCreateForm(prev => ({ ...prev, latitude: e.target.value }))}
+                        placeholder="e.g. 14.5995"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Longitude</label>
+                      <input
+                        type="number"
+                        step="any"
+                        value={createForm.longitude}
+                        onChange={(e) => setCreateForm(prev => ({ ...prev, longitude: e.target.value }))}
+                        placeholder="e.g. 120.9842"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Company Logo</label>
+                      <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
+                        <input
+                          type="file"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              setCreateLogoFile(e.target.files[0]);
+                              setCreateLogoName(e.target.files[0].name);
+                            }
+                          }}
+                          className="absolute inset-0 opacity-0 cursor-pointer"
+                          accept="image/*"
+                        />
+                        <Upload className="w-6 h-6 text-stone-400 mb-2" />
+                        <span className="text-xs font-bold text-slate-700 font-sans">
+                          Click to upload provider logo
+                        </span>
+                        <span className="text-[10px] text-stone-400 mt-1 font-sans">JPEG, PNG formats</span>
+                      </div>
+
+                      {/* Logo Image Preview (rendered below the upload input box) */}
+                      {createLogoFile ? (
+                        <div className="mt-3 flex items-center gap-3 bg-stone-50 border border-champagne/45 p-2 rounded-xl">
+                          <img 
+                            src={URL.createObjectURL(createLogoFile)} 
+                            alt="New logo upload preview" 
+                            onClick={() => setPreviewImageUrl(URL.createObjectURL(createLogoFile))}
+                            className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity animate-fade-in" 
+                          />
+                          <div className="flex flex-col">
+                            <span className="text-xs font-semibold text-slate-700">Preview of logo</span>
+                            <span className="text-[10px] text-stone-400 font-sans">{createLogoName}</span>
+                          </div>
+                        </div>
+                      ) : createForm.logo_url ? (
+                        <div className="mt-3 flex items-center gap-3 bg-stone-50 border border-champagne/45 p-2 rounded-xl">
+                          <img 
+                            src={createForm.logo_url} 
+                            alt="Provided logo URL preview" 
+                            onClick={() => setPreviewImageUrl(createForm.logo_url)}
+                            className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity animate-fade-in" 
+                          />
+                          <span className="text-xs text-stone-500 font-sans">Preview of logo URL</span>
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Or Paste Logo URL</label>
+                      <input
+                        type="text"
+                        value={createForm.logo_url}
+                        onChange={(e) => setCreateForm(prev => ({ ...prev, logo_url: e.target.value }))}
+                        placeholder="https://example.com/logo.png"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Status</label>
+                      <select
+                        value={createForm.status}
+                        onChange={(e) => setCreateForm(prev => ({ ...prev, status: e.target.value as any }))}
+                        className="w-full border border-champagne rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-accent bg-white"
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="suspended">Suspended</option>
+                      </select>
+                    </div>
+
+                    {/* Status & Verify Options */}
+                    <div className="md:col-span-2 flex items-center gap-2 py-1">
+                      <input
+                        type="checkbox"
+                        id="create_is_verified"
+                        checked={createForm.is_verified}
+                        onChange={(e) => setCreateForm(prev => ({ ...prev, is_verified: e.target.checked }))}
+                        className="rounded border-champagne text-primary focus:ring-accent"
+                      />
+                      <label htmlFor="create_is_verified" className="text-xs font-semibold text-stone-600 cursor-pointer">
+                        Is Verified (Verified Badge)
+                      </label>
+                    </div>
+
+                    {/* Service Categories Multi-Select */}
+                    <div className="md:col-span-2 border-b border-champagne/40 pb-2 mt-2">
+                      <h4 className="font-display font-bold text-xs text-stone-400 uppercase tracking-wider">Service Categories</h4>
+                    </div>
+
+                    <div className="md:col-span-2 grid grid-cols-2 gap-2 bg-stone-50 p-3 rounded-xl border border-champagne/50 font-sans">
+                      {categories.map((c) => {
+                        const isChecked = createForm.categories.includes(c.name);
+                        return (
+                          <div key={c.id} className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              id={`create_cat_${c.id}`}
+                              checked={isChecked}
+                              onChange={() => {
+                                setCreateForm(prev => {
+                                  const list = prev.categories.includes(c.name)
+                                    ? prev.categories.filter(x => x !== c.name)
+                                    : [...prev.categories, c.name];
+                                  return { ...prev, categories: list };
+                                });
+                              }}
+                              className="rounded border-champagne text-primary focus:ring-accent"
+                            />
+                            <label htmlFor={`create_cat_${c.id}`} className="text-[11px] text-stone-600 cursor-pointer">
+                              {c.name}
+                            </label>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-champagne/45">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowCreateModal(false);
+                        setCreateLogoFile(null);
+                        setCreateLogoName('');
+                      }}
+                      className="px-4 py-2.5 border border-champagne text-stone-600 hover:bg-stone-50 rounded-xl text-xs font-bold transition-all"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={uploadingLogo}
+                      className="px-4 py-2.5 bg-primary hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+                    >
+                      {uploadingLogo ? (
+                        <>
+                          <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                          Saving...
+                        </>
+                      ) : 'Add Provider'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* Edit Provider Modal */}
+            {editingProvider && (
+              <div className="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center p-4 overflow-y-auto">
+                <form onSubmit={handleUpdateProvider} className="bg-white border border-champagne rounded-2xl p-6 shadow-2xl max-w-2xl w-full flex flex-col gap-4 max-h-[90vh] overflow-y-auto font-sans">
+                  <div className="flex justify-between items-center border-b border-champagne/45 pb-3">
+                    <h3 className="font-display font-bold text-espresso text-base flex items-center gap-1.5">
+                      <FolderEdit className="w-5 h-5 text-accent" /> Edit Provider Profile
+                    </h3>
+                    <button type="button" onClick={() => {
+                      setEditingProvider(null);
+                      setEditLogoFile(null);
+                      setEditLogoName('');
+                    }} className="text-stone-400 hover:text-stone-600 font-bold text-lg">&times;</button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Business Details */}
+                    <div className="md:col-span-2 border-b border-champagne/40 pb-2">
+                      <h4 className="font-display font-bold text-xs text-stone-400 uppercase tracking-wider">Business Details</h4>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Business Name</label>
+                      <input
+                        type="text"
+                        required
+                        value={editForm.business_name}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, business_name: e.target.value }))}
+                        placeholder="e.g. Acme Cleaning Services"
+                        className="w-full border border-champagne rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-accent"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Website URL</label>
+                      <input
+                        type="text"
+                        value={editForm.website}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, website: e.target.value }))}
+                        placeholder="e.g. www.acmecleaning.com"
+                        className="w-full border border-champagne rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-accent"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Description</label>
+                      <textarea
+                        value={editForm.description}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                        placeholder="Provide details about the business, services offered, etc."
+                        rows={3}
+                        className="w-full border border-champagne rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-accent"
+                      />
+                    </div>
+
+                    {/* Location & Contact */}
+                    <div className="md:col-span-2 border-b border-champagne/40 pb-2 mt-2">
+                      <h4 className="font-display font-bold text-xs text-stone-400 uppercase tracking-wider">Location & Branding</h4>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Service City</label>
+                      <input
+                        type="text"
+                        required
+                        value={editForm.service_city}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, service_city: e.target.value }))}
+                        placeholder="e.g. Manila"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service District</label>
+                      <input
+                        type="text"
+                        required
+                        value={editForm.service_district}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, service_district: e.target.value }))}
+                        placeholder="e.g. Makati"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Latitude</label>
+                      <input
+                        type="number"
+                        step="any"
+                        value={editForm.latitude}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, latitude: e.target.value }))}
+                        placeholder="e.g. 14.5995"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Longitude</label>
+                      <input
+                        type="number"
+                        step="any"
+                        value={editForm.longitude}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, longitude: e.target.value }))}
+                        placeholder="e.g. 120.9842"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Company Logo</label>
+                      <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
+                        <input
+                          type="file"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              setEditLogoFile(e.target.files[0]);
+                              setEditLogoName(e.target.files[0].name);
+                            }
+                          }}
+                          className="absolute inset-0 opacity-0 cursor-pointer"
+                          accept="image/*"
+                        />
+                        <Upload className="w-6 h-6 text-stone-400 mb-2" />
+                        <span className="text-xs font-bold text-slate-700 font-sans">
+                          Click to upload provider logo
+                        </span>
+                        <span className="text-[10px] text-stone-400 mt-1 font-sans">JPEG, PNG formats</span>
+                      </div>
+
+                      {/* Logo Image Preview (rendered below the upload input box) */}
+                      {editLogoFile ? (
+                        <div className="mt-3 flex items-center gap-3 bg-stone-50 border border-champagne/45 p-2 rounded-xl">
+                          <img 
+                            src={URL.createObjectURL(editLogoFile)} 
+                            alt="New logo upload preview" 
+                            onClick={() => setPreviewImageUrl(URL.createObjectURL(editLogoFile))}
+                            className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity animate-fade-in" 
+                          />
+                          <div className="flex flex-col">
+                            <span className="text-xs font-semibold text-slate-700">Preview of new logo</span>
+                            <span className="text-[10px] text-stone-400 font-sans">{editLogoName}</span>
+                          </div>
+                        </div>
+                      ) : editForm.logo_url ? (
+                        <div className="mt-3 flex items-center gap-3 bg-stone-50 border border-champagne/45 p-2 rounded-xl">
+                          <img 
+                            src={editForm.logo_url} 
+                            alt="Current active logo preview" 
+                            onClick={() => setPreviewImageUrl(editForm.logo_url)}
+                            className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity animate-fade-in" 
+                          />
+                          <span className="text-xs text-stone-500 font-sans">Current active logo</span>
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Or Edit Logo URL</label>
+                      <input
+                        type="text"
+                        value={editForm.logo_url}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, logo_url: e.target.value }))}
+                        placeholder="https://example.com/logo.png"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Status</label>
+                      <select
+                        value={editForm.status}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value as any }))}
+                        className="w-full border border-champagne rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-accent bg-white"
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="suspended">Suspended</option>
+                      </select>
+                    </div>
+
+                    {/* Status & Verify Options */}
+                    <div className="md:col-span-2 flex items-center gap-2 py-1">
+                      <input
+                        type="checkbox"
+                        id="edit_is_verified"
+                        checked={editForm.is_verified}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, is_verified: e.target.checked }))}
+                        className="rounded border-champagne text-primary focus:ring-accent"
+                      />
+                      <label htmlFor="edit_is_verified" className="text-xs font-semibold text-stone-600 cursor-pointer">
+                        Is Verified (Verified Badge)
+                      </label>
+                    </div>
+
+                    {/* Service Categories Multi-Select */}
+                    <div className="md:col-span-2 border-b border-champagne/40 pb-2 mt-2">
+                      <h4 className="font-display font-bold text-xs text-stone-400 uppercase tracking-wider">Service Categories</h4>
+                    </div>
+
+                    <div className="md:col-span-2 grid grid-cols-2 gap-2 bg-stone-50 p-3 rounded-xl border border-champagne/50">
+                      {categories.map((c) => {
+                        const isChecked = editForm.categories.includes(c.name);
+                        return (
+                          <div key={c.id} className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              id={`edit_cat_${c.id}`}
+                              checked={isChecked}
+                              onChange={() => {
+                                setEditForm(prev => {
+                                  const list = prev.categories.includes(c.name)
+                                    ? prev.categories.filter(x => x !== c.name)
+                                    : [...prev.categories, c.name];
+                                  return { ...prev, categories: list };
+                                });
+                              }}
+                              className="rounded border-champagne text-primary focus:ring-accent"
+                            />
+                            <label htmlFor={`edit_cat_${c.id}`} className="text-[11px] text-stone-600 cursor-pointer">
+                              {c.name}
+                            </label>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-champagne/45">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingProvider(null);
+                        setEditLogoFile(null);
+                        setEditLogoName('');
+                      }}
+                      className="px-4 py-2.5 border border-champagne text-stone-600 hover:bg-stone-50 rounded-xl text-xs font-bold transition-all"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={uploadingLogo}
+                      className="px-4 py-2.5 bg-primary hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+                    >
+                      {uploadingLogo ? (
+                        <>
+                          <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                          Saving...
+                        </>
+                      ) : 'Save Changes'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* Custom Delete Confirmation Modal */}
+            {providerToDelete && (
+              <div className="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center p-4">
+                <div className="bg-white border border-champagne rounded-2xl p-6 shadow-2xl max-w-md w-full flex flex-col gap-4 font-sans">
+                  <div className="flex items-center gap-3 text-red-600">
+                    <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
+                      <Trash2 className="w-5 h-5 animate-pulse" />
+                    </div>
+                    <h3 className="font-display font-bold text-espresso text-lg">
+                      Delete Provider Profile?
+                    </h3>
+                  </div>
+
+                  <p className="text-stone-600 text-xs leading-relaxed">
+                    Are you sure you want to delete the business profile for <strong className="text-espresso font-bold">{providerToDelete.business_name}</strong>?
+                    This action will permanently delete all services associated with this provider and revert their user account role back to a seeker. This cannot be undone.
+                  </p>
+
+                  <div className="flex justify-end gap-3 mt-4 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setProviderToDelete(null)}
+                      className="px-4 py-2.5 border border-champagne text-stone-600 hover:bg-stone-50 rounded-xl text-xs font-bold transition-all"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteProvider(providerToDelete.id)}
+                      className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm"
+                    >
+                      Delete Profile
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         );
       })()}
 
       {/* Tab 3: Categories CRUD */}
       {activeTab === 'categories' && (() => {
-        const itemsPerPage = 10;
-        const indexOfLastItem = currentCategoryPage * itemsPerPage;
-        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-        const currentCategories = categories.slice(indexOfFirstItem, indexOfLastItem);
-        const totalPages = Math.ceil(categories.length / itemsPerPage);
+        const filteredCategories = categories.filter((c) =>
+          c.name.toLowerCase().includes(categorySearchQuery.toLowerCase()) ||
+          c.slug.toLowerCase().includes(categorySearchQuery.toLowerCase())
+        );
 
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <form onSubmit={handleAddCategory} className="bg-white border border-champagne/60 rounded-2xl p-6 shadow-sm flex flex-col gap-4 h-max">
-              <h2 className="font-display font-bold text-espresso text-base flex items-center gap-1.5">
-                <FolderEdit className="w-4.5 h-4.5 text-accent" /> Add Category
-              </h2>
+          <div className="flex flex-col gap-6">
+            {/* Header section with "+ Add Category" button */}
+            <div className="flex justify-between items-center border-b border-champagne/40 pb-4 flex-wrap gap-4">
               <div>
-                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Category Name</label>
-                <input
-                  type="text"
-                  required
-                  value={categoryName}
-                  onChange={(e) => setCategoryName(e.target.value)}
-                  placeholder="e.g. Roof Repair"
-                  className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Slug</label>
-                <input
-                  type="text"
-                  required
-                  value={categorySlug}
-                  onChange={(e) => setCategorySlug(e.target.value)}
-                  placeholder="e.g. roof-repair"
-                  className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent"
-                />
+                <h1 className="font-display text-2xl font-bold text-espresso tracking-tight">Categories Directory</h1>
+                <p className="text-stone-500 text-xs font-sans mt-0.5">Manage and organize platform service categories.</p>
               </div>
               <button
-                type="submit"
-                disabled={submittingCategory}
-                className="w-full bg-primary hover:bg-slate-800 text-white font-semibold text-xs py-3 rounded-xl transition-all shadow-sm"
+                onClick={() => {
+                  setEditingCategory(null);
+                  setCategoryFormName('');
+                  setCategoryFormSlug('');
+                  setCategoryFormIcon('sparkles');
+                  setCategoryFormActive(true);
+                  setShowCategoryForm(true);
+                }}
+                className="bg-primary hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
               >
-                {submittingCategory ? 'Adding...' : 'Add Category'}
+                <Plus className="w-4 h-4" /> Add Category
               </button>
-            </form>
+            </div>
 
-            <div className="lg:col-span-2 bg-white border border-champagne/60 rounded-2xl p-6 shadow-sm flex flex-col justify-between min-h-[400px]">
-              <div>
-                <h2 className="font-display font-bold text-espresso text-base mb-4">Active Categories</h2>
-                <div className="flex flex-col gap-3">
-                  {currentCategories.map((c) => (
-                    <div key={c.id} className="p-3 border border-champagne/50 bg-stone-50/50 rounded-xl flex items-center justify-between font-sans text-xs">
-                      <div>
-                        <span className="font-bold text-slate-800 block">{c.name}</span>
-                        <span className="text-[10px] text-stone-500">Slug: {c.slug}</span>
-                      </div>
-                    </div>
-                  ))}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left Column: Categories List & Search */}
+              <div className="lg:col-span-2 flex flex-col gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3.5 top-3 w-4 h-4 text-stone-400" />
+                  <input
+                    type="text"
+                    placeholder="Search categories..."
+                    value={categorySearchQuery}
+                    onChange={(e) => setCategorySearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-champagne rounded-xl text-xs focus:outline-none focus:border-accent"
+                  />
                 </div>
+
+                {filteredCategories.length === 0 ? (
+                  <div className="bg-white border border-champagne rounded-2xl p-12 text-center shadow-sm">
+                    <FolderHeart className="w-10 h-10 text-stone-300 mx-auto mb-3" />
+                    <p className="text-stone-400 text-sm font-sans">No categories found matching your query.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {filteredCategories.map((c) => (
+                      <div 
+                        key={c.id} 
+                        className="bg-white border border-champagne/60 rounded-xl p-5 shadow-sm flex flex-col justify-between gap-4 hover:border-accent/40 transition-all bg-stone-50/20"
+                      >
+                        <div className="flex justify-between items-start gap-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-lg bg-stone-50 border border-champagne/50 flex items-center justify-center text-espresso text-base">
+                              {getEmojiForIcon(c.icon)}
+                            </div>
+                            <div>
+                              <h3 className="font-sans font-bold text-espresso text-sm leading-tight">{c.name}</h3>
+                              <span className="text-[10px] text-stone-400 font-mono">/{c.slug}</span>
+                            </div>
+                          </div>
+                          <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                            c.is_active
+                              ? 'bg-purple-50 border-purple-200 text-purple-800'
+                              : 'bg-stone-50 border-stone-200 text-stone-500'
+                          }`}>
+                            {c.is_active ? 'Active' : 'Inactive'}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between items-center text-[10px] text-stone-400 font-sans border-t border-champagne/30 pt-3 mt-1">
+                          <span>Icon: <span className="font-mono text-espresso font-bold">{c.icon || 'sparkles'}</span></span>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => {
+                                setEditingCategory(c);
+                                setCategoryFormName(c.name);
+                                setCategoryFormSlug(c.slug);
+                                setCategoryFormIcon(c.icon || 'sparkles');
+                                setCategoryFormActive(c.is_active);
+                                setShowCategoryForm(true);
+                              }}
+                              className="p-1.5 hover:bg-stone-100 border border-champagne/60 rounded-lg text-slate-700 hover:text-accent transition-all"
+                              title="Edit Category"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteCategory(c.id)}
+                              className="p-1.5 hover:bg-red-100 bg-red-50/50 border border-red-200 rounded-lg text-red-700 transition-all"
+                              title="Delete Category"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              {/* Pagination Controls */}
-              {totalPages > 1 && (
-                <div className="flex justify-between items-center mt-6 pt-4 border-t border-champagne/30 flex-wrap gap-4">
-                  <span className="text-xs text-stone-500 font-sans">
-                    Page {currentCategoryPage} of {totalPages}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      disabled={currentCategoryPage === 1}
-                      onClick={() => setCurrentCategoryPage(1)}
-                      className="px-2.5 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
-                      title="First Page"
-                    >
-                      &lt;&lt;
-                    </button>
-                    <button
-                      type="button"
-                      disabled={currentCategoryPage === 1}
-                      onClick={() => setCurrentCategoryPage(prev => Math.max(prev - 1, 1))}
-                      className="px-3 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
-                      title="Previous Page"
-                    >
-                      &lt;
-                    </button>
+              {/* Right Column: Inline Edit/Add Form */}
+              <div className="flex flex-col gap-6">
+                {showCategoryForm ? (
+                  <form onSubmit={editingCategory ? handleUpdateCategory : handleAddCategory} className="bg-white border border-champagne/80 rounded-2xl p-6 shadow-md flex flex-col gap-4 sticky top-24 font-sans">
+                    <div className="flex justify-between items-center border-b border-champagne/45 pb-3">
+                      <h2 className="font-display font-bold text-espresso text-sm uppercase tracking-wider">
+                        {editingCategory ? 'Edit Category' : 'New Category'}
+                      </h2>
+                      <button type="button" onClick={() => setShowCategoryForm(false)} className="text-stone-400 hover:text-stone-600">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
 
-                    {Array.from({ length: totalPages }).map((_, i) => {
-                      const pageNum = i + 1;
-                      return (
-                        <button
-                          type="button"
-                          key={pageNum}
-                          onClick={() => setCurrentCategoryPage(pageNum)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
-                            currentCategoryPage === pageNum
-                              ? 'bg-accent border-accent text-white shadow-xs'
-                              : 'bg-white border-champagne text-stone-600 hover:border-gold'
-                          }`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Category Name</label>
+                      <input
+                        type="text"
+                        required
+                        value={categoryFormName}
+                        onChange={(e) => setCategoryFormName(e.target.value)}
+                        placeholder="e.g. Roof Repair"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Slug</label>
+                      <input
+                        type="text"
+                        required
+                        value={categoryFormSlug}
+                        onChange={(e) => setCategoryFormSlug(e.target.value)}
+                        placeholder="e.g. roof-repair"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent font-mono"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Icon Name / Emoji</label>
+                      <div className="mb-2 flex items-center justify-center w-12 h-12 rounded-lg bg-champagne/20 border border-champagne/45 text-2xl animate-fade-in">
+                        {getEmojiForIcon(categoryFormIcon)}
+                      </div>
+                      <input
+                        type="text"
+                        value={categoryFormIcon}
+                        onChange={(e) => setCategoryFormIcon(e.target.value)}
+                        placeholder="e.g. sparkles, wrench, zap or 🧹"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2 mt-1">
+                      <input
+                        type="checkbox"
+                        id="category_active"
+                        checked={categoryFormActive}
+                        onChange={(e) => setCategoryFormActive(e.target.checked)}
+                        className="rounded text-accent focus:ring-accent"
+                      />
+                      <label htmlFor="category_active" className="text-xs font-semibold text-stone-600 select-none cursor-pointer">
+                        Mark as Active
+                      </label>
+                    </div>
 
                     <button
-                      type="button"
-                      disabled={currentCategoryPage === totalPages}
-                      onClick={() => setCurrentCategoryPage(prev => Math.min(prev + 1, totalPages))}
-                      className="px-3 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
-                      title="Next Page"
+                      type="submit"
+                      disabled={submittingCategory}
+                      className="w-full bg-primary hover:bg-slate-800 text-white font-semibold text-xs py-3 rounded-xl transition-all shadow-sm mt-2 flex items-center justify-center gap-1.5"
                     >
-                      &gt;
+                      {submittingCategory ? (
+                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      ) : (
+                        <Check className="w-4 h-4" />
+                      )}
+                      Save Category
                     </button>
-                    <button
-                      type="button"
-                      disabled={currentCategoryPage === totalPages}
-                      onClick={() => setCurrentCategoryPage(totalPages)}
-                      className="px-2.5 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
-                      title="Last Page"
-                    >
-                      &gt;&gt;
-                    </button>
+                  </form>
+                ) : (
+                  <div className="bg-stone-50/50 border border-dashed border-champagne rounded-2xl p-6 text-center text-stone-400 text-xs py-12">
+                    Select a category to edit or create a new one to begin editing here.
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         );
@@ -673,11 +1657,41 @@ export default function AdminDashboard() {
           )}
         </div>
       )}
-        </div>
-      </div>
 
-      {/* Footer */}
-      <Footer />
+      {/* Lightbox / Image Preview Modal */}
+      {previewImageUrl && (
+        <div 
+          className="fixed inset-0 bg-slate-950/80 z-[100] flex items-center justify-center p-4 backdrop-blur-xs cursor-zoom-out animate-fade-in"
+          onClick={() => setPreviewImageUrl(null)}
+        >
+          <div className="relative max-w-3xl w-full max-h-[85vh] flex items-center justify-center bg-black/40 rounded-2xl overflow-hidden border border-white/10 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <button 
+              type="button" 
+              onClick={() => setPreviewImageUrl(null)}
+              className="absolute top-4 right-4 bg-black/60 hover:bg-black/80 text-white rounded-full p-2 transition-all cursor-pointer z-10"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <img 
+              src={previewImageUrl} 
+              alt="High resolution preview" 
+              className="max-w-full max-h-[85vh] object-contain rounded-xl"
+            />
+          </div>
+        </div>
+      )}
     </div>
+  );
+}
+
+export default function AdminDashboard() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center p-8 h-[50vh]">
+        <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <AdminDashboardContent />
+    </Suspense>
   );
 }

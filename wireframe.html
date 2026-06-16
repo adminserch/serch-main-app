@@ -11,7 +11,7 @@
         extend: {
           colors: {
             navy: '#0F172A',
-            teal: '#0D9488',
+            purple: '#7C3AED',
             cool: '#F8FAFC',
             espresso: '#1C1917',
             champagne: '#F7F0E6',
@@ -28,19 +28,19 @@
     .wf-label { font-size: 10px; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; margin-top: 4px; }
     .ph-img { background: linear-gradient(135deg, #e2e8f0, #cbd5e1); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 12px; }
     .card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-    .tab-active { border-bottom: 2px solid #0D9488; color: #0D9488; font-weight: 600; }
+    .tab-active { border-bottom: 2px solid #7C3AED; color: #7C3AED; font-weight: 600; }
     .tab-inactive { color: #64748b; cursor: pointer; }
     .section-title { font-size: 14px; font-weight: 700; color: #0F172A; margin-bottom: 4px; }
     .section-subtitle { font-size: 11px; color: #94a3b8; margin-bottom: 12px; }
-    .screen-label { position: absolute; top: -10px; left: 12px; font-size: 9px; font-weight: 600; color: #0D9488; background: #F0FDFA; padding: 1px 8px; border-radius: 4px; letter-spacing: 0.3px; }
+    .screen-label { position: absolute; top: -10px; left: 12px; font-size: 9px; font-weight: 600; color: #7C3AED; background: #F5F3FF; padding: 1px 8px; border-radius: 4px; letter-spacing: 0.3px; }
     .badge { font-size: 10px; padding: 2px 8px; border-radius: 999px; font-weight: 500; }
     .badge-pending { background: #FEF3C7; color: #D97706; }
-    .badge-confirmed { background: #F0FDFA; color: #0D9488; }
+    .badge-confirmed { background: #F5F3FF; color: #7C3AED; }
     .badge-completed { background: #D1FAE5; color: #059669; }
     .badge-cancelled { background: #FEE2E2; color: #DC2626; }
     .sidebar-item { padding: 8px 12px; border-radius: 8px; font-size: 13px; color: #475569; cursor: pointer; }
     .sidebar-item:hover { background: #F1F5F9; }
-    .sidebar-item.active { background: #F0FDFA; color: #0D9488; font-weight: 600; }
+    .sidebar-item.active { background: #F5F3FF; color: #7C3AED; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -51,7 +51,7 @@
   <div class="text-center space-y-2 sticky top-0 z-50 bg-cool py-3 border-b border-slate-200">
     <h1 class="text-xl font-bold text-navy">Serch — Complete Wireframes</h1>
     <p class="text-xs text-slate-400">Every screen from the site map. Not pixel-perfect — shows component layout only.</p>
-    <div class="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[11px] text-teal-600 font-medium">
+    <div class="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[11px] text-purple-600 font-medium">
       <a href="#seeker" class="hover:underline">Seeker</a>
       <a href="#provider" class="hover:underline">Provider</a>
       <a href="#admin" class="hover:underline">Admin</a>
@@ -74,7 +74,9 @@
       <div class="mt-4 space-y-4">
         <!-- Top bar -->
         <div class="flex items-center justify-between">
-          <div class="text-lg font-bold text-navy">Serch</div>
+          <div class="h-10 flex items-center">
+            <img src="src/images/SERCH Logo 6.png" alt="Serch Logo" class="h-8 w-auto object-contain" />
+          </div>
           <div class="flex items-center gap-3">
             <div class="w-6 h-6 ph-img rounded-full"></div>
           </div>
@@ -99,9 +101,9 @@
         <div class="ph-img h-36 w-full rounded-xl flex items-center justify-center">
           <span class="text-xs">Leaflet Map — Provider markers pinned by city</span>
         </div>
-        <!-- Popular Providers -->
+        <!-- Providers -->
         <div>
-          <h3 class="text-sm font-semibold text-navy mb-2">Popular Providers</h3>
+          <h3 class="text-sm font-semibold text-navy mb-2">Providers</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div class="card p-3 space-y-2">
               <div class="flex items-center justify-between">
@@ -111,8 +113,8 @@
               <div class="font-semibold text-sm">CleanPro Manila</div>
               <div class="text-[11px] text-slate-500">Makati City • Home Cleaning</div>
               <div class="flex items-center gap-1">
-                <div class="w-3.5 h-3.5 rounded-full bg-teal flex items-center justify-center"><span class="text-white text-[7px]">✓</span></div>
-                <span class="text-[9px] text-teal font-medium">Verified</span>
+                <div class="w-3.5 h-3.5 rounded-full bg-purple flex items-center justify-center"><span class="text-white text-[7px]">✓</span></div>
+                <span class="text-[9px] text-purple font-medium">Verified</span>
               </div>
             </div>
             <div class="card p-3 space-y-2">
@@ -123,8 +125,8 @@
               <div class="font-semibold text-sm">Cool Air Services</div>
               <div class="text-[11px] text-slate-500">Quezon City • Aircon Repair</div>
               <div class="flex items-center gap-1">
-                <div class="w-3.5 h-3.5 rounded-full bg-teal flex items-center justify-center"><span class="text-white text-[7px]">✓</span></div>
-                <span class="text-[9px] text-teal font-medium">Verified</span>
+                <div class="w-3.5 h-3.5 rounded-full bg-purple flex items-center justify-center"><span class="text-white text-[7px]">✓</span></div>
+                <span class="text-[9px] text-purple font-medium">Verified</span>
               </div>
             </div>
             <div class="card p-3 space-y-2">
@@ -135,8 +137,8 @@
               <div class="font-semibold text-sm">RoofMasters PH</div>
               <div class="text-[11px] text-slate-500">Pasig City • Roof Repair</div>
               <div class="flex items-center gap-1">
-                <div class="w-3.5 h-3.5 rounded-full bg-teal flex items-center justify-center"><span class="text-white text-[7px]">✓</span></div>
-                <span class="text-[9px] text-teal font-medium">Verified</span>
+                <div class="w-3.5 h-3.5 rounded-full bg-purple flex items-center justify-center"><span class="text-white text-[7px]">✓</span></div>
+                <span class="text-[9px] text-purple font-medium">Verified</span>
               </div>
             </div>
           </div>
@@ -152,8 +154,8 @@
                 <div class="text-[11px] text-yellow-500">★★★★★ <span class="text-slate-400">(24 reviews)</span></div>
                 <div class="text-[11px] text-slate-500">Home Cleaning • Starts at ₱500</div>
                 <div class="flex items-center gap-2">
-                  <span class="badge bg-teal/10 text-teal">✓ Verified</span>
-                  <span class="badge bg-green-100 text-green-600">● Online</span>
+                  <span class="badge bg-purple/10 text-purple">✓ Verified</span>
+                  <span class="badge bg-purple-100 text-purple-600">● Online</span>
                 </div>
               </div>
               <button class="self-center shrink-0 text-[11px] bg-navy text-white px-3 py-1.5 rounded-lg">Book</button>
@@ -165,7 +167,7 @@
                 <div class="text-[11px] text-yellow-500">★★★★☆ <span class="text-slate-400">(18 reviews)</span></div>
                 <div class="text-[11px] text-slate-500">Aircon Repair • Starts at ₱800</div>
                 <div class="flex items-center gap-2">
-                  <span class="badge bg-teal/10 text-teal">✓ Verified</span>
+                  <span class="badge bg-purple/10 text-purple">✓ Verified</span>
                   <span class="badge bg-slate-100 text-slate-400">● Offline</span>
                 </div>
               </div>
@@ -178,8 +180,8 @@
                 <div class="text-[11px] text-yellow-500">★★★★★ <span class="text-slate-400">(31 reviews)</span></div>
                 <div class="text-[11px] text-slate-500">Roof Repair • Starts at ₱1,500</div>
                 <div class="flex items-center gap-2">
-                  <span class="badge bg-teal/10 text-teal">✓ Verified</span>
-                  <span class="badge bg-green-100 text-green-600">● Online</span>
+                  <span class="badge bg-purple/10 text-purple">✓ Verified</span>
+                  <span class="badge bg-purple-100 text-purple-600">● Online</span>
                 </div>
               </div>
               <button class="self-center shrink-0 text-[11px] bg-navy text-white px-3 py-1.5 rounded-lg">Book</button>
@@ -189,7 +191,7 @@
         <!-- Mobile bottom nav -->
         <div class="md:hidden border-t border-slate-200 pt-3">
           <div class="flex justify-around text-[10px]">
-            <div class="flex flex-col items-center text-teal"><span class="text-xs">●</span><span>Home</span></div>
+            <div class="flex flex-col items-center text-purple"><span class="text-xs">●</span><span>Home</span></div>
             <div class="flex flex-col items-center text-slate-400"><span class="text-xs">○</span><span>Search</span></div>
             <div class="flex flex-col items-center text-slate-400"><span class="text-xs">○</span><span>Bookings</span></div>
             <div class="flex flex-col items-center text-slate-400"><span class="text-xs">○</span><span>Profile</span></div>
@@ -213,12 +215,12 @@
             <span class="text-[10px] text-slate-400">Home Cleaning in Makati City</span>
           </div>
           <div class="flex gap-1">
-            <div class="text-[10px] bg-teal/10 text-teal px-2 py-1 rounded font-medium">List</div>
+            <div class="text-[10px] bg-purple/10 text-purple px-2 py-1 rounded font-medium">List</div>
             <div class="text-[10px] text-slate-400 px-2 py-1 rounded">Map</div>
           </div>
         </div>
         <div class="flex gap-2 overflow-x-auto pb-1">
-          <div class="shrink-0 text-[10px] bg-teal text-white px-3 py-1 rounded-full">All Results</div>
+          <div class="shrink-0 text-[10px] bg-purple text-white px-3 py-1 rounded-full">All Results</div>
           <div class="shrink-0 text-[10px] bg-white border border-slate-300 text-slate-600 px-3 py-1 rounded-full">Home Cleaning</div>
           <div class="shrink-0 text-[10px] bg-white border border-slate-300 text-slate-600 px-3 py-1 rounded-full">Deep Clean</div>
           <div class="shrink-0 text-[10px] bg-white border border-slate-300 text-slate-600 px-3 py-1 rounded-full">Office Cleaning</div>
@@ -230,8 +232,8 @@
             <div class="text-[10px] text-yellow-500">★★★★★ <span class="text-slate-400">24 reviews</span></div>
             <div class="text-[10px] text-slate-500">Home Cleaning • ₱500–₱1,200</div>
             <div class="flex gap-2 mt-1">
-              <span class="badge bg-teal/10 text-teal">✓ Verified</span>
-              <span class="badge bg-green-100 text-green-600">● Online</span>
+              <span class="badge bg-purple/10 text-purple">✓ Verified</span>
+              <span class="badge bg-purple-100 text-purple-600">● Online</span>
             </div>
           </div>
           <button class="self-center shrink-0 text-[11px] bg-navy text-white px-3 py-1.5 rounded-lg">View</button>
@@ -243,7 +245,7 @@
             <div class="text-[10px] text-yellow-500">★★★★☆ <span class="text-slate-400">12 reviews</span></div>
             <div class="text-[10px] text-slate-500">Home Cleaning • ₱400–₱900</div>
             <div class="flex gap-2 mt-1">
-              <span class="badge bg-teal/10 text-teal">✓ Verified</span>
+              <span class="badge bg-purple/10 text-purple">✓ Verified</span>
               <span class="badge bg-slate-100 text-slate-400">● Offline</span>
             </div>
           </div>
@@ -269,7 +271,7 @@
           <div class="pt-6">
             <div class="flex items-center gap-2">
               <span class="font-bold text-sm">CleanPro Manila</span>
-              <div class="w-4 h-4 rounded-full bg-teal flex items-center justify-center"><span class="text-white text-[8px]">✓</span></div>
+              <div class="w-4 h-4 rounded-full bg-purple flex items-center justify-center"><span class="text-white text-[8px]">✓</span></div>
             </div>
             <div class="text-[11px] text-yellow-500 mt-0.5">★★★★★ <span class="text-slate-400">(24 reviews)</span></div>
             <div class="text-[11px] text-slate-500">Makati City • Home Cleaning Service</div>
@@ -283,11 +285,11 @@
           <div class="space-y-2">
             <div class="card p-3 flex items-center justify-between">
               <div><div class="text-xs font-medium">Basic Home Cleaning</div><div class="text-[10px] text-slate-500">2 hours</div></div>
-              <div class="flex items-center gap-2"><span class="text-xs font-semibold">₱500</span><button class="text-[10px] bg-teal text-white px-3 py-1 rounded-lg">Book</button></div>
+              <div class="flex items-center gap-2"><span class="text-xs font-semibold">₱500</span><button class="text-[10px] bg-purple text-white px-3 py-1 rounded-lg">Book</button></div>
             </div>
             <div class="card p-3 flex items-center justify-between">
               <div><div class="text-xs font-medium">Deep Cleaning</div><div class="text-[10px] text-slate-500">4 hours</div></div>
-              <div class="flex items-center gap-2"><span class="text-xs font-semibold">₱1,200</span><button class="text-[10px] bg-teal text-white px-3 py-1 rounded-lg">Book</button></div>
+              <div class="flex items-center gap-2"><span class="text-xs font-semibold">₱1,200</span><button class="text-[10px] bg-purple text-white px-3 py-1 rounded-lg">Book</button></div>
             </div>
           </div>
         </div>
@@ -333,7 +335,7 @@
             </thead>
             <tbody>
               <tr class="border-b border-slate-100"><td class="py-2 pr-4 text-slate-500">Rating</td><td class="text-center py-2">★★★★★</td><td class="text-center py-2">★★★★☆</td><td class="text-center py-2">★★★★☆</td></tr>
-              <tr class="border-b border-slate-100"><td class="py-2 pr-4 text-slate-500">Verified</td><td class="text-center py-2 text-teal">✓</td><td class="text-center py-2 text-teal">✓</td><td class="text-center py-2 text-slate-300">—</td></tr>
+              <tr class="border-b border-slate-100"><td class="py-2 pr-4 text-slate-500">Verified</td><td class="text-center py-2 text-purple">✓</td><td class="text-center py-2 text-purple">✓</td><td class="text-center py-2 text-slate-300">—</td></tr>
               <tr class="border-b border-slate-100"><td class="py-2 pr-4 text-slate-500">Starting Price</td><td class="text-center py-2 font-medium">₱500</td><td class="text-center py-2 font-medium">₱400</td><td class="text-center py-2 font-medium">₱600</td></tr>
               <tr class="border-b border-slate-100"><td class="py-2 pr-4 text-slate-500">Location</td><td class="text-center py-2">Makati</td><td class="text-center py-2">Makati</td><td class="text-center py-2">Mandaluyong</td></tr>
               <tr class="border-b border-slate-100"><td class="py-2 pr-4 text-slate-500">Reviews</td><td class="text-center py-2">24</td><td class="text-center py-2">12</td><td class="text-center py-2">8</td></tr>
@@ -351,10 +353,10 @@
         <!-- Step indicator -->
         <div class="flex items-center justify-center gap-2">
           <div class="flex items-center gap-1">
-            <div class="w-5 h-5 rounded-full bg-teal flex items-center justify-center"><span class="text-white text-[8px]">1</span></div>
-            <span class="text-[9px] text-teal font-medium">Calendar</span>
+            <div class="w-5 h-5 rounded-full bg-purple flex items-center justify-center"><span class="text-white text-[8px]">1</span></div>
+            <span class="text-[9px] text-purple font-medium">Calendar</span>
           </div>
-          <div class="w-6 h-px bg-teal"></div>
+          <div class="w-6 h-px bg-purple"></div>
           <div class="flex items-center gap-1">
             <div class="w-5 h-5 rounded-full bg-navy flex items-center justify-center"><span class="text-white text-[8px]">2</span></div>
             <span class="text-[9px] text-navy font-medium">Checkout</span>
@@ -378,12 +380,12 @@
             <div>
               <div class="text-[9px] text-slate-500 font-medium mt-1 mb-1">Available Slots — Jun 15</div>
               <div class="flex flex-wrap gap-1.5">
-                <div class="bg-teal/10 text-teal text-[10px] px-2.5 py-1 rounded-lg">9:00 AM</div>
-                <div class="bg-teal/10 text-teal text-[10px] px-2.5 py-1 rounded-lg">10:00 AM</div>
-                <div class="bg-teal/10 text-teal text-[10px] px-2.5 py-1 rounded-lg">11:00 AM</div>
+                <div class="bg-purple/10 text-purple text-[10px] px-2.5 py-1 rounded-lg">9:00 AM</div>
+                <div class="bg-purple/10 text-purple text-[10px] px-2.5 py-1 rounded-lg">10:00 AM</div>
+                <div class="bg-purple/10 text-purple text-[10px] px-2.5 py-1 rounded-lg">11:00 AM</div>
                 <div class="bg-navy text-white text-[10px] px-2.5 py-1 rounded-lg">2:00 PM</div>
-                <div class="bg-teal/10 text-teal text-[10px] px-2.5 py-1 rounded-lg">3:00 PM</div>
-                <div class="bg-teal/10 text-teal text-[10px] px-2.5 py-1 rounded-lg">4:00 PM</div>
+                <div class="bg-purple/10 text-purple text-[10px] px-2.5 py-1 rounded-lg">3:00 PM</div>
+                <div class="bg-purple/10 text-purple text-[10px] px-2.5 py-1 rounded-lg">4:00 PM</div>
               </div>
             </div>
           </div>
@@ -405,8 +407,8 @@
           </div>
         </div>
         <!-- Confirmation (shown after booking) -->
-        <div class="card p-6 border-teal/30 bg-teal/5 text-center space-y-2">
-          <div class="w-12 h-12 rounded-full bg-teal flex items-center justify-center mx-auto"><span class="text-white text-lg">✓</span></div>
+        <div class="card p-6 border-purple/30 bg-purple/5 text-center space-y-2">
+          <div class="w-12 h-12 rounded-full bg-purple flex items-center justify-center mx-auto"><span class="text-white text-lg">✓</span></div>
           <div class="font-bold text-sm text-navy">Booking Request Sent!</div>
           <div class="text-xs text-slate-500">Awaiting provider approval — you'll be notified once confirmed.</div>
           <div class="card inline-block p-3 text-left text-xs space-y-1 mt-2">
@@ -427,7 +429,7 @@
       <div class="screen-label">1h. My Bookings</div>
       <div class="mt-4 space-y-3">
         <div class="flex gap-2 overflow-x-auto pb-1">
-          <div class="shrink-0 text-[10px] bg-teal text-white px-3 py-1 rounded-full">All</div>
+          <div class="shrink-0 text-[10px] bg-purple text-white px-3 py-1 rounded-full">All</div>
           <div class="shrink-0 text-[10px] bg-white border border-slate-300 text-slate-600 px-3 py-1 rounded-full">Pending</div>
           <div class="shrink-0 text-[10px] bg-white border border-slate-300 text-slate-600 px-3 py-1 rounded-full">Confirmed</div>
           <div class="shrink-0 text-[10px] bg-white border border-slate-300 text-slate-600 px-3 py-1 rounded-full">Completed</div>
@@ -465,9 +467,9 @@
     <div class="relative card p-6 mb-8">
       <div class="screen-label">1i. Auth — Sign In</div>
       <div class="mt-4 max-w-sm mx-auto space-y-3">
-        <div class="text-center">
-          <div class="text-lg font-bold text-navy">Serch</div>
-          <div class="text-xs text-slate-500 mt-1">Find. Book. Trust.</div>
+        <div class="text-center flex flex-col items-center">
+          <img src="src/images/SERCH Logo 6.png" alt="Serch Logo" class="h-10 w-auto object-contain mb-1" />
+          <div class="text-xs text-slate-500">Find Trusted Services Near You — <span class="text-purple-600 font-semibold">Fast</span></div>
         </div>
         <div class="space-y-2">
           <div class="h-9 border border-slate-300 rounded-lg flex items-center px-3 text-xs text-slate-400">Email address</div>
@@ -480,7 +482,7 @@
           <span>Sign in with Google</span>
         </button>
         <div class="text-center text-[10px] text-slate-500">
-          Don't have an account? <span class="text-teal font-medium">Sign up</span>
+          Don't have an account? <span class="text-purple font-medium">Sign up</span>
         </div>
       </div>
     </div>
@@ -509,10 +511,10 @@
           <span>Sign up with Google</span>
         </button>
         <div class="text-center text-[10px] text-slate-500">
-          Already have an account? <span class="text-teal font-medium">Sign in</span>
+          Already have an account? <span class="text-purple font-medium">Sign in</span>
         </div>
         <div class="text-center text-[10px] text-slate-400">
-          Registering as a provider? <span class="text-teal font-medium">Sign up here</span>
+          Registering as a provider? <span class="text-purple font-medium">Sign up here</span>
         </div>
       </div>
     </div>
@@ -523,10 +525,10 @@
       <div class="mt-4 space-y-4">
         <!-- Stepper -->
         <div class="flex items-center justify-center gap-1 text-[9px]">
-          <div class="flex items-center gap-1"><div class="w-4 h-4 rounded-full bg-teal flex items-center justify-center"><span class="text-white text-[6px]">✓</span></div><span class="text-teal font-medium">Details</span></div>
-          <div class="w-6 h-px bg-teal"></div>
-          <div class="flex items-center gap-1"><div class="w-4 h-4 rounded-full bg-teal flex items-center justify-center"><span class="text-white text-[6px]">✓</span></div><span class="text-teal font-medium">Permit</span></div>
-          <div class="w-6 h-px bg-teal"></div>
+          <div class="flex items-center gap-1"><div class="w-4 h-4 rounded-full bg-purple flex items-center justify-center"><span class="text-white text-[6px]">✓</span></div><span class="text-purple font-medium">Details</span></div>
+          <div class="w-6 h-px bg-purple"></div>
+          <div class="flex items-center gap-1"><div class="w-4 h-4 rounded-full bg-purple flex items-center justify-center"><span class="text-white text-[6px]">✓</span></div><span class="text-purple font-medium">Permit</span></div>
+          <div class="w-6 h-px bg-purple"></div>
           <div class="flex items-center gap-1"><div class="w-4 h-4 rounded-full bg-navy flex items-center justify-center"><span class="text-white text-[6px]">3</span></div><span class="text-navy font-medium">Address</span></div>
           <div class="w-6 h-px bg-slate-300"></div>
           <div class="flex items-center gap-1"><div class="w-4 h-4 rounded-full bg-slate-300 flex items-center justify-center"><span class="text-white text-[6px]">4</span></div><span class="text-slate-400">Review</span></div>
@@ -537,9 +539,9 @@
           <div class="h-9 border border-slate-300 rounded-lg flex items-center px-3 text-xs text-slate-400">Enter your business address</div>
           <div class="ph-img h-32 w-full rounded-xl flex items-center justify-center relative">
             <span class="text-xs">Leaflet Map — Address auto-pinned. Drag marker to adjust.</span>
-            <div class="absolute w-4 h-4 bg-teal rounded-full border-2 border-white shadow" style="top:45%;left:55%;"></div>
+            <div class="absolute w-4 h-4 bg-purple rounded-full border-2 border-white shadow" style="top:45%;left:55%;"></div>
           </div>
-          <div class="text-[9px] text-slate-400 flex items-center gap-1"><span class="text-teal">●</span> Drag the pin to adjust your exact location</div>
+          <div class="text-[9px] text-slate-400 flex items-center gap-1"><span class="text-purple">●</span> Drag the pin to adjust your exact location</div>
           <div class="flex justify-between">
             <button class="text-[10px] border border-slate-300 text-slate-600 px-4 py-1.5 rounded-lg">Back</button>
             <button class="text-[10px] bg-navy text-white px-4 py-1.5 rounded-lg">Next — Review</button>
@@ -548,7 +550,7 @@
         <!-- Step 1: Details (collapsed preview) -->
         <details class="text-xs text-slate-500">
           <summary class="cursor-pointer font-medium">Step 1: Business Details (completed)</summary>
-          <div class="mt-2 space-y-1 pl-2 border-l-2 border-teal/30">
+          <div class="mt-2 space-y-1 pl-2 border-l-2 border-purple/30">
             <div>Business Name: Juan's Roofing Services</div>
             <div>Category: Roof Repair</div>
             <div>City: Manila</div>
@@ -557,7 +559,7 @@
         <!-- Step 2: Permit (collapsed preview) -->
         <details class="text-xs text-slate-500">
           <summary class="cursor-pointer font-medium">Step 2: Business Permit (completed)</summary>
-          <div class="mt-2 space-y-1 pl-2 border-l-2 border-teal/30">
+          <div class="mt-2 space-y-1 pl-2 border-l-2 border-purple/30">
             <div>File: business_permit_2026.pdf</div>
             <div class="ph-img h-16 w-24 rounded flex items-center justify-center"><span class="text-[8px]">PDF preview</span></div>
           </div>
@@ -594,10 +596,10 @@
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
             <div class="card text-center p-3"><div class="text-xl font-bold text-navy">48</div><div class="text-[9px] text-slate-500">Total</div></div>
             <div class="card text-center p-3"><div class="text-xl font-bold text-amber-500">12</div><div class="text-[9px] text-slate-500">Pending</div></div>
-            <div class="card text-center p-3"><div class="text-xl font-bold text-teal">28</div><div class="text-[9px] text-slate-500">Confirmed</div></div>
-            <div class="card text-center p-3"><div class="text-xl font-bold text-green-500">8</div><div class="text-[9px] text-slate-500">Completed</div></div>
+            <div class="card text-center p-3"><div class="text-xl font-bold text-purple">28</div><div class="text-[9px] text-slate-500">Confirmed</div></div>
+            <div class="card text-center p-3"><div class="text-xl font-bold text-purple-500">8</div><div class="text-[9px] text-slate-500">Completed</div></div>
             <div class="card text-center p-3"><div class="text-xl font-bold text-navy">6</div><div class="text-[9px] text-slate-500">Services</div></div>
-            <div class="card text-center p-3"><div class="text-xl font-bold text-teal">3</div><div class="text-[9px] text-slate-500">Today</div></div>
+            <div class="card text-center p-3"><div class="text-xl font-bold text-purple">3</div><div class="text-[9px] text-slate-500">Today</div></div>
           </div>
           <!-- Tabs -->
           <div class="flex gap-4 border-b border-slate-200 pb-2 text-xs">
@@ -618,7 +620,7 @@
                   <div><div class="text-xs font-medium">Maria Santos</div><div class="text-[10px] text-slate-500">Home Cleaning • Today 2:00 PM</div></div>
                 </div>
                 <div class="flex gap-1.5">
-                  <button class="text-[10px] bg-teal text-white px-2.5 py-1 rounded-lg">Confirm</button>
+                  <button class="text-[10px] bg-purple text-white px-2.5 py-1 rounded-lg">Confirm</button>
                   <button class="text-[10px] border border-slate-300 text-slate-600 px-2.5 py-1 rounded-lg">Details</button>
                 </div>
               </div>
@@ -628,7 +630,7 @@
                   <div><div class="text-xs font-medium">Juan dela Cruz</div><div class="text-[10px] text-slate-500">Aircon Repair • Today 4:30 PM</div></div>
                 </div>
                 <div class="flex gap-1.5">
-                  <button class="text-[10px] bg-teal text-white px-2.5 py-1 rounded-lg">Confirm</button>
+                  <button class="text-[10px] bg-purple text-white px-2.5 py-1 rounded-lg">Confirm</button>
                   <button class="text-[10px] border border-slate-300 text-slate-600 px-2.5 py-1 rounded-lg">Details</button>
                 </div>
               </div>
@@ -656,7 +658,7 @@
               <div><div class="text-xs font-medium">Maria Santos</div><div class="text-[9px] text-slate-500">Home Cleaning • Jun 15 • 2:00 PM</div></div>
             </div>
             <div class="flex items-center gap-2"><span class="badge badge-pending">Pending</span>
-              <button class="text-[9px] bg-teal text-white px-2 py-0.5 rounded">Confirm</button>
+              <button class="text-[9px] bg-purple text-white px-2 py-0.5 rounded">Confirm</button>
               <button class="text-[9px] border border-slate-300 text-slate-500 px-2 py-0.5 rounded">Cancel</button>
             </div>
           </div>
@@ -666,7 +668,7 @@
               <div><div class="text-xs font-medium">Juan dela Cruz</div><div class="text-[9px] text-slate-500">Aircon Repair • Jun 15 • 4:30 PM</div></div>
             </div>
             <div class="flex items-center gap-2"><span class="badge badge-confirmed">Confirmed</span>
-              <button class="text-[9px] bg-green-500 text-white px-2 py-0.5 rounded">Complete</button>
+              <button class="text-[9px] bg-purple-500 text-white px-2 py-0.5 rounded">Complete</button>
               <button class="text-[9px] border border-slate-300 text-slate-500 px-2 py-0.5 rounded">Msg</button>
             </div>
           </div>
@@ -676,7 +678,7 @@
               <div><div class="text-xs font-medium">Ana Reyes</div><div class="text-[9px] text-slate-500">Roof Inspection • Jun 16 • 9:00 AM</div></div>
             </div>
             <div class="flex items-center gap-2"><span class="badge badge-pending">Pending</span>
-              <button class="text-[9px] bg-teal text-white px-2 py-0.5 rounded">Confirm</button>
+              <button class="text-[9px] bg-purple text-white px-2 py-0.5 rounded">Confirm</button>
               <button class="text-[9px] border border-slate-300 text-slate-500 px-2 py-0.5 rounded">Cancel</button>
             </div>
           </div>
@@ -690,22 +692,22 @@
       <div class="mt-4 space-y-3">
         <div class="flex justify-between items-center">
           <h4 class="text-xs font-semibold text-navy">Your Services (6)</h4>
-          <button class="text-[10px] bg-teal text-white px-3 py-1 rounded-lg">+ Add Service</button>
+          <button class="text-[10px] bg-purple text-white px-3 py-1 rounded-lg">+ Add Service</button>
         </div>
         <div class="space-y-1.5">
           <div class="card p-3 flex items-center justify-between">
             <div><div class="text-xs font-medium">Basic Home Cleaning</div><div class="text-[9px] text-slate-500">2 hrs • ₱500</div></div>
             <div class="flex items-center gap-2">
-              <span class="badge bg-green-100 text-green-600">Active</span>
-              <button class="text-[9px] text-teal">Edit</button>
+              <span class="badge bg-purple-100 text-purple-600">Active</span>
+              <button class="text-[9px] text-purple">Edit</button>
               <button class="text-[9px] text-slate-400">Delete</button>
             </div>
           </div>
           <div class="card p-3 flex items-center justify-between">
             <div><div class="text-xs font-medium">Deep Cleaning</div><div class="text-[9px] text-slate-500">4 hrs • ₱1,200</div></div>
             <div class="flex items-center gap-2">
-              <span class="badge bg-green-100 text-green-600">Active</span>
-              <button class="text-[9px] text-teal">Edit</button>
+              <span class="badge bg-purple-100 text-purple-600">Active</span>
+              <button class="text-[9px] text-purple">Edit</button>
               <button class="text-[9px] text-slate-400">Delete</button>
             </div>
           </div>
@@ -713,13 +715,13 @@
             <div><div class="text-xs font-medium">Office Cleaning</div><div class="text-[9px] text-slate-500">3 hrs • ₱800</div></div>
             <div class="flex items-center gap-2">
               <span class="badge bg-slate-100 text-slate-400">Inactive</span>
-              <button class="text-[9px] text-teal">Edit</button>
+              <button class="text-[9px] text-purple">Edit</button>
               <button class="text-[9px] text-slate-400">Delete</button>
             </div>
           </div>
         </div>
         <!-- Add/Edit modal preview -->
-        <div class="card border-teal/30 bg-teal/5 p-4 mt-2 space-y-2">
+        <div class="card border-purple/30 bg-purple/5 p-4 mt-2 space-y-2">
           <div class="text-xs font-semibold text-navy">Add Service</div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div class="h-8 border border-slate-300 rounded-lg flex items-center px-3 text-[10px] text-slate-400">Service name</div>
@@ -750,7 +752,7 @@
           <div class="card p-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
               <span class="text-xs font-medium w-16">Monday</span>
-              <div class="w-7 h-4 bg-teal rounded-full relative"><div class="w-3 h-3 bg-white rounded-full absolute right-0.5 top-0.5"></div></div>
+              <div class="w-7 h-4 bg-purple rounded-full relative"><div class="w-3 h-3 bg-white rounded-full absolute right-0.5 top-0.5"></div></div>
             </div>
             <div class="flex items-center gap-2">
               <div class="h-7 w-20 border border-slate-300 rounded-lg flex items-center px-2 text-[10px] text-slate-500">9:00 AM</div>
@@ -761,7 +763,7 @@
           <div class="card p-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
               <span class="text-xs font-medium w-16">Tuesday</span>
-              <div class="w-7 h-4 bg-teal rounded-full relative"><div class="w-3 h-3 bg-white rounded-full absolute right-0.5 top-0.5"></div></div>
+              <div class="w-7 h-4 bg-purple rounded-full relative"><div class="w-3 h-3 bg-white rounded-full absolute right-0.5 top-0.5"></div></div>
             </div>
             <div class="flex items-center gap-2">
               <div class="h-7 w-20 border border-slate-300 rounded-lg flex items-center px-2 text-[10px] text-slate-500">9:00 AM</div>
@@ -822,7 +824,7 @@
             <div class="h-8 border border-slate-300 rounded-lg flex items-center px-3 text-[10px] text-slate-400">Service address</div>
             <div class="ph-img h-24 w-full rounded-lg flex items-center justify-center relative">
               <span class="text-[10px]">Leaflet Map — Drag to adjust location</span>
-              <div class="absolute w-3.5 h-3.5 bg-teal rounded-full border-2 border-white shadow" style="top:40%;left:50%;"></div>
+              <div class="absolute w-3.5 h-3.5 bg-purple rounded-full border-2 border-white shadow" style="top:40%;left:50%;"></div>
             </div>
           </div>
           <!-- Booking Config -->
@@ -864,7 +866,7 @@
             <div class="text-[8px] text-slate-400 mt-1">Jun 5, 2026</div>
             <div class="mt-2 flex gap-2">
               <div class="flex-1 h-7 border border-slate-300 rounded-lg flex items-center px-2 text-[9px] text-slate-400">Write a response...</div>
-              <button class="text-[9px] bg-teal text-white px-2.5 rounded-lg">Reply</button>
+              <button class="text-[9px] bg-purple text-white px-2.5 rounded-lg">Reply</button>
             </div>
           </div>
           <div class="card p-3">
@@ -885,7 +887,7 @@
   <!-- ======================================================================= -->
   <section id="admin" class="pt-8">
     <h2 class="text-lg font-bold text-navy mb-1">3. Admin Screens</h2>
-    <p class="text-xs text-slate-400 mb-6">Admin panel — provider management, categories, bookings, reviews.</p>
+    <p class="text-xs text-slate-400 mb-6">Admin Dashboard — provider management, categories, bookings, reviews.</p>
 
     <!-- 3a. Admin Dashboard -->
     <div class="relative card p-6 mb-8">
@@ -904,7 +906,7 @@
         <div class="flex-1 space-y-4">
           <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
             <div class="card text-center p-3"><div class="text-xl font-bold text-navy">245</div><div class="text-[9px] text-slate-500">Total Users</div></div>
-            <div class="card text-center p-3"><div class="text-xl font-bold text-teal">38</div><div class="text-[9px] text-slate-500">Providers</div></div>
+            <div class="card text-center p-3"><div class="text-xl font-bold text-purple">38</div><div class="text-[9px] text-slate-500">Providers</div></div>
             <div class="card text-center p-3"><div class="text-xl font-bold text-amber-500">7</div><div class="text-[9px] text-slate-500">Pending Approval</div></div>
             <div class="card text-center p-3"><div class="text-xl font-bold text-navy">186</div><div class="text-[9px] text-slate-500">Total Bookings</div></div>
           </div>
@@ -917,7 +919,7 @@
                   <div><div class="text-xs font-medium">Juan's Roofing Services</div><div class="text-[9px] text-slate-500">Submitted Jun 10 • Manila • Permit ✓</div></div>
                 </div>
                 <div class="flex gap-1.5">
-                  <button class="text-[9px] bg-teal text-white px-2 py-1 rounded-lg">Approve</button>
+                  <button class="text-[9px] bg-purple text-white px-2 py-1 rounded-lg">Approve</button>
                   <button class="text-[9px] bg-red-500 text-white px-2 py-1 rounded-lg">Reject</button>
                   <button class="text-[9px] border border-slate-300 text-slate-600 px-2 py-1 rounded-lg">View</button>
                 </div>
@@ -928,7 +930,7 @@
                   <div><div class="text-xs font-medium">CoolBreeze Aircon</div><div class="text-[9px] text-slate-500">Submitted Jun 9 • Quezon City • Permit ✓</div></div>
                 </div>
                 <div class="flex gap-1.5">
-                  <button class="text-[9px] bg-teal text-white px-2 py-1 rounded-lg">Approve</button>
+                  <button class="text-[9px] bg-purple text-white px-2 py-1 rounded-lg">Approve</button>
                   <button class="text-[9px] bg-red-500 text-white px-2 py-1 rounded-lg">Reject</button>
                   <button class="text-[9px] border border-slate-300 text-slate-600 px-2 py-1 rounded-lg">View</button>
                 </div>
@@ -957,18 +959,89 @@
       <div class="screen-label">3b. Providers List</div>
       <div class="mt-4 space-y-3">
         <div class="flex items-center justify-between">
-          <div class="h-8 w-56 border border-slate-300 rounded-lg flex items-center px-3 text-[10px] text-slate-400">Search providers...</div>
+          <div class="flex gap-2 items-center">
+            <div class="h-8 w-56 border border-slate-300 rounded-lg flex items-center px-3 text-[10px] text-slate-400">Search providers...</div>
+            <button class="text-[10px] bg-purple text-white px-3 py-1.5 rounded-lg">+ Add Provider</button>
+          </div>
           <div class="text-[10px] text-slate-400">38 total</div>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-[10px]">
             <thead><tr class="text-left text-slate-500 border-b border-slate-200"><th class="pb-2 font-medium">Business Name</th><th class="pb-2 font-medium">Email</th><th class="pb-2 font-medium">City</th><th class="pb-2 font-medium">Status</th><th class="pb-2 font-medium">Verified</th><th class="pb-2 font-medium">Actions</th></tr></thead>
             <tbody>
-              <tr class="border-b border-slate-100"><td class="py-2 font-medium">Juan's Roofing</td><td class="py-2">juan@email.com</td><td class="py-2">Manila</td><td class="py-2"><span class="badge badge-pending">Pending</span></td><td class="py-2 text-slate-300">—</td><td class="py-2"><div class="flex gap-1"><button class="text-[9px] bg-teal text-white px-2 py-0.5 rounded">Approve</button><button class="text-[9px] border border-slate-300 text-slate-600 px-2 py-0.5 rounded">View</button></div></td></tr>
-              <tr class="border-b border-slate-100"><td class="py-2 font-medium">CleanPro Manila</td><td class="py-2">hello@cleanpro.ph</td><td class="py-2">Makati</td><td class="py-2"><span class="badge badge-completed">Approved</span></td><td class="py-2 text-teal">✓</td><td class="py-2"><div class="flex gap-1"><button class="text-[9px] bg-amber-500 text-white px-2 py-0.5 rounded">Suspend</button><button class="text-[9px] border border-slate-300 text-slate-600 px-2 py-0.5 rounded">View</button><button class="text-[9px] text-red-400">Delete</button></div></td></tr>
-              <tr class="border-b border-slate-100"><td class="py-2 font-medium">Cool Air Services</td><td class="py-2">info@coolair.ph</td><td class="py-2">Quezon City</td><td class="py-2"><span class="badge badge-completed">Approved</span></td><td class="py-2 text-slate-300">—</td><td class="py-2"><div class="flex gap-1"><button class="text-[9px] text-teal px-2 py-0.5 rounded font-medium">Verify</button><button class="text-[9px] border border-slate-300 text-slate-600 px-2 py-0.5 rounded">View</button></div></td></tr>
+              <tr class="border-b border-slate-100"><td class="py-2 font-medium">Juan's Roofing</td><td class="py-2">juan@email.com</td><td class="py-2">Manila</td><td class="py-2"><span class="badge badge-pending">Pending</span></td><td class="py-2 text-slate-300">—</td><td class="py-2"><div class="flex gap-1"><button class="text-[9px] bg-purple text-white px-2 py-0.5 rounded">Approve</button><button class="text-[9px] border border-slate-300 text-slate-600 px-2 py-0.5 rounded">View</button></div></td></tr>
+              <tr class="border-b border-slate-100"><td class="py-2 font-medium">CleanPro Manila</td><td class="py-2">hello@cleanpro.ph</td><td class="py-2">Makati</td><td class="py-2"><span class="badge badge-completed">Approved</span></td><td class="py-2 text-purple">✓</td><td class="py-2"><div class="flex gap-1"><button class="text-[9px] bg-amber-500 text-white px-2 py-0.5 rounded">Suspend</button><button class="text-[9px] border border-slate-300 text-slate-600 px-2 py-0.5 rounded">View</button><button class="text-[9px] text-red-400">Delete</button></div></td></tr>
+              <tr class="border-b border-slate-100"><td class="py-2 font-medium">Cool Air Services</td><td class="py-2">info@coolair.ph</td><td class="py-2">Quezon City</td><td class="py-2"><span class="badge badge-completed">Approved</span></td><td class="py-2 text-slate-300">—</td><td class="py-2"><div class="flex gap-1"><button class="text-[9px] text-purple px-2 py-0.5 rounded font-medium">Verify</button><button class="text-[9px] border border-slate-300 text-slate-600 px-2 py-0.5 rounded">View</button></div></td></tr>
             </tbody>
           </table>
+        </div>
+
+        <!-- Add/Edit Provider modal wireframe preview -->
+        <div class="card border-purple/30 bg-purple/5 p-4 mt-4 space-y-3">
+          <div class="text-xs font-semibold text-navy flex items-center gap-1">Add New Provider / Edit Provider Profile</div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-[10px]">
+            <!-- Owner info -->
+            <div>
+              <div class="text-[9px] text-slate-500 mb-1">Owner Email</div>
+              <div class="h-8 border border-slate-300 bg-white rounded-lg flex items-center px-3 text-slate-400">Owner Email</div>
+            </div>
+            <div>
+              <div class="text-[9px] text-slate-500 mb-1">Owner Full Name</div>
+              <div class="h-8 border border-slate-300 bg-white rounded-lg flex items-center px-3 text-slate-400">Owner Full Name</div>
+            </div>
+            <!-- Business Info -->
+            <div>
+              <div class="text-[9px] text-slate-500 mb-1">Business Name</div>
+              <div class="h-8 border border-slate-300 bg-white rounded-lg flex items-center px-3 text-slate-400">Business Name</div>
+            </div>
+            <div>
+              <div class="text-[9px] text-slate-500 mb-1">Website URL</div>
+              <div class="h-8 border border-slate-300 bg-white rounded-lg flex items-center px-3 text-slate-400">Website URL</div>
+            </div>
+            <div class="md:col-span-2">
+              <div class="text-[9px] text-slate-500 mb-1">Description</div>
+              <div class="h-12 border border-slate-300 bg-white rounded-lg p-2 text-slate-400">Description</div>
+            </div>
+          </div>
+          <!-- Location & Branding section wireframe matching the exact Screenshot fields -->
+          <div class="border-t border-slate-200 pt-2 space-y-2">
+            <div class="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Location & Branding</div>
+            <div class="grid grid-cols-2 gap-2 text-[10px]">
+              <div>
+                <div class="text-[8px] text-slate-500 mb-1">SERVICE CITY</div>
+                <div class="h-8 border border-slate-300 bg-white rounded-lg flex items-center px-3 text-slate-400">e.g. Manila</div>
+              </div>
+              <div>
+                <div class="text-[8px] text-slate-500 mb-1">SERVICE DISTRICT</div>
+                <div class="h-8 border border-slate-300 bg-white rounded-lg flex items-center px-3 text-slate-400">e.g. Makati</div>
+              </div>
+              <div>
+                <div class="text-[8px] text-slate-500 mb-1">LATITUDE</div>
+                <div class="h-8 border border-slate-300 bg-white rounded-lg flex items-center px-3 text-slate-400">e.g. 14.5995</div>
+              </div>
+              <div>
+                <div class="text-[8px] text-slate-500 mb-1">LONGITUDE</div>
+                <div class="h-8 border border-slate-300 bg-white rounded-lg flex items-center px-3 text-slate-400">e.g. 120.9842</div>
+              </div>
+            </div>
+            <!-- Company Logo Wireframe Upload Box -->
+            <div>
+              <div class="text-[8px] text-slate-500 mb-1">COMPANY LOGO</div>
+              <div class="border border-dashed border-slate-300 bg-white rounded-xl p-4 flex flex-col items-center justify-center text-center">
+                <span class="text-[9px] text-slate-500 font-medium">Click to upload provider logo</span>
+                <span class="text-[8px] text-slate-400">JPEG, PNG formats</span>
+              </div>
+            </div>
+            <div>
+              <div class="text-[8px] text-slate-500 mb-1">OR PASTE LOGO URL</div>
+              <div class="h-8 border border-slate-300 bg-white rounded-lg flex items-center px-3 text-[10px] text-slate-400">https://example.com/logo.png</div>
+            </div>
+          </div>
+          <!-- Footer Buttons -->
+          <div class="flex justify-end gap-2 text-[10px] pt-1">
+            <button class="border border-slate-300 text-slate-600 px-3 py-1 rounded-lg">Cancel</button>
+            <button class="bg-navy text-white px-3 py-1 rounded-lg">Add Provider</button>
+          </div>
         </div>
       </div>
     </div>
@@ -995,13 +1068,13 @@
             <h4 class="text-xs font-semibold text-navy">Service Location</h4>
             <div class="ph-img h-32 w-full rounded-lg flex items-center justify-center relative">
               <span class="text-[10px]">Leaflet Map — Provider location pinned</span>
-              <div class="absolute w-3.5 h-3.5 bg-teal rounded-full border-2 border-white shadow" style="top:50%;left:50%;"></div>
+              <div class="absolute w-3.5 h-3.5 bg-purple rounded-full border-2 border-white shadow" style="top:50%;left:50%;"></div>
             </div>
             <div class="text-[9px] text-slate-400">123 Rizal St., Brgy. San Antonio, Manila</div>
           </div>
         </div>
         <div class="flex gap-2">
-          <button class="text-[10px] bg-teal text-white px-4 py-1.5 rounded-lg">Approve Provider</button>
+          <button class="text-[10px] bg-purple text-white px-4 py-1.5 rounded-lg">Approve Provider</button>
           <button class="text-[10px] bg-red-500 text-white px-4 py-1.5 rounded-lg">Reject</button>
           <button class="text-[10px] bg-navy text-white px-4 py-1.5 rounded-lg">Toggle Verified</button>
         </div>
@@ -1014,33 +1087,29 @@
       <div class="mt-4 space-y-3">
         <div class="flex justify-between items-center">
           <h4 class="text-xs font-semibold text-navy">Service Categories</h4>
-          <button class="text-[10px] bg-teal text-white px-3 py-1 rounded-lg">+ Add Category</button>
+          <button class="text-[10px] bg-purple text-white px-3 py-1 rounded-lg">+ Add Category</button>
         </div>
         <div class="space-y-1.5">
           <div class="card p-3 flex items-center justify-between">
             <div class="flex items-center gap-2"><span class="w-6 h-6 ph-img rounded flex items-center justify-center text-[8px]">🧹</span><span class="text-xs font-medium">Home Cleaning</span></div>
-            <div class="flex items-center gap-2"><span class="badge bg-green-100 text-green-600">Active</span><button class="text-[9px] text-teal">Edit</button><button class="text-[9px] text-slate-400">Delete</button></div>
+            <div class="flex items-center gap-2"><span class="badge bg-purple-100 text-purple-600">Active</span><button class="text-[9px] text-purple">Edit</button><button class="text-[9px] text-slate-400">Delete</button></div>
           </div>
           <div class="card p-3 flex items-center justify-between">
             <div class="flex items-center gap-2"><span class="w-6 h-6 ph-img rounded flex items-center justify-center text-[8px]">❄️</span><span class="text-xs font-medium">Aircon Repair</span></div>
-            <div class="flex items-center gap-2"><span class="badge bg-green-100 text-green-600">Active</span><button class="text-[9px] text-teal">Edit</button><button class="text-[9px] text-slate-400">Delete</button></div>
+            <div class="flex items-center gap-2"><span class="badge bg-purple-100 text-purple-600">Active</span><button class="text-[9px] text-purple">Edit</button><button class="text-[9px] text-slate-400">Delete</button></div>
           </div>
           <div class="card p-3 flex items-center justify-between">
             <div class="flex items-center gap-2"><span class="w-6 h-6 ph-img rounded flex items-center justify-center text-[8px]">🔧</span><span class="text-xs font-medium">Roof Repair</span></div>
-            <div class="flex items-center gap-2"><span class="badge bg-green-100 text-green-600">Active</span><button class="text-[9px] text-teal">Edit</button><button class="text-[9px] text-slate-400">Delete</button></div>
+            <div class="flex items-center gap-2"><span class="badge bg-purple-100 text-purple-600">Active</span><button class="text-[9px] text-purple">Edit</button><button class="text-[9px] text-slate-400">Delete</button></div>
           </div>
         </div>
-        <!-- Add/edit modal -->
-        <div class="card border-teal/30 bg-teal/5 p-4 space-y-2">
-          <div class="text-xs font-semibold text-navy">Add Category</div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-            <div class="h-8 border border-slate-300 rounded-lg flex items-center px-3 text-[10px] text-slate-400">Category name</div>
-            <div class="h-8 border border-slate-300 rounded-lg flex items-center px-3 text-[10px] text-slate-400">Slug</div>
-            <div class="h-8 border border-slate-300 rounded-lg flex items-center px-3 text-[10px] text-slate-400">Icon</div>
-          </div>
-          <div class="flex justify-end gap-2">
-            <button class="text-[10px] border border-slate-300 text-slate-600 px-3 py-1 rounded-lg">Cancel</button>
-            <button class="text-[10px] bg-navy text-white px-3 py-1 rounded-lg">Save</button>
+        <!-- Pagination Controls -->
+        <div class="flex justify-between items-center text-[10px] text-slate-500 pt-2 border-t border-slate-100">
+          <span>Page 1 of 1</span>
+          <div class="flex gap-1">
+            <button class="px-2 py-0.5 border border-slate-300 rounded text-[9px]" disabled>&lt;</button>
+            <button class="px-2 py-0.5 bg-purple text-white rounded text-[9px]">1</button>
+            <button class="px-2 py-0.5 border border-slate-300 rounded text-[9px]" disabled>&gt;</button>
           </div>
         </div>
       </div>
@@ -1106,7 +1175,7 @@
           </div>
           <div class="flex items-center justify-between">
             <span class="text-[10px] text-slate-500">Allow new provider registration</span>
-            <div class="w-8 h-4 bg-teal rounded-full relative"><div class="w-3 h-3 bg-white rounded-full absolute right-0.5 top-0.5"></div></div>
+            <div class="w-8 h-4 bg-purple rounded-full relative"><div class="w-3 h-3 bg-white rounded-full absolute right-0.5 top-0.5"></div></div>
           </div>
           <button class="text-[10px] bg-navy text-white px-4 py-1.5 rounded-lg">Save Changes</button>
         </div>
@@ -1130,9 +1199,9 @@
           <div class="card p-3 space-y-2">
             <h4 class="text-xs font-semibold text-navy">Messages</h4>
             <div class="space-y-1.5">
-              <div class="flex items-center gap-2 p-2 bg-teal/5 rounded-lg">
+              <div class="flex items-center gap-2 p-2 bg-purple/5 rounded-lg">
                 <div class="w-8 h-8 ph-img rounded-full relative shrink-0">
-                  <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border border-white rounded-full"></div>
+                  <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-purple-500 border border-white rounded-full"></div>
                 </div>
                 <div class="flex-1 min-w-0">
                   <div class="text-xs font-medium">Maria Santos</div>
@@ -1158,7 +1227,7 @@
               <div class="w-7 h-7 ph-img rounded-full"></div>
               <div>
                 <div class="text-xs font-medium">Maria Santos</div>
-                <div class="flex items-center gap-1"><div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div><span class="text-[8px] text-green-600">Online</span></div>
+                <div class="flex items-center gap-1"><div class="w-1.5 h-1.5 bg-purple-500 rounded-full"></div><span class="text-[8px] text-purple-600">Online</span></div>
               </div>
             </div>
             <div class="flex-1 p-3 space-y-2 overflow-y-auto">
@@ -1185,7 +1254,7 @@
         <div class="w-80 card p-3 shadow-xl space-y-2">
           <div class="flex items-center justify-between border-b border-slate-200 pb-2">
             <div class="flex items-center gap-2">
-              <div class="w-6 h-6 bg-teal rounded-full flex items-center justify-center"><span class="text-white text-[8px]">AI</span></div>
+              <div class="w-6 h-6 bg-purple rounded-full flex items-center justify-center"><span class="text-white text-[8px]">AI</span></div>
               <span class="text-xs font-semibold text-navy">Serch Assistant</span>
             </div>
             <span class="text-slate-400 text-[10px] cursor-pointer">—</span>
@@ -1203,7 +1272,7 @@
           </div>
           <div class="flex gap-2 border-t border-slate-200 pt-2">
             <div class="flex-1 h-7 border border-slate-300 rounded-lg flex items-center px-2 text-[9px] text-slate-400">Ask anything...</div>
-            <div class="w-7 h-7 bg-teal rounded-lg flex items-center justify-center"><span class="text-white text-[9px]">➤</span></div>
+            <div class="w-7 h-7 bg-purple rounded-lg flex items-center justify-center"><span class="text-white text-[9px]">➤</span></div>
           </div>
         </div>
       </div>
@@ -1219,8 +1288,8 @@
     <div class="relative card p-6 mb-8">
       <div class="screen-label">4c. Toast Notifications</div>
       <div class="mt-4 flex flex-col gap-2 items-end">
-        <div class="card p-3 flex items-center gap-3 shadow-lg border-l-4 border-teal w-72">
-          <div class="w-6 h-6 bg-teal rounded-full flex items-center justify-center shrink-0"><span class="text-white text-[8px]">✓</span></div>
+        <div class="card p-3 flex items-center gap-3 shadow-lg border-l-4 border-purple w-72">
+          <div class="w-6 h-6 bg-purple rounded-full flex items-center justify-center shrink-0"><span class="text-white text-[8px]">✓</span></div>
           <div><div class="text-xs font-medium">Booking Confirmed!</div><div class="text-[9px] text-slate-500">CleanPro Manila • Jun 15 at 2:00 PM</div></div>
           <span class="text-[9px] text-slate-400 shrink-0">✕</span>
         </div>
@@ -1238,9 +1307,11 @@
       <div class="mt-4 space-y-6">
         <!-- Desktop top nav -->
         <div class="card p-3 flex items-center justify-between">
-          <div class="text-base font-bold text-navy">Serch</div>
+          <div class="h-10 flex items-center">
+            <img src="src/images/SERCH Logo 6.png" alt="Serch Logo" class="h-8 w-auto object-contain" />
+          </div>
           <div class="hidden md:flex items-center gap-6 text-xs text-slate-600">
-            <span class="text-teal font-medium">Home</span>
+            <span class="text-purple font-medium">Home</span>
             <span>Search</span>
             <span>Bookings</span>
             <span>Profile</span>
@@ -1251,7 +1322,7 @@
         </div>
         <!-- Mobile bottom nav -->
         <div class="card p-3 flex justify-around text-[10px]">
-          <div class="flex flex-col items-center text-teal"><span class="text-sm">●</span><span>Home</span></div>
+          <div class="flex flex-col items-center text-purple"><span class="text-sm">●</span><span>Home</span></div>
           <div class="flex flex-col items-center text-slate-400"><span class="text-sm">○</span><span>Search</span></div>
           <div class="flex flex-col items-center text-slate-400"><span class="text-sm">○</span><span>Bookings</span></div>
           <div class="flex flex-col items-center text-slate-400"><span class="text-sm">○</span><span>Profile</span></div>
@@ -1318,8 +1389,8 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="card p-3 space-y-1.5 max-h-80 overflow-y-auto">
-            <div class="flex items-center gap-2 p-2 bg-teal/5 rounded-lg">
-              <div class="w-8 h-8 ph-img rounded-full relative shrink-0"><div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border border-white rounded-full"></div></div>
+            <div class="flex items-center gap-2 p-2 bg-purple/5 rounded-lg">
+              <div class="w-8 h-8 ph-img rounded-full relative shrink-0"><div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-purple-500 border border-white rounded-full"></div></div>
               <div class="flex-1 min-w-0"><div class="text-xs font-medium">CleanPro Manila</div><div class="text-[9px] text-slate-500 truncate">Sure, I'll see you tomorrow</div></div>
               <div class="text-[8px] text-slate-400">2m</div>
             </div>
@@ -1332,7 +1403,7 @@
           <div class="md:col-span-2 card p-3 flex flex-col h-80">
             <div class="flex items-center gap-2 pb-2 border-b border-slate-200">
               <div class="w-7 h-7 ph-img rounded-full"></div>
-              <div><div class="text-xs font-medium">CleanPro Manila</div><div class="flex items-center gap-1"><div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div><span class="text-[8px] text-green-600">Online</span></div></div>
+              <div><div class="text-xs font-medium">CleanPro Manila</div><div class="flex items-center gap-1"><div class="w-1.5 h-1.5 bg-purple-500 rounded-full"></div><span class="text-[8px] text-purple-600">Online</span></div></div>
             </div>
             <div class="flex-1 p-3 space-y-2 overflow-y-auto">
               <div class="flex justify-start"><div class="bg-slate-100 text-slate-700 text-[10px] p-2.5 rounded-2xl rounded-bl-sm max-w-[70%]">Hi! Just confirming your booking tomorrow at 2pm for home cleaning.</div></div>
@@ -1374,8 +1445,8 @@
           <div class="font-xs font-semibold text-navy mb-1">Expanded</div>
           <div class="flex items-center justify-between border-b border-slate-200 pb-2">
             <div class="flex items-center gap-2">
-              <div class="w-7 h-7 bg-teal rounded-full flex items-center justify-center"><span class="text-white text-[9px]">AI</span></div>
-              <div><span class="text-xs font-semibold text-navy">Serch Assistant</span><div class="text-[8px] text-green-600">● Online</div></div>
+              <div class="w-7 h-7 bg-purple rounded-full flex items-center justify-center"><span class="text-white text-[9px]">AI</span></div>
+              <div><span class="text-xs font-semibold text-navy">Serch Assistant</span><div class="text-[8px] text-purple-600">● Online</div></div>
             </div>
             <span class="text-slate-400 text-[9px] cursor-pointer">—</span>
           </div>
@@ -1386,7 +1457,7 @@
           </div>
           <div class="flex gap-1.5 border-t border-slate-200 pt-2">
             <div class="flex-1 h-7 border border-slate-300 rounded-lg flex items-center px-2 text-[8px] text-slate-400">Ask anything...</div>
-            <div class="w-7 h-7 bg-teal rounded-lg flex items-center justify-center"><span class="text-white text-[8px]">➤</span></div>
+            <div class="w-7 h-7 bg-purple rounded-lg flex items-center justify-center"><span class="text-white text-[8px]">➤</span></div>
           </div>
         </div>
       </div>

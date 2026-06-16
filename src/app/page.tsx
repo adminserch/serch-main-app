@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import searchButtonLogo from '@/images/serch-button-logo.png';
 import { useRouter } from 'next/navigation';
 import { 
   SignInButton, 
@@ -156,10 +157,10 @@ export default function LandingPage() {
           </div>
           
           <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight text-espresso mb-6 leading-tight">
-            Find. <span className="text-accent">Book.</span> Trust.
+            Find Trusted Services Near You — <span className="text-purple-600">Fast</span>
           </h1>
           <p className="font-sans text-lg md:text-xl text-stone-600 max-w-2xl mx-auto mb-12 leading-relaxed">
-            The curated marketplace for premium home services. Connect with elite, verified professionals for your cleaning, repair, and carpentry needs.
+            SERCH connects you with trusted local professionals and businesses anytime, anywhere.
           </p>
 
           {/* Search Bar */}
@@ -175,8 +176,15 @@ export default function LandingPage() {
               />
             </div>
 
-            <button type="submit" className="bg-primary hover:bg-slate-800 text-white font-semibold text-md px-8 py-3.5 rounded-xl md:rounded-full w-full md:w-auto transition-all shadow-sm flex-shrink-0">
-              Search
+            <button type="submit" className="flex-shrink-0 transition-transform active:scale-95 hover:opacity-90 bg-primary hover:bg-slate-800 text-white font-semibold text-md px-6 py-3.5 rounded-xl md:rounded-full shadow-sm flex items-center gap-2">
+              <Image 
+                src={searchButtonLogo} 
+                alt="Search Icon"
+                height={24}
+                className="h-6 w-6 object-cover rounded-full border-2 border-white"
+                priority
+              />
+              <span>Search</span>
             </button>
           </form>
 
@@ -194,7 +202,7 @@ export default function LandingPage() {
       <section className="py-20 px-6 max-w-7xl mx-auto w-full">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
           <div>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-espresso mb-3">Popular Providers</h2>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-espresso mb-3">Providers</h2>
             <p className="font-sans text-stone-500 max-w-xl">
               Discover highly-rated experts, meticulously vetted for quality, reliability, and professional excellence.
             </p>

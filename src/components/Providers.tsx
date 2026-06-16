@@ -42,8 +42,37 @@ const queryClient = new QueryClient({
 
 function UserSync() {
   const { user } = useUser();
+  const { isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (isLoaded) {
+      if (isSignedIn) {
+        // Mark session as active in local & session storage
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('serch_session_active', 'true');
+          sessionStorage.setItem('serch_session_active', 'true');
+        }
+      } else {
+        // Not signed in. Check if we previously had an active session
+        if (typeof window !== 'undefined') {
+          const hadSession = 
+            localStorage.getItem('serch_session_active') === 'true' ||
+            sessionStorage.getItem('serch_session_active') === 'true';
+
+          if (hadSession) {
+            // Clear React Query cache & browser storage
+            queryClient.clear();
+            localStorage.clear();
+            sessionStorage.clear();
+            // Hard redirect to home to wipe in-memory cache/states cleanly
+            window.location.href = '/';
+          }
+        }
+      }
+    }
+  }, [isLoaded, isSignedIn]);
 
   useEffect(() => {
     async function syncUser() {

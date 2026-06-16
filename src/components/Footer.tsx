@@ -1,14 +1,22 @@
 'use client';
 
-import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import logoImg from '@/images/SERCH Logo 6.png';
 
 export default function Footer() {
   return (
     <footer className="bg-espresso text-stone-300 w-full pt-8 pb-20 md:pb-8 mt-auto border-t border-stone-800">
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-        <div>
-          <div className="font-display text-xl font-bold text-white mb-1 tracking-tight">Serch</div>
+        <div className="flex flex-col items-center md:items-start">
+          <Link href="/" className="flex items-center mb-3">
+            <Image
+              src={logoImg}
+              alt="Serch Logo"
+              height={48}
+              className="h-12 w-auto object-contain brightness-0 invert"
+            />
+          </Link>
           <p className="text-[11px] text-stone-400 max-w-sm">
             Connecting premium local service professionals with seeking clients. Verified quality, transparent calendars, secure bookings.
           </p>

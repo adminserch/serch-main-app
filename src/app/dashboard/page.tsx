@@ -175,7 +175,7 @@ export default function DashboardOverview() {
       <div className="bg-gradient-to-r from-primary to-slate-800 text-white rounded-2xl p-8 relative overflow-hidden shadow-sm">
         <div className="relative z-10">
           {providerStatus === 'approved' ? (
-            <div className="inline-flex items-center gap-1 bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 backdrop-blur px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase mb-4">
+            <div className="inline-flex items-center gap-1 bg-purple-600/20 text-purple-300 border border-purple-500/30 backdrop-blur px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase mb-4">
               <Award className="w-3.5 h-3.5" /> Verified Provider
             </div>
           ) : providerStatus === 'pending' ? (

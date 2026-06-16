@@ -398,6 +398,11 @@ CREATE POLICY providers_update_own ON providers
     AND status = (SELECT status FROM providers WHERE id = providers.id) -- cannot change own status
   );
 
+-- Admin can insert any provider
+CREATE POLICY providers_insert_admin ON providers
+  FOR INSERT
+  WITH CHECK (auth_user_role() = 'admin');
+
 -- Admin can update any provider
 CREATE POLICY providers_update_admin ON providers
   FOR UPDATE

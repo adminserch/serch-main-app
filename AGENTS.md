@@ -186,7 +186,7 @@ Mobile-friendly web app connecting seekers with local service providers (cleanin
 
 ## Brand
 - **Name**: Serch
-- **Tagline**: Find. Book. Trust.
+- **Tagline**: Find Trusted Services Near You — Fast
 - **Primary Color**: #0F172A (Deep Navy)
 - **Accent Color**: #0D9488 (Teal)
 - **Background**: #F8FAFC (Cool Gray)

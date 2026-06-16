@@ -11,7 +11,7 @@ graph TD
     Home["/ Home
     Seeker Dashboard:
     Search bar at top,
-    Popular Providers section,
+    Providers section,
     All approved providers below"]
     Search["/search Results / Filters"]
     Provider["/provider/:id Detail Page"]
@@ -438,6 +438,11 @@ erDiagram
         boolean is_verified
         enum status
         enum plan
+        string house_building_number
+        string street_name
+        string state_province_region
+        string postal_zip_code
+        string country
         timestamp created_at
     }
 

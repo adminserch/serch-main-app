@@ -59,7 +59,7 @@ export default function Navbar() {
               )}
               {dbRole === 'admin' && (
                 <Link href="/admin" className={`font-medium hover:text-accent transition-colors text-sm tracking-wide ${pathname.startsWith('/admin') ? 'text-accent font-semibold' : 'text-stone-600'}`}>
-                  Admin Panel
+                  Admin Dashboard
                 </Link>
               )}
               {isSignedIn && dbRole === 'seeker' && (
@@ -88,7 +88,7 @@ export default function Navbar() {
                   </button>
                 </SignInButton>
                 <SignInButton mode="modal">
-                  <button className="bg-primary hover:bg-slate-800 text-white font-medium text-xs sm:text-sm px-3.5 py-1.5 sm:px-5 sm:py-2 rounded-xl transition-all duration-200">
+                  <button className="bg-purple-600 hover:bg-purple-700 text-white font-medium text-xs sm:text-sm px-3.5 py-1.5 sm:px-5 sm:py-2 rounded-xl transition-all duration-200">
                     Sign-in as Provider
                   </button>
                 </SignInButton>
