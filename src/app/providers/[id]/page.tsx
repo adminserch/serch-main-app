@@ -16,7 +16,8 @@ import {
   DollarSign, 
   Calendar as CalendarIcon, 
   MessageSquare, 
-  Globe 
+  Globe,
+  Lightbulb
 } from 'lucide-react';
 import { SignIn, useAuth, useUser } from '@clerk/nextjs';
 import dynamic from 'next/dynamic';
@@ -66,6 +67,7 @@ export default function ProviderProfilePage() {
   const { user } = useUser();
   const [dbRole, setDbRole] = useState<string | null>(null);
   const [roleLoading, setRoleLoading] = useState(true);
+  const [isDark, setIsDark] = useState(false);
 
   const [provider, setProvider] = useState<Provider | null>(null);
   const [services, setServices] = useState<Service[]>([]);
@@ -289,16 +291,39 @@ export default function ProviderProfilePage() {
   // 2. Not signed in: show custom guard with embedded Sign In
   if (!isSignedIn) {
     return (
-      <div className="flex flex-col min-h-screen bg-stone-50/50">
+      <div className={`flex flex-col min-h-screen transition-colors duration-300 ${isDark ? 'bg-slate-950 text-white' : 'bg-stone-50/50 text-espresso'}`}>
         <Navbar />
         <main className="flex-grow pt-28 pb-16 flex items-center justify-center px-6">
-          <div className="max-w-md w-full bg-white border border-champagne/80 shadow-md rounded-2xl p-8 flex flex-col items-center">
+          <div className={`max-w-md w-full transition-colors duration-300 border rounded-2xl p-8 flex flex-col items-center ${
+            isDark 
+              ? 'bg-slate-900 border-slate-800 shadow-xl' 
+              : 'bg-white border-champagne/80 shadow-md'
+          }`}>
+            {/* Dark mode toggle lightbulb button */}
+            <div className="w-full flex justify-end mb-2">
+              <button 
+                onClick={() => setIsDark(!isDark)}
+                className={`p-2 rounded-full transition-colors ${
+                  isDark ? 'hover:bg-slate-800 text-amber-400' : 'hover:bg-stone-100 text-stone-500'
+                }`}
+                aria-label="Toggle Dark Mode"
+              >
+                <Lightbulb className="w-5 h-5" />
+              </button>
+            </div>
+
             <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-champagne/40 text-accent mb-4 border border-champagne">
-                <ShieldCheck className="w-6 h-6 text-accent" />
+              <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full mb-4 border transition-colors ${
+                isDark 
+                  ? 'bg-slate-800 text-teal-400 border-slate-700' 
+                  : 'bg-champagne/40 text-accent border-champagne'
+              }`}>
+                <ShieldCheck className="w-6 h-6" />
               </div>
-              <h1 className="font-display text-2xl font-bold text-espresso mb-2">Sign In as Seeker</h1>
-              <p className="font-sans text-stone-500 text-sm">
+              <h1 className={`font-display text-2xl font-bold mb-2 transition-colors ${isDark ? 'text-white' : 'text-espresso'}`}>
+                Sign In as Seeker
+              </h1>
+              <p className={`font-sans text-sm transition-colors ${isDark ? 'text-slate-400' : 'text-stone-500'}`}>
                 To view provider profiles, customer reviews, and check booking calendar, please sign in to your Seeker account.
               </p>
             </div>
@@ -306,8 +331,27 @@ export default function ProviderProfilePage() {
               routing="hash"
               appearance={{
                 elements: {
-                  formButtonPrimary: 'bg-primary hover:bg-slate-800 text-sm normal-case',
-                  card: 'border border-champagne/40 shadow-none rounded-xl bg-white w-full max-w-sm',
+                  formButtonPrimary: isDark 
+                    ? 'bg-white hover:bg-slate-200 text-slate-950 text-sm normal-case border-none'
+                    : 'bg-primary hover:bg-slate-800 text-white text-sm normal-case border-none',
+                  card: isDark
+                    ? 'border border-slate-800 shadow-none rounded-xl bg-slate-900 w-full max-w-sm'
+                    : 'border border-champagne/40 shadow-none rounded-xl bg-white w-full max-w-sm',
+                  headerTitle: isDark ? 'text-white' : 'text-espresso',
+                  headerSubtitle: isDark ? 'text-slate-400' : 'text-stone-500',
+                  socialButtonsBlockButton: isDark 
+                    ? 'bg-slate-800 border-slate-700 text-white hover:bg-slate-700' 
+                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50',
+                  formFieldLabel: isDark ? 'text-slate-300' : 'text-stone-700',
+                  formFieldInput: isDark
+                    ? 'bg-slate-800 text-white border-slate-700 focus:border-slate-500 focus:ring-slate-500'
+                    : 'bg-white text-stone-700 border-slate-200 focus:border-primary focus:ring-primary',
+                  dividerText: isDark ? 'text-slate-400 font-sans' : 'text-stone-500 font-sans',
+                  dividerLine: isDark ? 'bg-slate-800' : 'bg-slate-200',
+                  footerActionText: isDark ? 'text-slate-400' : 'text-stone-500',
+                  footerActionLink: isDark ? 'text-white hover:text-slate-200' : 'text-primary hover:text-accent',
+                  identityPreviewText: isDark ? 'text-white' : 'text-espresso',
+                  identityPreviewEditButtonIcon: isDark ? 'text-white' : 'text-primary',
                 },
               }}
             />
