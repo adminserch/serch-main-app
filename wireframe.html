@@ -317,7 +317,44 @@
         </div>
       </div>
     </div>
+ 
+    <!-- 1c-guard. Seeker Profile Access Guard -->
+    <div class="relative card p-6 mb-8 border-purple/30 bg-purple/5">
+      <div class="screen-label">1c-guard. Seeker Profile Access Guard</div>
+      <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Not Signed In Guard State -->
+        <div class="card p-4 space-y-4 bg-white border border-slate-200">
+          <div class="text-[9px] font-bold text-purple uppercase tracking-wide">State A: Unauthenticated Seeker Guard</div>
+          <div class="text-center space-y-2 py-4">
+            <div class="w-10 h-10 rounded-full bg-purple/10 text-purple flex items-center justify-center mx-auto border border-purple/20">✓</div>
+            <div class="font-bold text-xs text-espresso">Sign In as Seeker</div>
+            <p class="text-[10px] text-slate-500 leading-relaxed max-w-[200px] mx-auto">To view provider profiles, customer reviews, and check booking calendar, please sign in to your Seeker account.</p>
+          </div>
+          <!-- Mock Clerk SignIn Widget -->
+          <div class="border border-slate-200 rounded-lg p-3 space-y-2 bg-slate-50">
+            <div class="text-[9px] text-slate-400 font-semibold uppercase">Mock Clerk SignIn Widget</div>
+            <div class="h-8 bg-white border border-slate-300 rounded flex items-center px-2 text-[10px] text-slate-400">Email address</div>
+            <button class="w-full bg-navy text-white text-[10px] py-1.5 rounded font-medium">Continue</button>
+            <div class="text-center text-[9px] text-slate-400">or sign in with Google</div>
+          </div>
+        </div>
 
+        <!-- Logged In as Provider Block State -->
+        <div class="card p-4 space-y-4 bg-white border border-slate-200">
+          <div class="text-[9px] font-bold text-purple uppercase tracking-wide">State B: Logged In as Provider Block</div>
+          <div class="text-center space-y-3 py-6">
+            <div class="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto border border-red-100">⚠</div>
+            <div class="font-bold text-xs text-espresso">Seeker Account Required</div>
+            <p class="text-[10px] text-slate-500 leading-relaxed max-w-[200px] mx-auto">You are currently signed in with a <strong>Provider</strong> account. Provider accounts cannot view other provider profiles or book services.</p>
+          </div>
+          <div class="space-y-1.5">
+            <button class="w-full bg-navy text-white text-[10px] py-2 rounded font-medium">Sign Out & Switch Account</button>
+            <button class="w-full border border-slate-300 text-slate-600 text-[10px] py-2 rounded font-medium">Back to Home</button>
+          </div>
+        </div>
+      </div>
+    </div>
+ 
     <!-- 1d. Provider Compare -->
     <div class="relative card p-6 mb-8">
       <div class="screen-label">1d. Compare Providers</div>

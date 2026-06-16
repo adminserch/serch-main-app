@@ -257,9 +257,11 @@ id, booking_id (FK), sender_id (FK), message, created_at
 1. Seeker searches by city/district (default) or selects on map
 2. Browses provider list with filters (category, price, rating)
 3. Compares providers side-by-side
-4. Selects provider → views profile with verified badge, rating, reviews, and availability
-5. Seeker signs in with Clerk (email/password or Google OAuth) if not already authenticated
-6. Picks date/time → enters booking checkout (review service, add notes, confirm details)
+4. Selects provider → page guards access:
+   - If not signed in: Prompts the user to Sign In as Seeker using Clerk's SignIn component.
+   - If signed in as Provider: Blocks access with a "Seeker Account Required" message.
+   - If signed in as Seeker (or Admin): Shows profile with verified badge, rating, reviews, and availability.
+5. Picks date/time → enters booking checkout (review service, add notes, confirm details)
 7. Submits booking request → booking created with status "pending"
 8. Provider views pending booking in dashboard → approves or contacts seeker
 9. Provider notified in-app + via email of new request

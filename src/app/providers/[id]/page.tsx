@@ -18,8 +18,8 @@ import {
   MessageSquare, 
   Globe 
 } from 'lucide-react';
+import { SignIn, useAuth, useUser } from '@clerk/nextjs';
 import dynamic from 'next/dynamic';
-import { SignInButton, SignUpButton, UserButton, useAuth, useUser } from '@clerk/nextjs';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -62,9 +62,10 @@ export default function ProviderProfilePage() {
   const router = useRouter();
   const providerId = params.id as string;
 
-  const { isSignedIn } = useAuth();
+  const { isLoaded: isAuthLoaded, isSignedIn, signOut } = useAuth();
   const { user } = useUser();
   const [dbRole, setDbRole] = useState<string | null>(null);
+  const [roleLoading, setRoleLoading] = useState(true);
 
   const [provider, setProvider] = useState<Provider | null>(null);
   const [services, setServices] = useState<Service[]>([]);
@@ -74,22 +75,43 @@ export default function ProviderProfilePage() {
   const [availableSlots, setAvailableSlots] = useState<any[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<any | null>(null);
 
-  // Load user role to show appropriate navbar link
+  // Load user role to show appropriate navbar link and enforce role guard
   useEffect(() => {
     async function loadUserRole() {
-      if (user) {
-        try {
-          const { data: userData } = await supabase
-            .from('users')
-            .select('role')
-            .eq('clerk_user_id', user.id)
-            .single();
-          if (userData) {
-            setDbRole(userData.role);
+      if (!user) {
+        setRoleLoading(false);
+        return;
+      }
+      try {
+        setRoleLoading(true);
+        let { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('role')
+          .eq('clerk_user_id', user.id)
+          .single();
+
+        if (userError || !userData) {
+          // Self-healing: sync if user is not in db yet
+          const response = await fetch('/api/users/sync', { method: 'POST' });
+          if (response.ok) {
+            const { data: retryData } = await supabase
+              .from('users')
+              .select('role')
+              .eq('clerk_user_id', user.id)
+              .single();
+            if (retryData) {
+              userData = retryData;
+            }
           }
-        } catch (err) {
-          console.error(err);
         }
+
+        if (userData) {
+          setDbRole(userData.role);
+        }
+      } catch (err) {
+        console.error('Error fetching user role:', err);
+      } finally {
+        setRoleLoading(false);
       }
     }
     loadUserRole();
@@ -250,6 +272,98 @@ export default function ProviderProfilePage() {
       `/checkout?providerId=${providerId}&serviceId=${selectedService.id}&date=${dateStr}&start=${startStr}&end=${endStr}`
     );
   };
+
+  // 1. Auth Loading state
+  if (!isAuthLoaded) {
+    return (
+      <div className="flex flex-col min-h-screen bg-stone-50/50">
+        <Navbar />
+        <div className="flex-grow flex items-center justify-center p-8 pt-36">
+          <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // 2. Not signed in: show custom guard with embedded Sign In
+  if (!isSignedIn) {
+    return (
+      <div className="flex flex-col min-h-screen bg-stone-50/50">
+        <Navbar />
+        <main className="flex-grow pt-28 pb-16 flex items-center justify-center px-6">
+          <div className="max-w-md w-full bg-white border border-champagne/80 shadow-md rounded-2xl p-8 flex flex-col items-center">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-champagne/40 text-accent mb-4 border border-champagne">
+                <ShieldCheck className="w-6 h-6 text-accent" />
+              </div>
+              <h1 className="font-display text-2xl font-bold text-espresso mb-2">Sign In as Seeker</h1>
+              <p className="font-sans text-stone-500 text-sm">
+                To view provider profiles, customer reviews, and check booking calendar, please sign in to your Seeker account.
+              </p>
+            </div>
+            <SignIn 
+              appearance={{
+                elements: {
+                  formButtonPrimary: 'bg-primary hover:bg-slate-800 text-sm normal-case',
+                  card: 'border border-champagne/40 shadow-none rounded-xl bg-white w-full max-w-sm',
+                },
+              }}
+            />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // 3. User role loading
+  if (roleLoading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-stone-50/50">
+        <Navbar />
+        <div className="flex-grow flex items-center justify-center p-8 pt-36">
+          <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // 4. If logged in but NOT seeker/admin (i.e. is provider)
+  if (dbRole !== 'seeker' && dbRole !== 'admin') {
+    return (
+      <div className="flex flex-col min-h-screen bg-stone-50/50">
+        <Navbar />
+        <main className="flex-grow pt-28 pb-16 flex items-center justify-center px-6">
+          <div className="max-w-md w-full bg-white border border-champagne/80 shadow-md rounded-2xl p-8 text-center flex flex-col items-center">
+            <div className="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center mb-4 border border-purple-200">
+              <ShieldCheck className="w-6 h-6 text-purple-600" />
+            </div>
+            <h1 className="font-display text-2xl font-bold text-espresso mb-3">Seeker Account Required</h1>
+            <p className="font-sans text-stone-500 text-sm mb-6 leading-relaxed">
+              You are currently signed in with a <strong>Provider</strong> account. Provider accounts cannot view other provider profiles or book services.
+            </p>
+            <div className="flex flex-col gap-3 w-full font-sans">
+              <button
+                onClick={() => signOut()}
+                className="w-full bg-primary hover:bg-slate-800 text-white font-semibold text-sm py-3.5 rounded-xl transition-all shadow-sm cursor-pointer"
+              >
+                Sign Out & Switch Account
+              </button>
+              <Link
+                href="/"
+                className="w-full border border-champagne hover:bg-stone-50 text-stone-700 font-semibold text-sm py-3.5 rounded-xl transition-all text-center"
+              >
+                Back to Home
+              </Link>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!provider) {
     return (

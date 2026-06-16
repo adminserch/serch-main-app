@@ -250,27 +250,24 @@ sequenceDiagram
     App->>Supabase: Query providers (filters)
     Supabase-->>App: Provider list
     App-->>Seeker: Display results + map
-    Seeker->>App: Select provider
-    App->>Supabase: Query provider details + reviews
-    Supabase-->>App: Provider data
-    App-->>Seeker: Provider profile page
-    Seeker->>App: Click "Compare"
-    App-->>Seeker: Side-by-side comparison view
-    Seeker->>App: Click "Book Now"
-    Note over App: Check if seeker is authenticated
+    Seeker->>App: Select provider ("View Profile")
+    Note over App: Check if Seeker is authenticated & role is Seeker
     alt Not Authenticated
-        App-->>Seeker: Redirect to Clerk sign-in / sign-up
-        Seeker->>App: Sign in via Clerk (email/password or Google)
+        App-->>Seeker: Show Sign In guard (Clerk SignIn)
+        Seeker->>App: Sign in
         App->>Clerk: Authenticate
         Clerk-->>App: JWT + session
-        App-->>Seeker: Redirect back to booking
-    else Authenticated
-        App-->>Seeker: Proceed to booking
+        App->>Supabase: Fetch/Sync user record & check role
+        Supabase-->>App: User role (seeker)
+    else Authenticated, but Provider role
+        App-->>Seeker: Show Seeker Account Required screen
     end
-    App->>Supabase: Query availability slots
-    Supabase-->>App: Available time slots
-    App-->>Seeker: Calendar picker
-    Seeker->>App: Select date + time slot
+    App->>Supabase: Query provider details + reviews
+    Supabase-->>App: Provider data
+    App-->>Seeker: Render Provider profile page
+    Seeker->>App: Click "Compare"
+    App-->>Seeker: Side-by-side comparison view
+    Seeker->>App: Select service + date + time slot on calendar
     App->>Supabase: Check slot still available
     alt Slot Taken
         App-->>Seeker: "Slot no longer available, pick another"
