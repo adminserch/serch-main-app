@@ -22,6 +22,20 @@ export default function ProviderSettings() {
   const [savingBusiness, setSavingBusiness] = useState(false);
   const [savingLocation, setSavingLocation] = useState(false);
   const [savingBookingRules, setSavingBookingRules] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  // Sync theme with HTML class and global events
+  useEffect(() => {
+    function checkTheme() {
+      if (typeof window !== 'undefined') {
+        const isDarkTheme = document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
+        setIsDark(isDarkTheme);
+      }
+    }
+    checkTheme();
+    window.addEventListener('theme-change', checkTheme);
+    return () => window.removeEventListener('theme-change', checkTheme);
+  }, []);
 
   // User details states
   const [fullName, setFullName] = useState('');
@@ -438,7 +452,7 @@ export default function ProviderSettings() {
       <div className="lg:col-span-2 flex flex-col gap-6">
         {/* Personal / Account Details */}
         <form onSubmit={handleSaveAccount} className="bg-white border border-champagne/60 rounded-2xl p-6 shadow-sm flex flex-col gap-5">
-          <h2 className="font-display font-semibold text-espresso text-base flex items-center gap-1.5 border-b border-champagne/40 pb-2">
+          <h2 className="font-display font-semibold text-espresso dark:text-accent text-base flex items-center gap-1.5 border-b border-champagne/40 pb-2">
             <Settings className="w-4 h-4 text-accent" /> Account Details
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -477,7 +491,11 @@ export default function ProviderSettings() {
             <button
               type="submit"
               disabled={savingAccount}
-              className="bg-primary hover:bg-slate-800 text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+              className={`font-semibold text-xs px-6 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5 ${
+                isDark
+                  ? 'bg-white-always text-slate-950 hover:bg-stone-100'
+                  : 'bg-primary hover:bg-slate-800 text-white'
+              }`}
             >
               {savingAccount ? (
                 <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -490,7 +508,7 @@ export default function ProviderSettings() {
         </form>
 
         <form onSubmit={handleSaveBusiness} className="bg-white border border-champagne/60 rounded-2xl p-6 shadow-sm flex flex-col gap-5">
-          <h2 className="font-display font-semibold text-espresso text-base flex items-center gap-1.5 border-b border-champagne/40 pb-2">
+          <h2 className="font-display font-semibold text-espresso dark:text-accent text-base flex items-center gap-1.5 border-b border-champagne/40 pb-2">
             <Settings className="w-4 h-4 text-accent" /> Business Profile
           </h2>
 
@@ -576,7 +594,11 @@ export default function ProviderSettings() {
             <button
               type="submit"
               disabled={savingBusiness}
-              className="bg-primary hover:bg-slate-800 text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+              className={`font-semibold text-xs px-6 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5 ${
+                isDark
+                  ? 'bg-white-always text-slate-950 hover:bg-stone-100'
+                  : 'bg-primary hover:bg-slate-800 text-white'
+              }`}
             >
               {savingBusiness ? (
                 <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -712,7 +734,11 @@ export default function ProviderSettings() {
             <button
               type="submit"
               disabled={savingLocation}
-              className="bg-primary hover:bg-slate-800 text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+              className={`font-semibold text-xs px-6 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5 ${
+                isDark
+                  ? 'bg-white-always text-slate-950 hover:bg-stone-100'
+                  : 'bg-primary hover:bg-slate-800 text-white'
+              }`}
             >
               {savingLocation ? (
                 <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -728,7 +754,7 @@ export default function ProviderSettings() {
       {/* Right Column: Booking configurations */}
       <div className="flex flex-col gap-6">
         <form onSubmit={handleSaveBookingRules} className="bg-white border border-champagne/60 rounded-2xl p-6 shadow-sm flex flex-col gap-5">
-          <h2 className="font-display font-semibold text-espresso text-base flex items-center gap-1.5 border-b border-champagne/40 pb-2">
+          <h2 className="font-display font-semibold text-espresso dark:text-accent text-base flex items-center gap-1.5 border-b border-champagne/40 pb-2">
             <Clock className="w-4 h-4 text-accent" /> Booking Rules
           </h2>
 
@@ -764,7 +790,11 @@ export default function ProviderSettings() {
             <button
               type="submit"
               disabled={savingBookingRules}
-              className="w-full bg-primary hover:bg-slate-800 text-white font-semibold text-xs py-3 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5"
+              className={`w-full font-semibold text-xs py-3 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 ${
+                isDark
+                  ? 'bg-white-always text-slate-950 hover:bg-stone-100'
+                  : 'bg-primary hover:bg-slate-800 text-white'
+              }`}
             >
               {savingBookingRules ? (
                 <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>

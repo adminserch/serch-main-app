@@ -59,6 +59,20 @@ export default function DashboardOverview() {
     todayVisits: 0
   });
   const [upcoming, setUpcoming] = useState<Appointment[]>([]);
+  const [isDark, setIsDark] = useState(false);
+
+  // Sync theme with HTML class and global events
+  useEffect(() => {
+    function checkTheme() {
+      if (typeof window !== 'undefined') {
+        const isDarkTheme = document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
+        setIsDark(isDarkTheme);
+      }
+    }
+    checkTheme();
+    window.addEventListener('theme-change', checkTheme);
+    return () => window.removeEventListener('theme-change', checkTheme);
+  }, []);
 
   useEffect(() => {
     async function loadStats() {
@@ -172,7 +186,11 @@ export default function DashboardOverview() {
   return (
     <div className="flex flex-col gap-8">
       {/* Hero Welcome banner */}
-      <div className="bg-gradient-to-r from-primary to-slate-800 text-white rounded-2xl p-8 relative overflow-hidden shadow-sm">
+      <div className={`rounded-2xl p-8 relative overflow-hidden shadow-sm transition-all duration-300 ${
+        isDark 
+          ? 'bg-gradient-to-r from-zinc-900 to-slate-950 border border-zinc-800 text-white' 
+          : 'bg-gradient-to-r from-primary to-slate-800 text-white'
+      }`}>
         <div className="relative z-10">
           {providerStatus === 'approved' ? (
             <div className="inline-flex items-center gap-1 bg-purple-600/20 text-purple-300 border border-purple-500/30 backdrop-blur px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase mb-4">
@@ -203,55 +221,55 @@ export default function DashboardOverview() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-champagne/60 rounded-xl p-5 shadow-sm">
+        <div className="bg-white-always border border-champagne/60 rounded-xl p-5 shadow-sm">
           <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block mb-1">Total Visits</span>
-          <span className="text-2xl font-bold font-display text-espresso block">{stats.total}</span>
+          <span className="text-2xl font-bold font-display text-stone-900 block">{stats.total}</span>
         </div>
-        <div className="bg-white border border-champagne/60 rounded-xl p-5 shadow-sm">
+        <div className="bg-white-always border border-champagne/60 rounded-xl p-5 shadow-sm">
           <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block mb-1">Pending Requests</span>
           <span className="text-2xl font-bold font-display text-amber-600 block">{stats.pending}</span>
         </div>
-        <div className="bg-white border border-champagne/60 rounded-xl p-5 shadow-sm">
+        <div className="bg-white-always border border-champagne/60 rounded-xl p-5 shadow-sm">
           <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block mb-1">Active Services</span>
           <span className="text-2xl font-bold font-display text-accent block">{stats.activeServices}</span>
         </div>
-        <div className="bg-white border border-champagne/60 rounded-xl p-5 shadow-sm">
+        <div className="bg-white-always border border-champagne/60 rounded-xl p-5 shadow-sm">
           <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block mb-1">Today&apos;s Visits</span>
-          <span className="text-2xl font-bold font-display text-purple-700 block">{stats.todayVisits}</span>
+          <span className="text-2xl font-bold font-display text-purple-705 block">{stats.todayVisits}</span>
         </div>
       </div>
 
       {/* Upcoming appointments table list */}
       <div>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="font-display text-lg font-bold text-espresso">Upcoming Appointments</h2>
+          <h2 className="font-display text-lg font-bold text-espresso dark:text-accent transition-colors duration-300">Upcoming Appointments</h2>
           <Link href="/dashboard/appointments" className="text-xs font-semibold text-accent hover:underline flex items-center gap-0.5">
             Manage Bookings <ChevronRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
         {upcoming.length === 0 ? (
-          <div className="bg-white border border-champagne/60 rounded-xl p-8 text-center text-sm text-stone-400 font-sans border-dashed">
+          <div className="bg-card-bg border border-champagne/60 dark:border-zinc-800 rounded-xl p-8 text-center text-sm text-stone-400 dark:text-stone-500 font-sans border-dashed transition-colors duration-300">
             No upcoming appointments scheduled.
           </div>
         ) : (
-          <div className="bg-white border border-champagne/60 rounded-xl overflow-hidden shadow-sm">
-            <div className="divide-y divide-champagne/40">
+          <div className="bg-card-bg border border-champagne/60 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm transition-colors duration-300">
+            <div className="divide-y divide-champagne/40 dark:divide-zinc-800">
               {upcoming.map((appt) => (
                 <div key={appt.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h3 className="font-sans font-bold text-espresso text-sm">{appt.users.full_name}</h3>
+                    <h3 className="font-sans font-bold text-espresso text-sm transition-colors duration-300">{appt.users.full_name}</h3>
                     <p className="text-xs text-accent font-medium mt-0.5">{appt.services.name}</p>
-                    <div className="flex items-center gap-3 text-stone-500 text-xs mt-2 font-sans">
-                      <span className="flex items-center gap-0.5"><Calendar className="w-3.5 h-3.5" /> {appt.booking_date}</span>
+                    <div className="flex items-center gap-3 text-stone-550 dark:text-stone-400 text-xs mt-2 font-sans transition-colors duration-300">
+                      <span className="flex items-center gap-0.5"><Calendar className="w-3.5 h-3.5 text-accent" /> {appt.booking_date}</span>
                       <span className="flex items-center gap-0.5"><Clock className="w-3.5 h-3.5" /> {formatTime(appt.start_time)} - {formatTime(appt.end_time)}</span>
                     </div>
                   </div>
 
-                  <span className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border w-max ${
+                  <span className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border w-max transition-colors duration-300 ${
                     appt.status === 'confirmed'
-                      ? 'bg-purple-50 border-purple-200 text-purple-800'
-                      : 'bg-amber-50 border-amber-200 text-amber-800'
+                      ? 'bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800 text-purple-800 dark:text-purple-300'
+                      : 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300'
                   }`}>
                     {appt.status}
                   </span>

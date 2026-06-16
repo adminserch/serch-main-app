@@ -35,6 +35,20 @@ export default function AvailabilityManager() {
   const [availabilities, setAvailabilities] = useState<Availability[]>([]);
   const [blockedDates, setBlockedDates] = useState<BlockedDate[]>([]);
   const [useAdminBypass, setUseAdminBypass] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  // Sync theme with HTML class and global events
+  useEffect(() => {
+    function checkTheme() {
+      if (typeof window !== 'undefined') {
+        const isDarkTheme = document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
+        setIsDark(isDarkTheme);
+      }
+    }
+    checkTheme();
+    window.addEventListener('theme-change', checkTheme);
+    return () => window.removeEventListener('theme-change', checkTheme);
+  }, []);
 
   // Weekly Hours Edit states
   const [isEditingHours, setIsEditingHours] = useState(false);
@@ -344,7 +358,7 @@ export default function AvailabilityManager() {
       <div className="bg-white border border-champagne/60 rounded-2xl p-6 shadow-sm flex flex-col gap-6">
         <div className="flex justify-between items-center border-b border-champagne/30 pb-4 mb-2">
           <div>
-            <h2 className="font-display text-xl font-bold text-espresso mb-1">Weekly Business Hours</h2>
+            <h2 className="font-display text-xl font-bold text-espresso dark:text-accent mb-1">Weekly Business Hours</h2>
             <p className="text-stone-500 text-xs font-sans">Set the recurring weekly times when you are open for bookings.</p>
           </div>
           {!isEditingHours && (
@@ -373,7 +387,7 @@ export default function AvailabilityManager() {
                         onChange={() => handleToggleDayLocal(dayData.day_of_week)}
                         className="rounded text-accent focus:ring-accent w-4 h-4"
                       />
-                      <span className="text-xs font-bold text-slate-800 w-24 select-none">{DOW_NAMES[dayData.day_of_week]}</span>
+                      <span className="text-xs font-bold text-slate-800 dark:text-white w-24 select-none">{DOW_NAMES[dayData.day_of_week]}</span>
                     </label>
 
                     {active ? (
@@ -406,11 +420,11 @@ export default function AvailabilityManager() {
                         disabled
                         className="rounded text-accent/50 w-4 h-4 cursor-default opacity-60"
                       />
-                      <span className="text-xs font-bold text-slate-800 w-24">{DOW_NAMES[dayData.day_of_week]}</span>
+                      <span className="text-xs font-bold text-slate-800 dark:text-white w-24">{DOW_NAMES[dayData.day_of_week]}</span>
                     </div>
 
                     {active ? (
-                      <span className="text-xs text-slate-700 font-sans font-medium py-1.5">
+                      <span className="text-xs text-slate-700 dark:text-slate-200 font-sans font-medium py-1.5">
                         {formatTime12h(dayData.start_time)} to {formatTime12h(dayData.end_time)}
                       </span>
                     ) : (
@@ -428,7 +442,11 @@ export default function AvailabilityManager() {
             <button
               onClick={handleSaveHours}
               disabled={savingHours}
-              className="bg-primary hover:bg-slate-800 text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm disabled:opacity-50"
+              className={`font-semibold text-xs px-6 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm disabled:opacity-50 ${
+                isDark
+                  ? 'bg-white-always text-slate-950 hover:bg-stone-100'
+                  : 'bg-primary hover:bg-slate-800 text-white'
+              }`}
             >
               {savingHours ? (
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -438,7 +456,7 @@ export default function AvailabilityManager() {
             <button
               onClick={cancelEditing}
               disabled={savingHours}
-              className="border border-champagne hover:bg-stone-50 text-slate-700 font-semibold text-xs px-6 py-2.5 rounded-xl transition-all"
+              className="border border-champagne hover:bg-stone-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-xs px-6 py-2.5 rounded-xl transition-all"
             >
               Cancel
             </button>
@@ -451,7 +469,7 @@ export default function AvailabilityManager() {
         {/* Block new date form */}
         <div className="bg-white border border-champagne/60 rounded-2xl p-6 shadow-sm flex flex-col gap-4">
           <div>
-            <h2 className="font-display text-lg font-bold text-espresso mb-1">Block Specific Dates</h2>
+            <h2 className="font-display text-lg font-bold text-espresso dark:text-accent mb-1">Block Specific Dates</h2>
             <p className="text-stone-500 text-xs font-sans">Temporarily block days off or holidays to override weekly hours.</p>
           </div>
 
@@ -479,7 +497,11 @@ export default function AvailabilityManager() {
             <button
               type="submit"
               disabled={savingBlock}
-              className="bg-primary hover:bg-slate-800 text-white font-semibold text-xs py-3 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5"
+              className={`w-full font-semibold text-xs py-3 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 ${
+                isDark
+                  ? 'bg-white-always text-slate-950 hover:bg-stone-100'
+                  : 'bg-primary hover:bg-slate-800 text-white'
+              }`}
             >
               {savingBlock ? (
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -491,7 +513,7 @@ export default function AvailabilityManager() {
 
         {/* Blocked dates listings */}
         <div className="bg-white border border-champagne/60 rounded-2xl p-6 shadow-sm flex flex-col gap-4">
-          <h2 className="font-display text-base font-bold text-espresso">Currently Blocked Dates</h2>
+          <h2 className="font-display text-base font-bold text-espresso dark:text-accent">Currently Blocked Dates</h2>
           
           {blockedDates.length === 0 ? (
             <p className="text-stone-400 text-xs font-sans italic">No custom blocked dates added.</p>
@@ -500,7 +522,7 @@ export default function AvailabilityManager() {
               {blockedDates.map((b) => (
                 <div key={b.id} className="p-3 border border-champagne/60 bg-stone-50/50 rounded-xl flex items-center justify-between gap-4 font-sans text-xs">
                   <div>
-                    <span className="font-bold text-slate-800 block">
+                    <span className="font-bold text-slate-800 dark:text-white block">
                       {(() => {
                         try {
                           return new Date(b.date).toLocaleDateString('en-US', {

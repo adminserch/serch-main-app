@@ -49,6 +49,7 @@ export default function ProviderAppointments() {
   const [provider, setProvider] = useState<any>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [isDark, setIsDark] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Chat State
@@ -56,6 +57,19 @@ export default function ProviderAppointments() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const chatBottomRef = useRef<HTMLDivElement>(null);
+
+  // Sync theme with HTML class and global events
+  useEffect(() => {
+    function checkTheme() {
+      if (typeof window !== 'undefined') {
+        const isDarkTheme = document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
+        setIsDark(isDarkTheme);
+      }
+    }
+    checkTheme();
+    window.addEventListener('theme-change', checkTheme);
+    return () => window.removeEventListener('theme-change', checkTheme);
+  }, []);
 
   async function loadData() {
     try {
@@ -241,7 +255,7 @@ export default function ProviderAppointments() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center flex-wrap gap-4">
-        <h1 className="font-display text-2xl font-bold text-espresso">Appointments Manager</h1>
+        <h1 className="font-display text-2xl font-bold text-espresso dark:text-accent">Appointments Manager</h1>
         
         {/* Status filters */}
         <div className="flex items-center gap-2">
@@ -251,8 +265,12 @@ export default function ProviderAppointments() {
               onClick={() => setFilterStatus(status)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all uppercase tracking-wider ${
                 filterStatus === status
-                  ? 'bg-primary border-primary text-white shadow-sm'
-                  : 'bg-white border-champagne text-stone-600 hover:border-gold'
+                  ? isDark
+                    ? 'bg-white-always border-white-always text-slate-950 shadow-sm'
+                    : 'bg-primary border-primary text-white shadow-sm'
+                  : isDark
+                    ? 'bg-zinc-900 border-zinc-800 text-stone-300 hover:border-zinc-700'
+                    : 'bg-white border-champagne text-stone-600 hover:border-gold'
               }`}
             >
               {status}
@@ -263,7 +281,7 @@ export default function ProviderAppointments() {
 
       {filteredAppointments.length === 0 ? (
         <div className="bg-white border border-champagne rounded-2xl p-12 text-center shadow-sm">
-          <Calendar className="w-10 h-10 text-stone-300 mx-auto mb-3" />
+          <Calendar className="w-10 h-10 text-accent mx-auto mb-3" />
           <p className="text-stone-400 text-sm font-sans">No appointments matching selected status.</p>
         </div>
       ) : (
@@ -275,7 +293,7 @@ export default function ProviderAppointments() {
                 <p className="text-xs text-accent font-semibold mt-0.5">{appt.services.name}</p>
 
                 <div className="flex flex-wrap items-center gap-4 text-stone-500 text-xs mt-3 font-sans">
-                  <span className="flex items-center gap-0.5"><Calendar className="w-3.5 h-3.5" /> {appt.booking_date}</span>
+                  <span className="flex items-center gap-0.5"><Calendar className="w-3.5 h-3.5 text-accent" /> {appt.booking_date}</span>
                   <span className="flex items-center gap-0.5"><Clock className="w-3.5 h-3.5" /> {formatTime(appt.start_time)} - {formatTime(appt.end_time)}</span>
                   <span className="font-bold text-slate-700">{appt.services.price} CAD</span>
                 </div>

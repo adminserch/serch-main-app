@@ -7,15 +7,15 @@ import { useAuth, useUser, UserButton } from '@clerk/nextjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase, getSupabaseClient } from '@/lib/supabase';
 import { useToast } from '@/components/Providers';
-import { 
-  Users, 
-  Building2, 
-  CalendarDays, 
-  ShieldAlert, 
-  Award, 
-  FolderEdit, 
-  Trash2, 
-  Check, 
+import {
+  Users,
+  Building2,
+  CalendarDays,
+  ShieldAlert,
+  Award,
+  FolderEdit,
+  Trash2,
+  Check,
   XCircle,
   Eye,
   Sliders,
@@ -171,7 +171,7 @@ function AdminDashboardContent() {
         const client = getSupabaseClient(token);
         const fileExt = createLogoFile.name.split('.').pop();
         const filePath = `admin-uploads/logo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
-        
+
         const { error: logoUploadError } = await client.storage
           .from('logos')
           .upload(filePath, createLogoFile);
@@ -250,7 +250,7 @@ function AdminDashboardContent() {
         const client = getSupabaseClient(token);
         const fileExt = editLogoFile.name.split('.').pop();
         const filePath = `${editingProvider.id}/logo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
-        
+
         const { error: logoUploadError } = await client.storage
           .from('logos')
           .upload(filePath, editLogoFile);
@@ -342,7 +342,7 @@ function AdminDashboardContent() {
         router.push('/');
         return;
       }
-      
+
       const resData = await response.json();
       if (!resData.success || !resData.user || resData.user.role !== 'admin') {
         router.push('/');
@@ -568,27 +568,27 @@ function AdminDashboardContent() {
       {/* Tab 1: Stats Overview */}
       {activeTab === 'stats' && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white border border-champagne/60 rounded-2xl p-6 shadow-sm flex items-center gap-4">
-            <Users className="w-8 h-8 text-accent" />
+          <div className="bg-white dark:bg-stone-900 border border-champagne/60 rounded-2xl p-6 shadow-sm flex items-center gap-4">
+            <Users className="w-8 h-8 text-accent animate-pulse" />
             <div>
-              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Total Users</span>
-              <span className="text-3xl font-bold font-display text-espresso">{stats.usersCount}</span>
+              <span className="text-[10px] font-bold text-stone-400 dark:text-white uppercase tracking-wider block">Total Users</span>
+              <span className="text-3xl font-bold font-display text-stone-900 dark:text-white">{stats.usersCount}</span>
             </div>
           </div>
 
-          <div className="bg-white border border-champagne/60 rounded-2xl p-6 shadow-sm flex items-center gap-4">
-            <Building2 className="w-8 h-8 text-primary" />
+          <div className="bg-white dark:bg-stone-900 border border-champagne/60 rounded-2xl p-6 shadow-sm flex items-center gap-4">
+            <Building2 className="w-8 h-8 text-purple-600 dark:text-purple-400" />
             <div>
-              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Total Providers</span>
-              <span className="text-3xl font-bold font-display text-espresso">{stats.providersCount}</span>
+              <span className="text-[10px] font-bold text-stone-400 dark:text-white uppercase tracking-wider block">Total Providers</span>
+              <span className="text-3xl font-bold font-display text-stone-900 dark:text-white">{stats.providersCount}</span>
             </div>
           </div>
 
-          <div className="bg-white border border-champagne/60 rounded-2xl p-6 shadow-sm flex items-center gap-4">
-            <CalendarDays className="w-8 h-8 text-purple-700" />
+          <div className="bg-white dark:bg-stone-900 border border-champagne/60 rounded-2xl p-6 shadow-sm flex items-center gap-4">
+            <CalendarDays className="w-8 h-8 text-purple-700 dark:text-purple-400" />
             <div>
-              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Total Bookings</span>
-              <span className="text-3xl font-bold font-display text-espresso">{stats.bookingsCount}</span>
+              <span className="text-[10px] font-bold text-stone-400 dark:text-white uppercase tracking-wider block">Total Bookings</span>
+              <span className="text-3xl font-bold font-display text-stone-900 dark:text-white">{stats.bookingsCount}</span>
             </div>
           </div>
         </div>
@@ -624,7 +624,7 @@ function AdminDashboardContent() {
                   });
                   setShowCreateModal(true);
                 }}
-                className="px-4 py-2.5 bg-primary hover:bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm"
+                className="px-4 py-2.5 bg-primary hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-black rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm"
               >
                 <Plus className="w-4 h-4" /> Add Provider
               </button>
@@ -666,13 +666,12 @@ function AdminDashboardContent() {
 
                     <div className="flex items-center gap-2.5">
                       {/* Status Badge */}
-                      <span className={`text-[10px] font-bold uppercase px-3 py-1 rounded-full border ${
-                        p.status === 'approved'
+                      <span className={`text-[10px] font-bold uppercase px-3 py-1 rounded-full border ${p.status === 'approved'
                           ? 'bg-purple-50 border-purple-200 text-purple-800'
                           : p.status === 'rejected'
-                          ? 'bg-red-50 border-red-200 text-red-800'
-                          : 'bg-amber-50 border-amber-200 text-amber-800'
-                      }`}>
+                            ? 'bg-red-50 border-red-200 text-red-800'
+                            : 'bg-amber-50 border-amber-200 text-amber-800'
+                        }`}>
                         {p.status}
                       </span>
 
@@ -784,11 +783,10 @@ function AdminDashboardContent() {
                           type="button"
                           key={pageNum}
                           onClick={() => setCurrentPage(pageNum)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
-                            currentPage === pageNum
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${currentPage === pageNum
                               ? 'bg-accent border-accent text-white shadow-xs'
                               : 'bg-white border-champagne text-stone-600 hover:border-gold'
-                          }`}
+                            }`}
                         >
                           {pageNum}
                         </button>
@@ -998,11 +996,11 @@ function AdminDashboardContent() {
                       {/* Logo Image Preview (rendered below the upload input box) */}
                       {createLogoFile ? (
                         <div className="mt-3 flex items-center gap-3 bg-stone-50 border border-champagne/45 p-2 rounded-xl">
-                          <img 
-                            src={URL.createObjectURL(createLogoFile)} 
-                            alt="New logo upload preview" 
+                          <img
+                            src={URL.createObjectURL(createLogoFile)}
+                            alt="New logo upload preview"
                             onClick={() => setPreviewImageUrl(URL.createObjectURL(createLogoFile))}
-                            className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity animate-fade-in" 
+                            className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity animate-fade-in"
                           />
                           <div className="flex flex-col">
                             <span className="text-xs font-semibold text-slate-700">Preview of logo</span>
@@ -1011,11 +1009,11 @@ function AdminDashboardContent() {
                         </div>
                       ) : createForm.logo_url ? (
                         <div className="mt-3 flex items-center gap-3 bg-stone-50 border border-champagne/45 p-2 rounded-xl">
-                          <img 
-                            src={createForm.logo_url} 
-                            alt="Provided logo URL preview" 
+                          <img
+                            src={createForm.logo_url}
+                            alt="Provided logo URL preview"
                             onClick={() => setPreviewImageUrl(createForm.logo_url)}
-                            className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity animate-fade-in" 
+                            className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity animate-fade-in"
                           />
                           <span className="text-xs text-stone-500 font-sans">Preview of logo URL</span>
                         </div>
@@ -1255,11 +1253,11 @@ function AdminDashboardContent() {
                       {/* Logo Image Preview (rendered below the upload input box) */}
                       {editLogoFile ? (
                         <div className="mt-3 flex items-center gap-3 bg-stone-50 border border-champagne/45 p-2 rounded-xl">
-                          <img 
-                            src={URL.createObjectURL(editLogoFile)} 
-                            alt="New logo upload preview" 
+                          <img
+                            src={URL.createObjectURL(editLogoFile)}
+                            alt="New logo upload preview"
                             onClick={() => setPreviewImageUrl(URL.createObjectURL(editLogoFile))}
-                            className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity animate-fade-in" 
+                            className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity animate-fade-in"
                           />
                           <div className="flex flex-col">
                             <span className="text-xs font-semibold text-slate-700">Preview of new logo</span>
@@ -1268,11 +1266,11 @@ function AdminDashboardContent() {
                         </div>
                       ) : editForm.logo_url ? (
                         <div className="mt-3 flex items-center gap-3 bg-stone-50 border border-champagne/45 p-2 rounded-xl">
-                          <img 
-                            src={editForm.logo_url} 
-                            alt="Current active logo preview" 
+                          <img
+                            src={editForm.logo_url}
+                            alt="Current active logo preview"
                             onClick={() => setPreviewImageUrl(editForm.logo_url)}
-                            className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity animate-fade-in" 
+                            className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity animate-fade-in"
                           />
                           <span className="text-xs text-stone-500 font-sans">Current active logo</span>
                         </div>
@@ -1445,7 +1443,7 @@ function AdminDashboardContent() {
                   setCategoryFormActive(true);
                   setShowCategoryForm(true);
                 }}
-                className="bg-primary hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+                className="bg-primary hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-xs px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
               >
                 <Plus className="w-4 h-4" /> Add Category
               </button>
@@ -1473,8 +1471,8 @@ function AdminDashboardContent() {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {filteredCategories.map((c) => (
-                      <div 
-                        key={c.id} 
+                      <div
+                        key={c.id}
                         className="bg-white border border-champagne/60 rounded-xl p-5 shadow-sm flex flex-col justify-between gap-4 hover:border-accent/40 transition-all bg-stone-50/20"
                       >
                         <div className="flex justify-between items-start gap-4">
@@ -1487,11 +1485,10 @@ function AdminDashboardContent() {
                               <span className="text-[10px] text-stone-400 font-mono">/{c.slug}</span>
                             </div>
                           </div>
-                          <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
-                            c.is_active
+                          <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${c.is_active
                               ? 'bg-purple-50 border-purple-200 text-purple-800'
                               : 'bg-stone-50 border-stone-200 text-stone-500'
-                          }`}>
+                            }`}>
                             {c.is_active ? 'Active' : 'Inactive'}
                           </span>
                         </div>
@@ -1633,11 +1630,10 @@ function AdminDashboardContent() {
                     </div>
                     <div className="flex items-center gap-0.5 mb-3">
                       {Array.from({ length: 5 }).map((_, i) => (
-                        <Star 
-                          key={i} 
-                          className={`w-3 h-3 ${
-                            i < rev.rating ? 'text-amber-500 fill-amber-500' : 'text-stone-200'
-                          }`} 
+                        <Star
+                          key={i}
+                          className={`w-3 h-3 ${i < rev.rating ? 'text-amber-500 fill-amber-500' : 'text-stone-200'
+                            }`}
                         />
                       ))}
                     </div>
@@ -1660,21 +1656,21 @@ function AdminDashboardContent() {
 
       {/* Lightbox / Image Preview Modal */}
       {previewImageUrl && (
-        <div 
+        <div
           className="fixed inset-0 bg-slate-950/80 z-[100] flex items-center justify-center p-4 backdrop-blur-xs cursor-zoom-out animate-fade-in"
           onClick={() => setPreviewImageUrl(null)}
         >
           <div className="relative max-w-3xl w-full max-h-[85vh] flex items-center justify-center bg-black/40 rounded-2xl overflow-hidden border border-white/10 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => setPreviewImageUrl(null)}
               className="absolute top-4 right-4 bg-black/60 hover:bg-black/80 text-white rounded-full p-2 transition-all cursor-pointer z-10"
             >
               <X className="w-5 h-5" />
             </button>
-            <img 
-              src={previewImageUrl} 
-              alt="High resolution preview" 
+            <img
+              src={previewImageUrl}
+              alt="High resolution preview"
               className="max-w-full max-h-[85vh] object-contain rounded-xl"
             />
           </div>

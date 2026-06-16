@@ -69,6 +69,20 @@ export default function LandingPage() {
   const [location, setLocation] = useState('');
   const [liveProviders, setLiveProviders] = useState<FeaturedProvider[]>([]);
   const [dbRole, setDbRole] = useState<string | null>(null);
+  const [isDark, setIsDark] = useState(false);
+
+  // Sync theme with HTML class and global events
+  useEffect(() => {
+    function checkTheme() {
+      if (typeof window !== 'undefined') {
+        const isDarkTheme = document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
+        setIsDark(isDarkTheme);
+      }
+    }
+    checkTheme();
+    window.addEventListener('theme-change', checkTheme);
+    return () => window.removeEventListener('theme-change', checkTheme);
+  }, []);
 
   // Fetch approved providers and current user role
   useEffect(() => {
@@ -139,29 +153,31 @@ export default function LandingPage() {
   const providersToShow = liveProviders.length > 0 ? liveProviders : STATIC_PROVIDERS;
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
       {/* Top Navbar */}
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-36 pb-32 px-6 overflow-hidden bg-gradient-to-b from-champagne/40 via-champagne/20 to-transparent">
+      <section className="relative pt-36 pb-32 px-6 overflow-hidden bg-gradient-to-b from-champagne/40 via-champagne/20 to-transparent dark:from-zinc-950 dark:via-zinc-900 dark:to-transparent">
         <div className="max-w-5xl mx-auto relative z-10 text-center">
-          <div className="inline-flex items-center gap-1.5 bg-white border border-champagne px-3 py-1 rounded-full shadow-sm mb-6">
+          <div className="inline-flex items-center gap-1.5 bg-card-bg border border-champagne dark:border-zinc-800 px-3 py-1 rounded-full shadow-sm mb-6 transition-colors duration-300">
             <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse" />
-            <span className="text-[11px] font-semibold tracking-wider text-slate-700 uppercase">Curated Local Marketplace</span>
+            <span className={`text-[11px] font-semibold tracking-wider uppercase transition-colors duration-300 ${
+              isDark ? 'text-accent' : 'text-slate-700'
+            }`}>Curated Local Marketplace</span>
           </div>
-          <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight text-espresso mb-6 leading-tight">
-            Find Trusted Services Near You — <span className="text-purple-600">Fast</span>
+          <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight text-espresso mb-6 leading-tight transition-colors duration-300">
+            Find Trusted Services Near You — <span className="text-accent">Fast</span>
           </h1>
-          <p className="font-sans text-lg md:text-xl text-stone-600 max-w-2xl mx-auto mb-6 leading-relaxed">
+          <p className="font-sans text-lg md:text-xl text-stone-605 dark:text-slate-300 max-w-2xl mx-auto mb-6 leading-relaxed transition-colors duration-300">
             SERCH connects you with trusted local professionals and businesses anytime, anywhere.
           </p>
-          <div className="font-display text-5xl md:text-7xl font-bold tracking-tight text-espresso mb-6 leading-tight">
-            Find. <span className="text-purple-600">Book</span>. Trust.
+          <div className="font-display text-5xl md:text-7xl font-bold tracking-tight text-espresso mb-6 leading-tight transition-colors duration-300">
+            Find. <span className="text-accent">Book</span>. Trust.
           </div>
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="bg-white/95 backdrop-blur rounded-2xl md:rounded-full p-2.5 mx-auto max-w-4xl shadow-lg border border-champagne/60 flex flex-col md:flex-row items-center gap-2">
-            <div className="flex-grow flex items-center bg-stone-50 rounded-xl md:rounded-full px-5 py-3 w-full border border-transparent focus-within:border-accent/40 transition-colors">
+          <form onSubmit={handleSearch} className="bg-card-bg/95 backdrop-blur rounded-2xl md:rounded-full p-2.5 mx-auto max-w-4xl shadow-lg border border-champagne/60 dark:border-zinc-800 flex flex-col md:flex-row items-center gap-2 transition-colors duration-300">
+            <div className="flex-grow flex items-center bg-stone-50 dark:bg-zinc-900 border border-transparent dark:border-zinc-800 rounded-xl md:rounded-full px-5 py-3 w-full focus-within:border-accent/40 transition-colors">
               <Search className="text-stone-400 w-5 h-5 mr-3 flex-shrink-0" />
               <input
                 className="w-full bg-transparent border-none focus:outline-none text-espresso font-sans placeholder:text-stone-400 p-0 text-md"
@@ -172,12 +188,19 @@ export default function LandingPage() {
               />
             </div>
 
-            <button type="submit" className="flex-shrink-0 transition-transform active:scale-95 hover:opacity-90 bg-primary hover:bg-slate-800 text-white font-semibold text-md px-6 py-3.5 rounded-xl md:rounded-full shadow-sm flex items-center gap-2">
+            <button 
+              type="submit" 
+              className={`flex-shrink-0 transition-all active:scale-95 hover:opacity-90 font-semibold text-md px-6 py-3.5 rounded-xl md:rounded-full shadow-sm flex items-center gap-2 cursor-pointer ${
+                isDark 
+                  ? 'bg-white hover:bg-slate-200 text-slate-950' 
+                  : 'bg-primary hover:bg-slate-800 text-white'
+              }`}
+            >
               <Image
                 src={searchButtonLogo}
                 alt="Search Icon"
                 height={24}
-                className="h-6 w-6 object-cover rounded-full border-2 border-white"
+                className={`h-6 w-6 object-cover rounded-full border-2 ${isDark ? 'border-slate-950' : 'border-white'}`}
                 priority
               />
               <span>Search</span>
@@ -185,11 +208,11 @@ export default function LandingPage() {
           </form>
 
           {/* Popular Categories tag links */}
-          <div className="mt-8 flex flex-wrap justify-center gap-3 text-xs text-stone-600 font-sans">
-            <span className="px-4 py-2 rounded-full bg-white border border-champagne hover:border-gold hover:bg-champagne/10 cursor-pointer transition-all shadow-sm" onClick={() => setQuery('Cleaning')}>Home Cleaning</span>
-            <span className="px-4 py-2 rounded-full bg-white border border-champagne hover:border-gold hover:bg-champagne/10 cursor-pointer transition-all shadow-sm" onClick={() => setQuery('Aircon')}>Aircon Repair</span>
-            <span className="px-4 py-2 rounded-full bg-white border border-champagne hover:border-gold hover:bg-champagne/10 cursor-pointer transition-all shadow-sm" onClick={() => setQuery('Roofing')}>Roof Repair</span>
-            <span className="px-4 py-2 rounded-full bg-white border border-champagne hover:border-gold hover:bg-champagne/10 cursor-pointer transition-all shadow-sm" onClick={() => setQuery('Plumbing')}>Plumbing</span>
+          <div className="mt-8 flex flex-wrap justify-center gap-3 text-xs text-stone-600 dark:text-stone-300 font-sans">
+            <span className="px-4 py-2 rounded-full bg-card-bg border border-champagne dark:border-zinc-850 hover:border-gold dark:hover:border-zinc-700 hover:bg-champagne/10 dark:hover:bg-zinc-900 cursor-pointer transition-all shadow-sm" onClick={() => setQuery('Cleaning')}>Home Cleaning</span>
+            <span className="px-4 py-2 rounded-full bg-card-bg border border-champagne dark:border-zinc-850 hover:border-gold dark:hover:border-zinc-700 hover:bg-champagne/10 dark:hover:bg-zinc-900 cursor-pointer transition-all shadow-sm" onClick={() => setQuery('Aircon')}>Aircon Repair</span>
+            <span className="px-4 py-2 rounded-full bg-card-bg border border-champagne dark:border-zinc-850 hover:border-gold dark:hover:border-zinc-700 hover:bg-champagne/10 dark:hover:bg-zinc-900 cursor-pointer transition-all shadow-sm" onClick={() => setQuery('Roofing')}>Roof Repair</span>
+            <span className="px-4 py-2 rounded-full bg-card-bg border border-champagne dark:border-zinc-850 hover:border-gold dark:hover:border-zinc-700 hover:bg-champagne/10 dark:hover:bg-zinc-900 cursor-pointer transition-all shadow-sm" onClick={() => setQuery('Plumbing')}>Plumbing</span>
           </div>
         </div>
       </section>
@@ -198,8 +221,10 @@ export default function LandingPage() {
       <section className="py-20 px-6 max-w-7xl mx-auto w-full">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
           <div>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-espresso mb-3">Providers</h2>
-            <p className="font-sans text-stone-500 max-w-xl">
+            <h2 className={`font-display text-3xl md:text-4xl font-bold mb-3 transition-colors duration-300 ${
+              isDark ? 'text-accent' : 'text-espresso'
+            }`}>Providers</h2>
+            <p className="font-sans text-stone-550 dark:text-stone-400">
               Discover highly-rated experts, meticulously vetted for quality, reliability, and professional excellence.
             </p>
           </div>
@@ -210,17 +235,19 @@ export default function LandingPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {providersToShow.map((prov) => (
-            <div key={prov.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md border border-champagne/60 transition-all duration-300 flex flex-col group">
-              <div className="h-52 bg-champagne/30 relative flex items-center justify-center overflow-hidden">
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm border border-champagne/40 z-10">
+            <div key={prov.id} className="bg-card-bg rounded-2xl overflow-hidden shadow-sm hover:shadow-md border border-champagne/60 dark:border-zinc-800 transition-all duration-300 flex flex-col group">
+              <div className="h-52 bg-champagne/30 dark:bg-zinc-900/40 relative flex items-center justify-center overflow-hidden transition-colors duration-300">
+                <div className="absolute top-4 left-4 bg-card-bg/90 backdrop-blur-sm px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm border border-champagne/40 dark:border-zinc-800 z-10 transition-colors duration-300">
                   <ShieldCheck className="w-4 h-4 text-accent" />
-                  <span className="text-[10px] font-bold text-slate-700 uppercase tracking-wider">Verified Provider</span>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider transition-colors duration-300 ${
+                    isDark ? 'text-accent' : 'text-slate-700'
+                  }`}>Verified Provider</span>
                 </div>
 
                 {prov.logo_url ? (
                   <img src={prov.logo_url} alt={prov.business_name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-champagne/50 to-gold/30 flex items-center justify-center text-stone-400 group-hover:scale-105 transition-transform duration-700">
+                  <div className="w-full h-full bg-gradient-to-br from-champagne/50 to-gold/30 dark:from-zinc-800 dark:to-zinc-900/40 flex items-center justify-center text-stone-400 group-hover:scale-105 transition-transform duration-700 transition-colors duration-300">
                     <Home className="w-16 h-16 opacity-30" />
                   </div>
                 )}
@@ -229,28 +256,28 @@ export default function LandingPage() {
               <div className="p-6 flex-grow flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-start gap-2 mb-2">
-                    <h3 className="font-display text-lg font-bold text-espresso group-hover:text-accent transition-colors">
+                    <h3 className="font-display text-lg font-bold text-espresso group-hover:text-accent transition-colors duration-300">
                       {prov.business_name}
                     </h3>
-                    <div className="flex items-center gap-1 bg-stone-50 border border-champagne/50 px-2 py-0.5 rounded-lg flex-shrink-0">
+                    <div className="flex items-center gap-1 bg-stone-50 dark:bg-zinc-900 border border-champagne/50 dark:border-zinc-800 px-2 py-0.5 rounded-lg flex-shrink-0 transition-colors duration-300">
                       <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                      <span className="text-xs font-bold text-slate-700">{prov.avg_rating}</span>
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{prov.avg_rating}</span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1 text-stone-500 text-xs mb-4">
+                  <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400 text-xs mb-4 transition-colors duration-300">
                     <MapPin className="w-3.5 h-3.5" />
                     <span>{prov.service_district}, {prov.service_city}</span>
                   </div>
 
-                  <p className="text-stone-600 text-sm font-sans line-clamp-3 leading-relaxed">
+                  <p className="text-stone-600 dark:text-stone-300 text-sm font-sans line-clamp-3 leading-relaxed transition-colors duration-300">
                     {prov.description}
                   </p>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-champagne/40 flex items-center justify-between">
-                  <span className="text-xs text-stone-400 font-sans">{prov.review_count} Reviews</span>
-                  <Link href={`/providers/${prov.id}`} className="text-xs font-semibold text-primary hover:text-accent transition-colors flex items-center gap-0.5">
+                <div className="mt-6 pt-4 border-t border-champagne/40 dark:border-zinc-800 flex items-center justify-between transition-colors duration-300">
+                  <span className="text-xs text-stone-400 dark:text-stone-500 font-sans">{prov.review_count} Reviews</span>
+                  <Link href={`/providers/${prov.id}`} className="text-xs font-semibold text-primary hover:text-accent dark:text-white dark:hover:text-accent transition-colors flex items-center gap-0.5">
                     View Profile <ChevronRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>

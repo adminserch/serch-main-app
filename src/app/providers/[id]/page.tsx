@@ -304,7 +304,7 @@ export default function ProviderProfilePage() {
   // 1. Auth Loading state
   if (!isAuthLoaded) {
     return (
-      <div className="flex flex-col min-h-screen bg-stone-50/50">
+      <div className={`flex flex-col min-h-screen transition-colors duration-300 ${isDark ? 'bg-slate-950 text-white' : 'bg-stone-50/50 text-espresso'}`}>
         <Navbar />
         <div className="flex-grow flex items-center justify-center p-8 pt-36">
           <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
@@ -391,7 +391,7 @@ export default function ProviderProfilePage() {
   // 3. User role loading
   if (roleLoading) {
     return (
-      <div className="flex flex-col min-h-screen bg-stone-50/50">
+      <div className={`flex flex-col min-h-screen transition-colors duration-300 ${isDark ? 'bg-slate-950 text-white' : 'bg-stone-50/50 text-espresso'}`}>
         <Navbar />
         <div className="flex-grow flex items-center justify-center p-8 pt-36">
           <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
@@ -404,27 +404,37 @@ export default function ProviderProfilePage() {
   // 4. If logged in but NOT seeker/admin (i.e. is provider)
   if (dbRole !== 'seeker' && dbRole !== 'admin') {
     return (
-      <div className="flex flex-col min-h-screen bg-stone-50/50">
+      <div className={`flex flex-col min-h-screen transition-colors duration-300 ${isDark ? 'bg-slate-950 text-white' : 'bg-stone-50/50 text-espresso'}`}>
         <Navbar />
         <main className="flex-grow pt-28 pb-16 flex items-center justify-center px-6">
-          <div className="max-w-md w-full bg-white border border-champagne/80 shadow-md rounded-2xl p-8 text-center flex flex-col items-center">
-            <div className="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center mb-4 border border-purple-200">
-              <ShieldCheck className="w-6 h-6 text-purple-600" />
+          <div className={`max-w-md w-full border shadow-md rounded-2xl p-8 text-center flex flex-col items-center transition-colors duration-300 ${
+            isDark 
+              ? 'bg-slate-900 border-slate-800' 
+              : 'bg-white border-champagne/80'
+          }`}>
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 border transition-colors ${
+              isDark ? 'bg-purple-950/40 border-purple-800 text-purple-400' : 'bg-purple-50 border-purple-200 text-purple-600'
+            }`}>
+              <ShieldCheck className="w-6 h-6" />
             </div>
-            <h1 className="font-display text-2xl font-bold text-espresso mb-3">Seeker Account Required</h1>
-            <p className="font-sans text-stone-500 text-sm mb-6 leading-relaxed">
+            <h1 className={`font-display text-2xl font-bold mb-3 transition-colors ${isDark ? 'text-white' : 'text-espresso'}`}>Seeker Account Required</h1>
+            <p className={`font-sans text-sm mb-6 leading-relaxed transition-colors ${isDark ? 'text-slate-400' : 'text-stone-500'}`}>
               You are currently signed in with a <strong>Provider</strong> account. Provider accounts cannot view other provider profiles or book services.
             </p>
             <div className="flex flex-col gap-3 w-full font-sans">
               <button
                 onClick={() => signOut()}
-                className="w-full bg-primary hover:bg-slate-800 text-white font-semibold text-sm py-3.5 rounded-xl transition-all shadow-sm cursor-pointer"
+                className={`w-full font-semibold text-sm py-3.5 rounded-xl transition-all shadow-sm cursor-pointer ${
+                  isDark ? 'bg-white hover:bg-slate-200 text-slate-950' : 'bg-primary hover:bg-slate-800 text-white'
+                }`}
               >
                 Sign Out & Switch Account
               </button>
               <Link
                 href="/"
-                className="w-full border border-champagne hover:bg-stone-50 text-stone-700 font-semibold text-sm py-3.5 rounded-xl transition-all text-center"
+                className={`w-full border font-semibold text-sm py-3.5 rounded-xl transition-all text-center ${
+                  isDark ? 'border-slate-800 hover:bg-slate-900 text-slate-300' : 'border-champagne hover:bg-stone-50 text-stone-700'
+                }`}
               >
                 Back to Home
               </Link>
@@ -438,7 +448,7 @@ export default function ProviderProfilePage() {
 
   if (!provider) {
     return (
-      <div className="flex-grow flex items-center justify-center p-8">
+      <div className={`flex-grow flex items-center justify-center p-8 transition-colors duration-300 ${isDark ? 'bg-slate-950 text-white' : 'bg-stone-50/50 text-espresso'}`}>
         <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
@@ -449,7 +459,7 @@ export default function ProviderProfilePage() {
     : 5.0;
 
   return (
-    <div className="flex flex-col min-h-screen bg-stone-50/50">
+    <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
       {/* Top Navbar */}
       <Navbar />
       {/* Main Content Body */}
@@ -457,20 +467,24 @@ export default function ProviderProfilePage() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row gap-10">
           {/* Left side: Profile Info, Map, Reviews */}
           <div className="w-full lg:w-3/5 flex flex-col gap-8">
-            <div className="bg-white border border-champagne/60 rounded-2xl p-8 shadow-sm">
+            <div className="bg-card-bg border border-champagne/60 rounded-2xl p-8 shadow-sm transition-colors duration-300">
               <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-                <h1 className="font-display text-3xl font-bold text-espresso">{provider.business_name}</h1>
+                <h1 className="font-display text-3xl font-bold text-espresso transition-colors duration-300">{provider.business_name}</h1>
                 {provider.is_verified && (
-                  <div className="bg-purple-50 border border-purple-200 text-purple-800 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+                  <div className={`border text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm transition-colors duration-300 ${
+                    isDark 
+                      ? 'bg-purple-950/40 border-purple-800 text-accent' 
+                      : 'bg-purple-50 border-purple-200 text-purple-800'
+                  }`}>
                     <ShieldCheck className="w-4 h-4" /> Verified Provider
                   </div>
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 text-sm text-stone-500 mb-6 font-sans">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-stone-500 dark:text-stone-400 mb-6 font-sans">
                 <div className="flex items-center gap-1">
                   <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                  <span className="font-semibold text-slate-700">{avgRating}</span>
+                  <span className="font-semibold text-slate-700 dark:text-slate-300 transition-colors duration-300">{avgRating}</span>
                   <span>({reviews.length} Reviews)</span>
                 </div>
                 <span>•</span>
@@ -480,7 +494,7 @@ export default function ProviderProfilePage() {
                 </div>
               </div>
 
-              <p className="text-stone-600 font-sans leading-relaxed mb-6">
+              <p className="text-stone-600 dark:text-stone-300 font-sans leading-relaxed mb-6 transition-colors duration-300">
                 {provider.description}
               </p>
 
@@ -496,12 +510,12 @@ export default function ProviderProfilePage() {
 
             {/* Services Provided Section */}
             <div>
-              <h2 className="font-display text-xl font-bold text-espresso mb-4">Services Provided</h2>
+              <h2 className="font-display text-xl font-bold text-espresso mb-4 transition-colors duration-300">Services Provided</h2>
               <div className="flex flex-col gap-4">
                 {services.map((s) => (
-                  <div key={s.id} className="bg-white border border-champagne/60 rounded-xl p-5 shadow-sm flex items-start gap-4">
+                  <div key={s.id} className="bg-card-bg border border-champagne/60 rounded-xl p-5 shadow-sm flex items-start gap-4 transition-colors duration-300">
                     {/* Service Image */}
-                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-stone-50 border border-champagne/40 flex-shrink-0 flex items-center justify-center relative">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-stone-50 dark:bg-zinc-900 border border-champagne/40 dark:border-zinc-800 flex-shrink-0 flex items-center justify-center relative transition-colors duration-300">
                       {s.images && s.images[0] ? (
                         <img
                           src={s.images[0]}
@@ -518,13 +532,13 @@ export default function ProviderProfilePage() {
                     {/* Service Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start gap-2 mb-1">
-                        <h3 className="font-sans font-bold text-espresso text-base truncate">{s.name}</h3>
+                        <h3 className="font-sans font-bold text-espresso text-base truncate transition-colors duration-300">{s.name}</h3>
                         <span className="text-sm font-bold text-accent font-sans flex-shrink-0">{s.price} CAD</span>
                       </div>
-                      <p className="text-stone-500 text-xs font-sans mb-3 leading-relaxed">
+                      <p className="text-stone-500 dark:text-stone-400 text-xs font-sans mb-3 leading-relaxed transition-colors duration-300">
                         {s.description}
                       </p>
-                      <div className="flex items-center gap-2 text-[10px] font-semibold text-stone-400 font-sans">
+                      <div className="flex items-center gap-2 text-[10px] font-semibold text-stone-400 dark:text-stone-550 font-sans">
                         <Clock className="w-3.5 h-3.5" />
                         <span>{s.duration_minutes} Minutes Duration</span>
                       </div>
@@ -536,7 +550,7 @@ export default function ProviderProfilePage() {
 
             {/* Map Pinned Location */}
             <div>
-              <h2 className="font-display text-xl font-bold text-espresso mb-4">Location</h2>
+              <h2 className="font-display text-xl font-bold text-espresso mb-4 transition-colors duration-300">Location</h2>
               <Map 
                 latitude={provider.latitude} 
                 longitude={provider.longitude} 
@@ -546,18 +560,18 @@ export default function ProviderProfilePage() {
 
             {/* Reviews Section */}
             <div>
-              <h2 className="font-display text-xl font-bold text-espresso mb-6">Customer Reviews</h2>
+              <h2 className="font-display text-xl font-bold text-espresso mb-6 transition-colors duration-300">Customer Reviews</h2>
               <div className="flex flex-col gap-4">
                 {reviews.map((rev) => (
-                  <div key={rev.id} className="bg-white border border-champagne/50 rounded-xl p-6 shadow-sm">
+                  <div key={rev.id} className="bg-card-bg border border-champagne/50 rounded-xl p-6 shadow-sm transition-colors duration-300">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-champagne/40 flex items-center justify-center font-bold text-accent font-sans">
+                        <div className="w-10 h-10 rounded-full bg-champagne/40 dark:bg-zinc-800 flex items-center justify-center font-bold text-accent font-sans transition-colors duration-300">
                           {rev.users.full_name.charAt(0)}
                         </div>
                         <div>
-                          <h4 className="font-display font-semibold text-espresso text-sm">{rev.users.full_name}</h4>
-                          <span className="text-[10px] text-stone-400 font-sans">
+                          <h4 className="font-display font-semibold text-espresso text-sm transition-colors duration-300">{rev.users.full_name}</h4>
+                          <span className="text-[10px] text-stone-400 dark:text-stone-500 font-sans">
                             {new Date(rev.created_at).toLocaleDateString()}
                           </span>
                         </div>
@@ -567,13 +581,13 @@ export default function ProviderProfilePage() {
                           <Star 
                             key={i} 
                             className={`w-3.5 h-3.5 ${
-                              i < rev.rating ? 'text-amber-500 fill-amber-500' : 'text-stone-200'
+                              i < rev.rating ? 'text-amber-500 fill-amber-500' : 'text-stone-200 dark:text-stone-700'
                             }`} 
                           />
                         ))}
                       </div>
                     </div>
-                    <p className="text-stone-600 text-sm font-sans leading-relaxed">
+                    <p className="text-stone-600 dark:text-stone-300 text-sm font-sans leading-relaxed transition-colors duration-300">
                       {rev.comment}
                     </p>
                   </div>
@@ -584,12 +598,12 @@ export default function ProviderProfilePage() {
 
           {/* Right side: Interactive Calendar & Checkout Selection */}
           <div className="w-full lg:w-2/5 flex flex-col gap-8">
-            <div className="bg-white border border-champagne/60 rounded-2xl p-6 shadow-md sticky top-36">
-              <h2 className="font-display text-xl font-bold text-espresso mb-6">Book an Appointment</h2>
+            <div className="bg-card-bg border border-champagne/60 rounded-2xl p-6 shadow-md sticky top-36 transition-colors duration-300">
+              <h2 className="font-display text-xl font-bold text-espresso mb-6 transition-colors duration-300">Book an Appointment</h2>
 
               {/* Service Selector */}
               <div className="mb-6">
-                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Select Service</label>
+                <label className="block text-xs font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider mb-2 transition-colors duration-300">Select Service</label>
                 <div className="flex flex-col gap-2">
                   {services.map((s) => (
                     <div
@@ -598,13 +612,13 @@ export default function ProviderProfilePage() {
                       className={`p-4 rounded-xl border cursor-pointer transition-all flex justify-between items-center ${
                         selectedService?.id === s.id
                           ? 'bg-accent/5 border-accent'
-                          : 'bg-white border-champagne/80 hover:border-gold'
+                          : 'bg-card-bg border-champagne/80 hover:border-gold'
                       }`}
                     >
                       <div>
-                        <h3 className="font-sans font-semibold text-espresso text-sm">{s.name}</h3>
-                        <p className="text-[11px] text-stone-400 font-sans mt-0.5">{s.description}</p>
-                        <div className="flex items-center gap-4 mt-2 text-xs text-stone-500">
+                        <h3 className="font-sans font-semibold text-espresso text-sm transition-colors duration-300">{s.name}</h3>
+                        <p className="text-[11px] text-stone-400 dark:text-stone-500 font-sans mt-0.5 transition-colors duration-300">{s.description}</p>
+                        <div className="flex items-center gap-4 mt-2 text-xs text-stone-500 dark:text-stone-400 transition-colors duration-300">
                           <span className="flex items-center gap-0.5"><Clock className="w-3.5 h-3.5 text-stone-400" /> {s.duration_minutes} min</span>
                           <span className="flex items-center gap-0.5"><DollarSign className="w-3.5 h-3.5 text-stone-400" /> {s.price} CAD</span>
                         </div>
@@ -616,7 +630,7 @@ export default function ProviderProfilePage() {
 
               {/* Date Picker */}
               <div className="mb-6">
-                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Select Date</label>
+                <label className="block text-xs font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider mb-2 transition-colors duration-300">Select Date</label>
                 <Calendar
                   onChange={(val) => setSelectedDate(val as Date)}
                   value={selectedDate}
@@ -627,7 +641,7 @@ export default function ProviderProfilePage() {
               {/* Slots Selector */}
               {selectedService && (
                 <div className="mb-8">
-                  <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
+                  <label className="block text-xs font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider mb-2 transition-colors duration-300">
                     Available Slots ({availableSlots.length})
                   </label>
                   {availableSlots.length > 0 ? (
@@ -641,7 +655,7 @@ export default function ProviderProfilePage() {
                             className={`py-2 px-3 rounded-lg text-xs font-medium font-sans border text-center transition-all ${
                               isSelected
                                 ? 'bg-accent border-accent text-white shadow-sm'
-                                : 'bg-stone-50 border-champagne hover:border-gold text-slate-700'
+                                : 'bg-stone-50 dark:bg-zinc-900 border-champagne dark:border-zinc-800 hover:border-gold text-slate-700 dark:text-slate-300'
                             }`}
                           >
                             {slot.label.split(' - ')[0]}
@@ -650,7 +664,7 @@ export default function ProviderProfilePage() {
                       })}
                     </div>
                   ) : (
-                    <div className="p-4 rounded-xl bg-stone-50 border border-dashed border-stone-200 text-center text-xs text-stone-400 font-sans">
+                    <div className="p-4 rounded-xl bg-stone-50 dark:bg-zinc-900 border border-dashed border-stone-200 dark:border-zinc-800 text-center text-xs text-stone-400 font-sans transition-colors duration-300">
                       No slots available on this date.
                     </div>
                   )}
@@ -663,8 +677,8 @@ export default function ProviderProfilePage() {
                 disabled={!selectedSlot || !selectedService}
                 className={`w-full py-3.5 rounded-xl text-center text-sm font-semibold transition-all shadow-sm ${
                   selectedSlot && selectedService
-                    ? 'bg-primary hover:bg-slate-800 text-white cursor-pointer'
-                    : 'bg-stone-100 border border-stone-200 text-stone-400 cursor-not-allowed'
+                    ? 'bg-primary hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-950 cursor-pointer'
+                    : 'bg-stone-100 dark:bg-zinc-850 border border-stone-200 dark:border-zinc-800 text-stone-400 dark:text-zinc-600 cursor-not-allowed'
                 }`}
               >
                 Confirm & Proceed

@@ -32,6 +32,20 @@ export default function ServicesManager() {
   const [services, setServices] = useState<Service[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDark, setIsDark] = useState(false);
+
+  // Sync theme with HTML class and global events
+  useEffect(() => {
+    function checkTheme() {
+      if (typeof window !== 'undefined') {
+        const isDarkTheme = document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
+        setIsDark(isDarkTheme);
+      }
+    }
+    checkTheme();
+    window.addEventListener('theme-change', checkTheme);
+    return () => window.removeEventListener('theme-change', checkTheme);
+  }, []);
 
   // Editor Modal States
   const [showEditor, setShowEditor] = useState(false);
@@ -276,10 +290,14 @@ export default function ServicesManager() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="font-display text-2xl font-bold text-espresso">My Services</h1>
+        <h1 className="font-display text-2xl font-bold text-espresso dark:text-accent">My Services</h1>
         <button
           onClick={() => openEditor(null)}
-          className="bg-primary hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+          className={`font-semibold text-xs px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5 ${
+            isDark
+              ? 'bg-white-always text-slate-950 hover:bg-stone-100'
+              : 'bg-primary hover:bg-slate-800 text-white'
+          }`}
         >
           <Plus className="w-4 h-4" /> Add Service
         </button>
@@ -501,7 +519,11 @@ export default function ServicesManager() {
             <button
               type="submit"
               disabled={editorLoading}
-              className="w-full bg-primary hover:bg-slate-800 text-white font-semibold text-sm py-3 rounded-xl transition-all shadow-sm mt-4 flex items-center justify-center gap-1.5"
+              className={`w-full font-semibold text-sm py-3 rounded-xl transition-all shadow-sm mt-4 flex items-center justify-center gap-1.5 ${
+                isDark
+                  ? 'bg-white-always text-slate-950 hover:bg-stone-100'
+                  : 'bg-primary hover:bg-slate-800 text-white'
+              }`}
             >
               {editorLoading ? (
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>

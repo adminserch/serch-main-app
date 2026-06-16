@@ -125,6 +125,20 @@ function SearchContent() {
   const [showCompareDrawer, setShowCompareDrawer] = useState(false);
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({ lat: 14.5995, lng: 120.9842 });
   const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
+  const [isDark, setIsDark] = useState(false);
+
+  // Sync theme with HTML class and global events
+  useEffect(() => {
+    function checkTheme() {
+      if (typeof window !== 'undefined') {
+        const isDarkTheme = document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
+        setIsDark(isDarkTheme);
+      }
+    }
+    checkTheme();
+    window.addEventListener('theme-change', checkTheme);
+    return () => window.removeEventListener('theme-change', checkTheme);
+  }, []);
 
   useEffect(() => {
     async function loadUserRole() {
@@ -265,18 +279,18 @@ function SearchContent() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-stone-50/50">
+    <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
       {/* Top Navbar */}
       <Navbar />
 
       {/* Main Content Body */}
       <div className="flex-grow pt-20 flex flex-col">
         {/* Top Bar / Search Controls */}
-        <div className="bg-white border-b border-champagne/60 px-6 py-4 sticky top-20 z-40">
+        <div className="bg-card-bg border-b border-champagne/60 dark:border-zinc-800 px-6 py-4 sticky top-20 z-45 transition-colors duration-300">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
               {/* Query */}
-              <div className="bg-stone-50 border border-champagne/60 rounded-xl px-3 py-2 flex items-center gap-2 text-sm w-full sm:w-[450px]">
+              <div className="bg-stone-50 dark:bg-zinc-900 border border-champagne/60 dark:border-zinc-805 rounded-xl px-3 py-2 flex items-center gap-2 text-sm w-full sm:w-[450px] transition-colors duration-300">
                 <SearchIcon className="w-4 h-4 text-stone-400" />
                 <input 
                   type="text" 
@@ -293,7 +307,7 @@ function SearchContent() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="bg-white border border-champagne rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none"
+                className="bg-card-bg border border-champagne dark:border-zinc-800 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-none transition-colors duration-300"
               >
                 <option value="all">All Categories</option>
                 <option value="Home Cleaning">Home Cleaning</option>
@@ -307,7 +321,7 @@ function SearchContent() {
               <select
                 value={priceFilter}
                 onChange={(e) => setPriceFilter(e.target.value)}
-                className="bg-white border border-champagne rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none"
+                className="bg-card-bg border border-champagne dark:border-zinc-800 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-none transition-colors duration-300"
               >
                 <option value="all">Any Price</option>
                 <option value="$">$ (Budget)</option>
@@ -318,7 +332,7 @@ function SearchContent() {
               <select
                 value={minRating}
                 onChange={(e) => setMinRating(Number(e.target.value))}
-                className="bg-white border border-champagne rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none"
+                className="bg-card-bg border border-champagne dark:border-zinc-800 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-none transition-colors duration-300"
               >
                 <option value={0}>Any Rating</option>
                 <option value={4.5}>4.5+ Stars</option>
@@ -334,7 +348,7 @@ function SearchContent() {
           <div className="w-full lg:w-1/2 p-6 md:p-10 overflow-y-auto max-h-[calc(100vh-220px)] lg:max-h-[calc(100vh-160px)] flex flex-col gap-6">
             <div>
               <span className="text-[10px] font-bold text-accent uppercase tracking-wider block mb-1">Search Results</span>
-              <h2 className="font-display text-2xl font-bold text-espresso">
+              <h2 className="font-display text-2xl font-bold text-espresso transition-colors duration-300">
                 {filteredProviders.length} Available Providers
               </h2>
             </div>
@@ -351,15 +365,15 @@ function SearchContent() {
                         setSelectedProviderId(p.id);
                       }
                     }}
-                    className={`bg-white border p-6 shadow-xs hover:shadow-md hover:border-gold/60 transition-all flex flex-col justify-between gap-4 cursor-pointer rounded-2xl ${
+                    className={`bg-card-bg border p-6 shadow-xs hover:shadow-md hover:border-gold/60 transition-all flex flex-col justify-between gap-4 cursor-pointer rounded-2xl ${
                       selectedProviderId === p.id 
-                        ? 'border-accent ring-2 ring-accent/20 bg-purple-50/5' 
-                        : 'border-champagne/60'
+                        ? 'border-accent ring-2 ring-accent/20 bg-accent/5' 
+                        : 'border-champagne/60 dark:border-zinc-800'
                     }`}
                   >
                     <div className="flex gap-4">
                       {/* Left: Company Logo */}
-                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-stone-50 border border-champagne/40 flex-shrink-0 flex items-center justify-center relative">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-stone-50 dark:bg-zinc-900 border border-champagne/40 dark:border-zinc-800 flex-shrink-0 flex items-center justify-center relative transition-colors duration-300">
                         {p.logo_url ? (
                           <img
                              src={p.logo_url}
@@ -367,7 +381,7 @@ function SearchContent() {
                              className="w-full h-full object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full bg-champagne/20 border border-champagne/40 rounded-xl flex items-center justify-center text-accent text-lg font-bold">
+                          <div className="w-full h-full bg-champagne/20 border border-champagne/40 dark:border-zinc-800 rounded-xl flex items-center justify-center text-accent text-lg font-bold">
                             {p.business_name.charAt(0)}
                           </div>
                         )}
@@ -376,23 +390,27 @@ function SearchContent() {
                       {/* Right: Provider Details */}
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start gap-4 mb-1 flex-wrap">
-                          <h3 className="font-sans font-bold text-espresso text-base hover:text-accent transition-colors truncate">
+                          <h3 className="font-sans font-bold text-espresso text-base hover:text-accent transition-colors duration-300 truncate">
                             <Link href={`/providers/${p.id}`} onClick={(e) => e.stopPropagation()}>{p.business_name}</Link>
                           </h3>
                           
                           <div className="flex items-center gap-1.5 flex-shrink-0">
                             {p.is_verified && (
-                              <span className="bg-purple-50 border border-purple-200 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                              <span className={`border text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors duration-300 ${
+                                isDark 
+                                  ? 'bg-purple-950/40 border-purple-800 text-accent' 
+                                  : 'bg-purple-50 border-purple-200 text-purple-800'
+                              }`}>
                                 <ShieldCheck className="w-3.5 h-3.5" /> Verified Provider
                               </span>
                             )}
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-4 text-xs text-stone-500 mb-3 font-sans">
+                        <div className="flex items-center gap-4 text-xs text-stone-550 dark:text-stone-400 mb-3 font-sans transition-colors duration-300">
                           <div className="flex items-center gap-0.5">
                             <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                            <span className="font-bold text-slate-800">{p.avg_rating}</span>
+                            <span className="font-bold text-slate-850 dark:text-slate-200">{p.avg_rating}</span>
                             <span>({p.review_count} reviews)</span>
                           </div>
                           <span>•</span>
@@ -402,13 +420,13 @@ function SearchContent() {
                           </div>
                         </div>
 
-                        <p className="text-stone-600 text-xs font-sans leading-relaxed line-clamp-2">
+                        <p className="text-stone-600 dark:text-stone-300 text-xs font-sans leading-relaxed line-clamp-2 transition-colors duration-300">
                           {p.description}
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between border-t border-champagne/30 pt-4 mt-1">
+                    <div className="flex items-center justify-between border-t border-champagne/30 dark:border-zinc-800 pt-4 mt-1 transition-colors duration-300">
                       {/* Compare Switch */}
                       {filteredProviders.length > 1 ? (
                         <button
@@ -416,10 +434,10 @@ function SearchContent() {
                             e.stopPropagation();
                             toggleCompare(p);
                           }}
-                          className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1 ${
+                          className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1 cursor-pointer ${
                             isCompared
                               ? 'bg-accent/10 border-accent text-accent'
-                              : 'bg-white border-champagne hover:border-gold text-slate-700'
+                              : 'bg-card-bg border-champagne dark:border-zinc-800 hover:border-gold text-slate-700 dark:text-slate-300 hover:bg-champagne/10 dark:hover:bg-zinc-900'
                           }`}
                         >
                           {isCompared ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
@@ -432,7 +450,11 @@ function SearchContent() {
                       <Link 
                         href={`/providers/${p.id}`} 
                         onClick={(e) => e.stopPropagation()}
-                        className="bg-primary hover:bg-slate-800 text-white text-xs font-bold py-2 px-4 rounded-xl transition-all shadow-xs"
+                        className={`text-xs font-bold py-2 px-4 rounded-xl transition-all shadow-xs ${
+                          isDark 
+                            ? 'bg-white hover:bg-slate-200 text-slate-950' 
+                            : 'bg-primary hover:bg-slate-800 text-white'
+                        }`}
                       >
                         View Profile
                       </Link>
@@ -443,8 +465,8 @@ function SearchContent() {
 
               {/* Pagination Controls */}
               {totalPages > 1 && (
-                <div className="flex justify-between items-center mt-6 pt-4 border-t border-champagne/30 flex-wrap gap-4">
-                  <span className="text-xs text-stone-500 font-sans">
+                <div className="flex justify-between items-center mt-6 pt-4 border-t border-champagne/30 dark:border-zinc-800 flex-wrap gap-4 transition-colors duration-300">
+                  <span className="text-xs text-stone-500 dark:text-stone-400 font-sans">
                     Page {currentPage} of {totalPages}
                   </span>
                   <div className="flex items-center gap-1">
@@ -452,7 +474,7 @@ function SearchContent() {
                       type="button"
                       disabled={currentPage === 1}
                       onClick={() => setCurrentPage(1)}
-                      className="px-2.5 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
+                      className="px-2.5 py-1.5 rounded-lg border border-champagne dark:border-zinc-800 text-[10px] font-bold text-slate-700 dark:text-slate-300 bg-card-bg hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
                       title="First Page"
                     >
                       &lt;&lt;
@@ -461,7 +483,7 @@ function SearchContent() {
                       type="button"
                       disabled={currentPage === 1}
                       onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                      className="px-3 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
+                      className="px-3 py-1.5 rounded-lg border border-champagne dark:border-zinc-800 text-[10px] font-bold text-slate-700 dark:text-slate-300 bg-card-bg hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
                       title="Previous Page"
                     >
                       &lt;
@@ -477,7 +499,7 @@ function SearchContent() {
                           className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
                             currentPage === pageNum
                               ? 'bg-accent border-accent text-white shadow-xs'
-                              : 'bg-white border-champagne text-stone-600 hover:border-gold'
+                              : 'bg-card-bg border-champagne dark:border-zinc-800 text-stone-605 dark:text-stone-300 hover:border-gold'
                           }`}
                         >
                           {pageNum}
@@ -489,7 +511,7 @@ function SearchContent() {
                       type="button"
                       disabled={currentPage === totalPages}
                       onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                      className="px-3 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
+                      className="px-3 py-1.5 rounded-lg border border-champagne dark:border-zinc-800 text-[10px] font-bold text-slate-700 dark:text-slate-300 bg-card-bg hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
                       title="Next Page"
                     >
                       &gt;
@@ -498,7 +520,7 @@ function SearchContent() {
                       type="button"
                       disabled={currentPage === totalPages}
                       onClick={() => setCurrentPage(totalPages)}
-                      className="px-2.5 py-1.5 rounded-lg border border-champagne text-[10px] font-bold text-slate-700 bg-white hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
+                      className="px-2.5 py-1.5 rounded-lg border border-champagne dark:border-zinc-800 text-[10px] font-bold text-slate-700 dark:text-slate-300 bg-card-bg hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
                       title="Last Page"
                     >
                       &gt;&gt;
@@ -510,7 +532,7 @@ function SearchContent() {
           </div>
 
           {/* Right Side: Map */}
-          <div className="w-full lg:w-1/2 h-[400px] lg:h-[calc(100vh-160px)] sticky top-[160px] border-l border-champagne bg-slate-100">
+          <div className="w-full lg:w-1/2 h-[400px] lg:h-[calc(100vh-160px)] sticky top-[160px] border-l border-champagne dark:border-zinc-800 bg-slate-100 transition-colors duration-300">
             <Map 
               latitude={mapCenter.lat} 
               longitude={mapCenter.lng} 
@@ -530,43 +552,50 @@ function SearchContent() {
 
       {/* Slide-Up Comparison Drawer */}
       {showCompareDrawer && (
-        <div className="fixed inset-0 bg-slate-900/40 z-50 backdrop-blur-xs flex items-end justify-center">
-          <div className="bg-white rounded-t-3xl shadow-2xl max-w-5xl w-full p-6 border-t border-champagne max-h-[85vh] overflow-y-auto transform translate-y-0 transition-transform duration-300">
-            <div className="flex justify-between items-center border-b border-champagne/80 pb-4 mb-6">
+        <div className="fixed inset-0 bg-slate-900/40 z-55 backdrop-blur-xs flex items-end justify-center">
+          <div className="bg-card-bg rounded-t-3xl shadow-2xl max-w-5xl w-full p-6 border-t border-champagne dark:border-zinc-800 max-h-[85vh] overflow-y-auto transform translate-y-0 transition-transform duration-300">
+            <div className="flex justify-between items-center border-b border-champagne/80 dark:border-zinc-800 pb-4 mb-6 transition-colors duration-300">
               <h2 className="text-lg font-bold font-display text-espresso">Side-by-Side Comparison</h2>
               <button 
                 onClick={() => setShowCompareDrawer(false)}
-                className="p-1 rounded-full hover:bg-stone-100 text-stone-400 hover:text-stone-600"
+                className="p-1 rounded-full hover:bg-stone-100 dark:hover:bg-zinc-800 text-stone-400 hover:text-stone-605"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 border-b border-champagne/40 pb-6">
+            <div className="grid grid-cols-3 gap-4 border-b border-champagne/40 dark:border-zinc-800 pb-6 transition-colors duration-300">
               {compareList.map((p) => (
-                <div key={p.id} className="border border-champagne/80 rounded-2xl p-4 bg-stone-50 flex flex-col justify-between">
+                <div key={p.id} className="border border-champagne/80 dark:border-zinc-800 rounded-2xl p-4 bg-stone-50 dark:bg-zinc-900/60 flex flex-col justify-between transition-colors duration-300">
                   <div>
-                    <div className="flex items-center gap-1 bg-purple-50 border border-purple-200 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-full w-max mb-3">
+                    <div className="flex items-center gap-1 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-purple-800 dark:text-purple-300 text-[10px] font-bold px-2 py-0.5 rounded-full w-max mb-3 transition-colors duration-300">
                       <ShieldCheck className="w-3.5 h-3.5" /> VERIFIED
                     </div>
-                    <h3 className="font-display font-bold text-espresso text-base mb-1">{p.business_name}</h3>
-                    <div className="flex items-center gap-1 text-xs text-slate-700 font-bold mb-3">
+                    <h3 className="font-display font-bold text-espresso text-base mb-1 transition-colors duration-300">{p.business_name}</h3>
+                    <div className="flex items-center gap-1 text-xs text-slate-700 dark:text-slate-350 font-bold mb-3 transition-colors duration-300">
                       <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                       <span>{p.avg_rating} ({p.review_count} reviews)</span>
                     </div>
                     
-                    <p className="text-[11px] text-stone-600 font-sans leading-relaxed mb-4 line-clamp-4">
+                    <p className="text-[11px] text-stone-600 dark:text-stone-300 font-sans leading-relaxed mb-4 line-clamp-4 transition-colors duration-300">
                       {p.description}
                     </p>
                   </div>
 
-                  <Link href={`/providers/${p.id}`} className="bg-primary hover:bg-slate-800 text-white text-xs font-bold py-2 px-3 rounded-lg text-center transition-all mt-4">
+                  <Link 
+                    href={`/providers/${p.id}`} 
+                    className={`text-xs font-bold py-2 px-3 rounded-lg text-center transition-all mt-4 ${
+                      isDark 
+                        ? 'bg-white hover:bg-slate-200 text-slate-950' 
+                        : 'bg-primary hover:bg-slate-800 text-white'
+                    }`}
+                  >
                     Book This Pro
                   </Link>
                 </div>
               ))}
               {Array.from({ length: 3 - compareList.length }).map((_, i) => (
-                <div key={i} className="border border-dashed border-stone-300 rounded-2xl p-6 flex flex-col items-center justify-center text-center text-xs text-stone-400 bg-white">
+                <div key={i} className="border border-dashed border-stone-300 dark:border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center text-xs text-stone-400 dark:text-stone-500 bg-card-bg transition-colors duration-300">
                   Add another expert to compare
                 </div>
               ))}

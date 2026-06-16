@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #FCFBF9; /* Warm off-white background */
   --foreground: #1C1917; /* Dark charcoal/espresso text */
@@ -10,6 +12,17 @@
   --espresso: #1C1917; /* Espresso */
   --champagne: #F5F2EB; /* Warm champagne */
   --card-bg: #FFFFFF;
+}
+
+.dark {
+  --background: #09090b; /* Dark charcoal background */
+  --foreground: #fafafa; /* Light gray text */
+  --primary: #ffffff; /* White primary */
+  --accent: #a78bfa; /* Light purple */
+  --gold: #27272a; /* Dark gold/zinc */
+  --espresso: #fafafa; /* Light text */
+  --champagne: #18181b; /* Dark zinc container */
+  --card-bg: #09090b;
 }
 
 @theme inline {
@@ -30,6 +43,7 @@ body {
   color: var(--foreground);
   font-family: 'Inter', sans-serif;
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -40,12 +54,32 @@ h1, h2, h3, h4, h5, h6 {
 .react-calendar {
   width: 100% !important;
   max-width: 100%;
-  background: white !important;
+  background: var(--card-bg) !important;
+  color: var(--foreground) !important;
   border: 1px solid var(--champagne) !important;
   font-family: inherit !important;
   border-radius: 0.75rem !important;
   padding: 0.75rem !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.react-calendar__navigation button {
+  color: var(--foreground) !important;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background-color: var(--champagne) !important;
+}
+
+.react-calendar__month-view__weekdays {
+  color: var(--foreground) !important;
+  opacity: 0.8;
+}
+
+.react-calendar__tile {
+  color: var(--foreground) !important;
 }
 
 .react-calendar__tile--active {
@@ -59,8 +93,67 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 0.375rem !important;
 }
 
-.react-calendar__tile:hover {
-  background: #F3F4F6 !important;
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background: var(--champagne) !important;
   border-radius: 0.375rem !important;
 }
+
+/* Dark mode specific calendar overrides */
+.dark .react-calendar__tile:disabled {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.dark .react-calendar__navigation button:disabled {
+  background-color: transparent !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.dark .react-calendar__tile--now {
+  background: rgba(167, 139, 250, 0.15) !important;
+  border: 1px solid var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+/* Dashboard & Admin panel dark theme overrides */
+.dark .bg-white,
+.dark aside.bg-white,
+.dark div.bg-white,
+.dark form.bg-white,
+.dark table.bg-white {
+  background-color: var(--card-bg) !important;
+  border-color: var(--champagne) !important;
+}
+
+.dark input.bg-white,
+.dark select.bg-white,
+.dark textarea.bg-white,
+.dark input[type="text"],
+.dark select {
+  background-color: var(--champagne) !important;
+  color: var(--foreground) !important;
+  border-color: var(--champagne) !important;
+}
+
+.dark th {
+  color: var(--foreground) !important;
+  border-color: var(--champagne) !important;
+}
+
+.dark td {
+  color: var(--foreground) !important;
+  border-color: var(--champagne) !important;
+}
+
+.dark .divide-y > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--champagne) !important;
+}
+
+.bg-white-always {
+  background-color: #ffffff !important;
+  color: #1c1917 !important;
+}
+
+
 
