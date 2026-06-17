@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SignInButton, SignUpButton, UserButton, useAuth } from '@clerk/nextjs';
+import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 import { supabase } from '@/lib/supabase';
 import { Home, Search, CalendarDays, LayoutDashboard, ShieldCheck, User, Lightbulb } from 'lucide-react';
 import Image from 'next/image';
@@ -130,7 +130,7 @@ export default function Navbar() {
                     Sign In
                   </button>
                 </SignInButton>
-                <SignInButton mode="modal">
+                <SignInButton mode="modal" fallbackRedirectUrl="/dashboard" forceRedirectUrl="/dashboard">
                   <button className="font-medium text-xs sm:text-sm px-3.5 py-1.5 sm:px-5 sm:py-2 rounded-xl transition-all duration-200 bg-purple-600 hover:bg-purple-700 text-white shadow-sm cursor-pointer">
                     Sign-in as Provider
                   </button>

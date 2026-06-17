@@ -4,8 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { UserButton, useUser, useAuth } from '@clerk/nextjs';
-import { supabase } from '@/lib/supabase';
+import { UserButton, useUser, useAuth, SignIn } from '@clerk/nextjs';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { 
@@ -48,7 +47,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
-      router.push('/');
       return;
     }
 
@@ -76,10 +74,58 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     checkRole();
   }, [isLoaded, isSignedIn, user]);
 
+  if (isLoaded && !isSignedIn) {
+    return (
+      <div className="flex flex-col min-h-screen bg-stone-50/50 text-espresso">
+        <Navbar />
+        <main className="flex-grow pt-28 pb-16 flex items-center justify-center px-6">
+          <div className="max-w-md w-full bg-white border border-champagne/80 shadow-md rounded-2xl p-8 flex flex-col items-center">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-4 border bg-champagne/40 text-accent border-champagne animate-pulse">
+                <LayoutDashboard className="w-6 h-6" />
+              </div>
+              <h1 className="font-display text-2xl font-bold mb-2 text-espresso">
+                Sign In as Provider
+              </h1>
+              <p className="font-sans text-sm text-stone-500">
+                To access your provider dashboard, manage appointments, services, and business hours, please sign in.
+              </p>
+            </div>
+            <SignIn 
+              routing="hash"
+              appearance={{
+                elements: {
+                  formButtonPrimary: 'bg-primary hover:bg-slate-800 text-white text-sm normal-case border-none',
+                  card: 'border border-champagne/40 shadow-none rounded-xl bg-white w-full max-w-sm',
+                  headerTitle: 'text-espresso',
+                  headerSubtitle: 'text-stone-500',
+                  socialButtonsBlockButton: 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50',
+                  formFieldLabel: 'text-stone-700',
+                  formFieldInput: 'bg-white text-stone-700 border-slate-200 focus:border-primary focus:ring-primary',
+                  dividerText: 'text-stone-500 font-sans',
+                  dividerLine: 'bg-slate-200',
+                  footerActionText: 'text-stone-500',
+                  footerActionLink: 'text-primary hover:text-accent',
+                  identityPreviewText: 'text-espresso',
+                  identityPreviewEditButtonIcon: 'text-primary',
+                },
+              }}
+            />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   if (!authorized) {
     return (
-      <div className="flex-grow flex items-center justify-center p-8 min-h-screen">
-        <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+      <div className="flex flex-col min-h-screen bg-stone-50/50 text-espresso">
+        <Navbar />
+        <div className="flex-grow flex items-center justify-center p-8 pt-36">
+          <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <Footer />
       </div>
     );
   }

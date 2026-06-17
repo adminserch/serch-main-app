@@ -3,9 +3,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth, useUser } from '@clerk/nextjs';
-import { supabase, getSupabaseClient, supabaseAdmin } from '@/lib/supabase';
+import { supabase, getSupabaseClient } from '@/lib/supabase';
 import { useToast } from '@/components/Providers';
-import { Calendar as CalendarIcon, Clock, Plus, Trash2, ShieldAlert } from 'lucide-react';
+import { Clock, Trash2 } from 'lucide-react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
@@ -63,7 +63,6 @@ export default function AvailabilityManager() {
   // Helper to resolve the correct database client
   const getDbClient = async () => {
     if (useAdminBypass) {
-      console.log('Using Public Anonymous Fallback Client');
       return supabase;
     }
     try {
@@ -91,7 +90,6 @@ export default function AvailabilityManager() {
   async function loadData() {
     try {
       const token = await getToken();
-      console.log('loadData token obtained:', !!token);
 
       let client = getSupabaseClient(token);
 
@@ -113,9 +111,6 @@ export default function AvailabilityManager() {
           .single();
         uData = fallbackRes.data;
       }
-
-      console.log('users select response:', uData);
-
       if (uData) {
         let { data: pData, error: pError } = await client
           .from('providers')
@@ -135,11 +130,8 @@ export default function AvailabilityManager() {
           pData = fallbackRes.data;
         }
 
-        console.log('providers select response:', pData);
-
         if (pData) {
           setProvider(pData);
-          console.log('Provider state set successfully:', pData);
 
           // Get availabilities
           let { data: aData } = await client
@@ -148,9 +140,7 @@ export default function AvailabilityManager() {
             .eq('provider_id', pData.id)
             .order('day_of_week', { ascending: true });
 
-          // Seed default availabilities if none exist (Mon-Fri 9am-5pm open, Sat-Sun closed)
           if (aData && aData.length === 0) {
-            console.log('No availabilities found, seeding default business hours...');
             const defaultAvailabilities = [];
             for (let i = 0; i < 7; i++) {
               const isWeekday = i >= 1 && i <= 5; // Monday (1) to Friday (5)
@@ -204,10 +194,7 @@ export default function AvailabilityManager() {
 
   useEffect(() => {
     if (user) {
-      console.log('User detected, loading data...');
       loadData();
-    } else {
-      console.log('User not loaded yet.');
     }
   }, [user]);
 
@@ -270,9 +257,7 @@ export default function AvailabilityManager() {
 
   const handleBlockDate = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('handleBlockDate triggered. Provider:', provider, 'Selected Date:', selectedDate);
     if (!provider) {
-      console.warn('Block date ignored: provider state is null.');
       return;
     }
 
@@ -283,7 +268,6 @@ export default function AvailabilityManager() {
       const offset = selectedDate.getTimezoneOffset();
       const localDate = new Date(selectedDate.getTime() - offset * 60 * 1000);
       const formattedDate = localDate.toISOString().split('T')[0];
-      console.log('Formatted block date string:', formattedDate);
 
       const { data, error } = await client
         .from('blocked_dates')
@@ -296,11 +280,9 @@ export default function AvailabilityManager() {
         .select();
 
       if (error) {
-        console.error('Supabase block_dates insert error:', error);
         throw error;
       }
-      
-      console.log('Supabase block_dates insert success:', data);
+
       toast('Date blocked successfully', 'success');
       setBlockReason('');
       loadData();

@@ -50,11 +50,19 @@ export const supabaseAdmin = (isConfigured && supabaseServiceKey && !supabaseSer
  * This sets the Authorization header with the Clerk token so that
  * Supabase RLS policies can authenticate the user role and clerk_user_id.
  */
+const useClerkJwt = process.env.NEXT_PUBLIC_USE_CLERK_JWT === 'true';
+
 export function getSupabaseClient(clerkToken?: string | null) {
   if (!isConfigured) {
     return supabase;
   }
-  if (!clerkToken) {
+  if (!clerkToken || !useClerkJwt) {
+    return supabase;
+  }
+  
+  // If we have detected that the Clerk-Supabase JWT integration is not configured in the dashboard,
+  // bypass sending the Clerk token to completely avoid 401 console errors.
+  if (typeof window !== 'undefined' && sessionStorage.getItem('serch_jwt_bypass') === 'true') {
     return supabase;
   }
 

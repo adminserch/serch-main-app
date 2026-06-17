@@ -1,9 +1,10 @@
 'use strict';
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, Suspense } from 'react';
 import Link from 'next/link';
-import { useAuth, useUser } from '@clerk/nextjs';
+import { useSearchParams } from 'next/navigation';
+import { useAuth, useUser, SignIn } from '@clerk/nextjs';
 import { supabase, getSupabaseClient } from '@/lib/supabase';
 import { useToast } from '@/components/Providers';
 import Navbar from '@/components/Navbar';
@@ -16,9 +17,7 @@ import {
   XCircle, 
   Lock, 
   Send,
-  Sparkles,
-  User,
-  Bot
+  ShieldCheck
 } from 'lucide-react';
 
 interface Booking {
@@ -52,14 +51,16 @@ interface ChatMessage {
   created_at: string;
 }
 
-export default function BookingsPage() {
-  const { getToken } = useAuth();
+function BookingsContent() {
+  const { getToken, isLoaded: isAuthLoaded, isSignedIn } = useAuth();
   const { user } = useUser();
   const { toast } = useToast();
+  const searchParams = useSearchParams();
 
   const [dbUser, setDbUser] = useState<any>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
 
   // Review Modal State
   const [reviewBooking, setReviewBooking] = useState<Booking | null>(null);
@@ -73,13 +74,14 @@ export default function BookingsPage() {
   const [newMessage, setNewMessage] = useState('');
   const chatBottomRef = useRef<HTMLDivElement>(null);
 
-  // AI Assistant State
-  const [showAiAssistant, setShowAiAssistant] = useState(false);
-  const [aiInput, setAiInput] = useState('');
-  const [aiMessages, setAiMessages] = useState<Array<{ sender: 'user' | 'ai'; text: string }>>([
-    { sender: 'ai', text: 'Hello! I am your Serch Assistant. How can I help you find or manage services today?' }
-  ]);
-  const [aiLoading, setAiLoading] = useState(false);
+
+
+  // Trigger success notification if URL has success=true
+  useEffect(() => {
+    if (searchParams.get('success') === 'true') {
+      setShowSuccessNotification(true);
+    }
+  }, [searchParams]);
 
   // Load bookings
   async function loadData() {
@@ -276,34 +278,72 @@ export default function BookingsPage() {
     }
   };
 
-  const handleSendAiMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!aiInput.trim()) return;
 
-    const userText = aiInput.trim();
-    setAiMessages((prev) => [...prev, { sender: 'user', text: userText }]);
-    setAiInput('');
-    setAiLoading(true);
 
-    try {
-      const response = await fetch('/api/ai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userText, bookings: bookings }),
-      });
-      const data = await response.json();
-      setAiMessages((prev) => [...prev, { sender: 'ai', text: data.reply || 'I am having trouble answering that right now.' }]);
-    } catch (err) {
-      setAiMessages((prev) => [...prev, { sender: 'ai', text: 'I simulated a response: Serch platform connects homeowners with top providers. Your bookings are currently visible on this panel.' }]);
-    } finally {
-      setAiLoading(false);
-    }
-  };
+  if (!isAuthLoaded) {
+    return (
+      <div className="flex flex-col min-h-screen bg-stone-50/50 text-espresso">
+        <Navbar />
+        <div className="flex-grow flex items-center justify-center p-8 pt-36">
+          <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+    return (
+      <div className="flex flex-col min-h-screen bg-stone-50/50 text-espresso">
+        <Navbar />
+        <main className="flex-grow pt-28 pb-16 flex items-center justify-center px-6">
+          <div className="max-w-md w-full bg-white border border-champagne/80 shadow-md rounded-2xl p-8 flex flex-col items-center">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-4 border bg-champagne/40 text-accent border-champagne animate-pulse">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <h1 className="font-display text-2xl font-bold mb-2 text-espresso">
+                Sign In as Seeker
+              </h1>
+              <p className="font-sans text-sm text-stone-500">
+                To view and manage your booked appointments, please sign in to your Seeker account.
+              </p>
+            </div>
+            <SignIn 
+              routing="hash"
+              appearance={{
+                elements: {
+                  formButtonPrimary: 'bg-primary hover:bg-slate-800 text-white text-sm normal-case border-none',
+                  card: 'border border-champagne/40 shadow-none rounded-xl bg-white w-full max-w-sm',
+                  headerTitle: 'text-espresso',
+                  headerSubtitle: 'text-stone-500',
+                  socialButtonsBlockButton: 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50',
+                  formFieldLabel: 'text-stone-700',
+                  formFieldInput: 'bg-white text-stone-700 border-slate-200 focus:border-primary focus:ring-primary',
+                  dividerText: 'text-stone-500 font-sans',
+                  dividerLine: 'bg-slate-200',
+                  footerActionText: 'text-stone-500',
+                  footerActionLink: 'text-primary hover:text-accent',
+                  identityPreviewText: 'text-espresso',
+                  identityPreviewEditButtonIcon: 'text-primary',
+                },
+              }}
+            />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (loading) {
     return (
-      <div className="flex-grow flex items-center justify-center p-8">
-        <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+      <div className="flex flex-col min-h-screen bg-stone-50/50 text-espresso">
+        <Navbar />
+        <div className="flex-grow flex items-center justify-center p-8 pt-36">
+          <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <Footer />
       </div>
     );
   }
@@ -322,6 +362,28 @@ export default function BookingsPage() {
       <Navbar />
       <main className="flex-grow pt-28 pb-16 max-w-5xl mx-auto w-full px-6 relative">
         <h1 className="font-display text-3xl font-bold text-espresso mb-8">My Bookings</h1>
+
+      {showSuccessNotification && (
+        <div className="mb-8 p-4 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40 rounded-2xl flex items-start gap-3 shadow-sm animate-fade-in">
+          <div className="p-1 bg-emerald-500 rounded-full text-white mt-0.5 flex-shrink-0">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <h3 className="font-display font-bold text-espresso dark:text-emerald-400 text-sm">Booking Request Submitted!</h3>
+            <p className="font-sans text-xs text-stone-500 dark:text-stone-400 mt-1">
+              Your appointment request has been successfully sent to the professional. You will receive an email update once they review and confirm your booking. Feel free to use the chat icon below to message them in real-time.
+            </p>
+          </div>
+          <button 
+            onClick={() => setShowSuccessNotification(false)}
+            className="text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-200 text-lg leading-none font-bold"
+          >
+            &times;
+          </button>
+        </div>
+      )}
 
       {bookings.length === 0 ? (
         <div className="bg-white border border-champagne rounded-2xl p-12 text-center shadow-sm">
@@ -532,68 +594,21 @@ export default function BookingsPage() {
         </div>
       )}
 
-      {/* Floating AI Assistant Chat Panel */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <button
-          onClick={() => setShowAiAssistant(!showAiAssistant)}
-          className="bg-primary hover:bg-slate-800 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-1.5"
-        >
-          <Sparkles className="w-5 h-5 text-gold" />
-          <span className="text-xs font-bold font-sans">Ask AI</span>
-        </button>
 
-        {showAiAssistant && (
-          <div className="absolute bottom-16 right-0 bg-white border border-champagne rounded-2xl shadow-2xl w-80 h-[400px] flex flex-col overflow-hidden">
-            {/* Header */}
-            <div className="bg-primary text-white p-3 flex justify-between items-center">
-              <div className="flex items-center gap-1.5">
-                <Bot className="w-5 h-5 text-gold" />
-                <span className="text-xs font-bold font-sans">Serch AI Assistant</span>
-              </div>
-              <button onClick={() => setShowAiAssistant(false)} className="text-stone-300 hover:text-white font-bold">&times;</button>
-            </div>
-
-            {/* Messages */}
-            <div className="flex-grow p-3 overflow-y-auto flex flex-col gap-2">
-              {aiMessages.map((msg, idx) => (
-                <div key={idx} className={`flex gap-1.5 items-start ${msg.sender === 'user' ? 'justify-end' : ''}`}>
-                  {msg.sender === 'ai' && <Bot className="w-4 h-4 text-stone-400 mt-1 flex-shrink-0" />}
-                  <div className={`p-2.5 rounded-xl text-[11px] font-sans leading-relaxed max-w-[80%] ${
-                    msg.sender === 'user' 
-                      ? 'bg-accent text-white rounded-tr-none' 
-                      : 'bg-stone-50 border border-stone-200/55 text-espresso rounded-tl-none'
-                  }`}>
-                    {msg.text}
-                  </div>
-                </div>
-              ))}
-              {aiLoading && (
-                <div className="flex gap-1.5 items-center text-[10px] text-stone-400 p-1">
-                  <span className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce"></span>
-                  <span className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce delay-150"></span>
-                  <span className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce delay-300"></span>
-                </div>
-              )}
-            </div>
-
-            {/* Input Form */}
-            <form onSubmit={handleSendAiMessage} className="p-3 border-t border-champagne/45 flex gap-2">
-              <input
-                type="text"
-                value={aiInput}
-                onChange={(e) => setAiInput(e.target.value)}
-                placeholder="Ask about booking logic, blocked slots..."
-                className="flex-grow border border-champagne rounded-xl px-3 py-2 text-[11px] focus:outline-none focus:border-accent"
-              />
-              <button type="submit" className="p-2 bg-primary hover:bg-slate-800 text-white rounded-xl">
-                <Send className="w-3.5 h-3.5" />
-              </button>
-            </form>
-          </div>
-        )}
-      </div>
     </main>
     <Footer />
   </div>
 );
+}
+
+export default function BookingsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex-grow flex items-center justify-center p-8 pt-36">
+        <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <BookingsContent />
+    </Suspense>
+  );
 }

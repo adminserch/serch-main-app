@@ -3,10 +3,10 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth, useUser } from '@clerk/nextjs';
+import { useAuth, useUser, SignIn } from '@clerk/nextjs';
 import { supabase, getSupabaseClient } from '@/lib/supabase';
 import { useToast } from '@/components/Providers';
-import { Calendar, Clock, DollarSign, ArrowLeft, NotepadText } from 'lucide-react';
+import { Calendar, Clock, ArrowLeft, NotepadText, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -28,7 +28,7 @@ interface Provider {
 function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { getToken } = useAuth();
+  const { getToken, isLoaded: isAuthLoaded, isSignedIn } = useAuth();
   const { user } = useUser();
   const { toast } = useToast();
 
@@ -42,6 +42,7 @@ function CheckoutContent() {
   const [service, setService] = useState<Service | null>(null);
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (!providerId || !serviceId) return;
@@ -89,6 +90,7 @@ function CheckoutContent() {
     if (!providerId || !serviceId || !dateStr || !startStr || !endStr) return;
 
     setLoading(true);
+    setErrorMsg(null);
     try {
       const token = await getToken();
       if (!token) {
@@ -126,6 +128,27 @@ function CheckoutContent() {
 
       if (userError || !dbUser) {
         throw new Error('User record not found in local database.');
+      }
+
+      // 1.5. Check for double booking (same provider, date, and overlapping time slot)
+      const { data: overlapping, error: overlapError } = await supabaseClient
+        .from('bookings')
+        .select('id')
+        .eq('provider_id', providerId)
+        .eq('booking_date', dateStr)
+        .in('status', ['pending', 'confirmed', 'completed'])
+        .lt('start_time', endStr)
+        .gt('end_time', startStr);
+
+      if (overlapError) {
+        console.error('Failed to verify slot overlap:', overlapError);
+      }
+
+      if (overlapping && overlapping.length > 0) {
+        setErrorMsg("There is already a previous booking with the same provider, date, and time.");
+        toast("Booking failed: Slot is already taken.", "error");
+        setLoading(false);
+        return;
       }
 
       // 2. Insert booking
@@ -166,18 +189,83 @@ function CheckoutContent() {
       router.push(`/bookings?success=true&bookingId=${booking.id}`);
     } catch (err: any) {
       console.error(err);
-      // Fallback redirect for static demo
-      toast('Booking request mock-submitted (Demo Mode)', 'success');
-      router.push(`/bookings?success=true&bookingId=demo-booking`);
+      if (err.message && err.message.includes('RLS')) {
+        setErrorMsg("Booking failed: Row-level security restriction.");
+        toast("Booking failed: RLS Policy error.", "error");
+      } else {
+        // Fallback redirect for static demo
+        toast('Booking request mock-submitted (Demo Mode)', 'success');
+        router.push(`/bookings?success=true&bookingId=demo-booking`);
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  if (!isAuthLoaded) {
+    return (
+      <div className="flex flex-col min-h-screen bg-stone-50/50 text-espresso">
+        <Navbar />
+        <div className="flex-grow flex items-center justify-center p-8 pt-36">
+          <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+    return (
+      <div className="flex flex-col min-h-screen bg-stone-50/50 text-espresso">
+        <Navbar />
+        <main className="flex-grow pt-28 pb-16 flex items-center justify-center px-6">
+          <div className="max-w-md w-full bg-white border border-champagne/80 shadow-md rounded-2xl p-8 flex flex-col items-center">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-4 border bg-champagne/40 text-accent border-champagne animate-pulse">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <h1 className="font-display text-2xl font-bold mb-2 text-espresso">
+                Sign In as Seeker
+              </h1>
+              <p className="font-sans text-sm text-stone-500">
+                To complete your booking checkout and schedule the appointment, please sign in to your Seeker account.
+              </p>
+            </div>
+            <SignIn 
+              routing="hash"
+              appearance={{
+                elements: {
+                  formButtonPrimary: 'bg-primary hover:bg-slate-800 text-white text-sm normal-case border-none',
+                  card: 'border border-champagne/40 shadow-none rounded-xl bg-white w-full max-w-sm',
+                  headerTitle: 'text-espresso',
+                  headerSubtitle: 'text-stone-500',
+                  socialButtonsBlockButton: 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50',
+                  formFieldLabel: 'text-stone-700',
+                  formFieldInput: 'bg-white text-stone-700 border-slate-200 focus:border-primary focus:ring-primary',
+                  dividerText: 'text-stone-500 font-sans',
+                  dividerLine: 'bg-slate-200',
+                  footerActionText: 'text-stone-500',
+                  footerActionLink: 'text-primary hover:text-accent',
+                  identityPreviewText: 'text-espresso',
+                  identityPreviewEditButtonIcon: 'text-primary',
+                },
+              }}
+            />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   if (!provider || !service) {
     return (
-      <div className="flex-grow flex items-center justify-center p-8">
-        <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+      <div className="flex-col min-h-screen bg-stone-50/50 text-espresso">
+        <Navbar />
+        <div className="flex-grow flex items-center justify-center p-8 pt-36">
+          <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <Footer />
       </div>
     );
   }
@@ -200,6 +288,29 @@ function CheckoutContent() {
         </Link>
 
       <h1 className="font-display text-3xl font-bold text-espresso mb-8">Review and Book</h1>
+
+      {errorMsg && (
+        <div className="mb-8 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/40 rounded-2xl flex items-start gap-3 shadow-sm animate-fade-in">
+          <div className="p-1 bg-red-550 rounded-full text-white mt-0.5 flex-shrink-0">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <h3 className="font-display font-bold text-espresso dark:text-red-400 text-sm">Booking Request Failed</h3>
+            <p className="font-sans text-xs text-stone-500 dark:text-stone-400 mt-1">
+              {errorMsg}
+            </p>
+          </div>
+          <button 
+            type="button"
+            onClick={() => setErrorMsg(null)}
+            className="text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-200 text-lg leading-none font-bold"
+          >
+            &times;
+          </button>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Checkout summary details */}

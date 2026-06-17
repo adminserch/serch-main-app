@@ -3,10 +3,15 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 const isPublicRoute = createRouteMatcher([
   '/',
   '/api/webhooks/clerk',
+  '/api/users/sync',
+  '/api/ai',
   '/search',
   '/providers(.*)',
   '/sign-in(.*)',
   '/sign-up(.*)',
+  '/bookings(.*)',
+  '/checkout(.*)',
+  '/dashboard(.*)',
   // Leaflet images or other assets
   '/favicon.ico',
   '/public(.*)'
