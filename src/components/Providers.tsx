@@ -1,11 +1,11 @@
 'use strict';
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { getSupabaseClient, supabase } from '@/lib/supabase';
+import { useAuth, useUser } from '@clerk/nextjs';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useUser, useAuth } from '@clerk/nextjs';
-import { supabase, getSupabaseClient } from '@/lib/supabase';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import AiAssistant from './AiAssistant';
 
 // Toast Context Types

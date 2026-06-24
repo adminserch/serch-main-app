@@ -1,24 +1,24 @@
 'use strict';
 'use client';
 
-import React, { useEffect, useState, useRef, Suspense } from 'react';
+import Footer from '@/components/Footer';
+import Navbar from '@/components/Navbar';
+import { useToast } from '@/components/Providers';
+import { getSupabaseClient, supabase } from '@/lib/supabase';
+import { SignIn, useAuth, useUser } from '@clerk/nextjs';
+import {
+  Calendar,
+  Clock,
+  Lock,
+  MessageSquare,
+  Send,
+  ShieldCheck,
+  Star,
+  XCircle
+} from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useAuth, useUser, SignIn } from '@clerk/nextjs';
-import { supabase, getSupabaseClient } from '@/lib/supabase';
-import { useToast } from '@/components/Providers';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import { 
-  Calendar, 
-  Clock, 
-  MessageSquare, 
-  Star, 
-  XCircle, 
-  Lock, 
-  Send,
-  ShieldCheck
-} from 'lucide-react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 
 interface Booking {
   id: string;

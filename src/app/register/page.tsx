@@ -1,21 +1,21 @@
 'use strict';
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth, useUser } from '@clerk/nextjs';
-import { supabase, getSupabaseClient } from '@/lib/supabase';
-import { useToast } from '@/components/Providers';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { 
-  Upload, 
-  CheckCircle, 
-  ArrowRight, 
-  ArrowLeft 
+import Navbar from '@/components/Navbar';
+import { useToast } from '@/components/Providers';
+import { getSupabaseClient, supabase } from '@/lib/supabase';
+import { useAuth, useUser } from '@clerk/nextjs';
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle,
+  Upload
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 

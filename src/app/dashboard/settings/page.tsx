@@ -1,12 +1,12 @@
 'use strict';
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useAuth, useUser } from '@clerk/nextjs';
-import { supabase, getSupabaseClient } from '@/lib/supabase';
 import { useToast } from '@/components/Providers';
-import { Settings, MapPin, Clock, Save, Upload, X } from 'lucide-react';
+import { getSupabaseClient, supabase } from '@/lib/supabase';
+import { useAuth, useUser } from '@clerk/nextjs';
+import { Clock, MapPin, Save, Settings, Upload, X } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import React, { useEffect, useState } from 'react';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 

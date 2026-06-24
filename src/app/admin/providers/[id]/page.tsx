@@ -1,29 +1,29 @@
 'use strict';
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@clerk/nextjs';
-import { getSupabaseClient } from '@/lib/supabase';
 import { useToast } from '@/components/Providers';
+import { getSupabaseClient } from '@/lib/supabase';
+import { useAuth } from '@clerk/nextjs';
 import {
   ArrowLeft,
   Award,
+  Clock,
+  DollarSign,
+  Edit,
   FileText,
-  MapPin,
   Globe,
   Mail,
+  MapPin,
   Phone,
-  Trash2,
-  Edit,
   Plus,
   Star,
-  XCircle,
-  Clock,
-  DollarSign
+  Trash2,
+  XCircle
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 

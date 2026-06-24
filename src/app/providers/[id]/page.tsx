@@ -1,26 +1,26 @@
 'use strict';
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import Footer from '@/components/Footer';
+import Navbar from '@/components/Navbar';
+import { formatLocalSubspaceDate, formatLocalSubspaceTime, getAvailableSlots } from '@/lib/availability';
+import { supabase } from '@/lib/supabase';
+import { SignIn, useAuth, useUser } from '@clerk/nextjs';
+import {
+  Clock,
+  DollarSign,
+  Globe,
+  Lightbulb,
+  MapPin,
+  ShieldCheck,
+  Star
+} from 'lucide-react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { supabase } from '@/lib/supabase';
-import { getAvailableSlots, formatLocalSubspaceDate, formatLocalSubspaceTime } from '@/lib/availability';
-import { 
-  ShieldCheck, 
-  Star, 
-  MapPin, 
-  Clock, 
-  DollarSign, 
-  Globe,
-  Lightbulb
-} from 'lucide-react';
-import { SignIn, useAuth, useUser } from '@clerk/nextjs';
-import dynamic from 'next/dynamic';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 

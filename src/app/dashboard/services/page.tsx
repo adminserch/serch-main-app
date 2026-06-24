@@ -1,11 +1,11 @@
 'use strict';
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useAuth, useUser } from '@clerk/nextjs';
-import { supabase, getSupabaseClient } from '@/lib/supabase';
 import { useToast } from '@/components/Providers';
-import { Plus, Trash2, Edit, CheckCircle, Clock, DollarSign, X, Upload } from 'lucide-react';
+import { getSupabaseClient, supabase } from '@/lib/supabase';
+import { useAuth, useUser } from '@clerk/nextjs';
+import { Clock, DollarSign, Edit, Plus, Trash2, Upload, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface Service {
   id: string;

@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import logoImg from '@/images/SERCH Logo 6.png';
+import { supabase } from '@/lib/supabase';
+import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
+import { CalendarDays, Home, LayoutDashboard, Lightbulb, Search, ShieldCheck, User } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
-import { supabase } from '@/lib/supabase';
-import { Home, Search, CalendarDays, LayoutDashboard, ShieldCheck, User, Lightbulb } from 'lucide-react';
-import Image from 'next/image';
-import logoImg from '@/images/SERCH Logo 6.png';
+import { useEffect, useState } from 'react';
 
 export default function Navbar() {
   const pathname = usePathname();

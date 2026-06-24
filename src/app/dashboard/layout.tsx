@@ -1,22 +1,20 @@
 'use strict';
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import Footer from '@/components/Footer';
+import Navbar from '@/components/Navbar';
+import { SignIn, useAuth, UserButton, useUser } from '@clerk/nextjs';
+import {
+  Activity,
+  ArrowLeft,
+  CalendarDays,
+  LayoutDashboard,
+  Settings2,
+  Sparkles
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { UserButton, useUser, useAuth, SignIn } from '@clerk/nextjs';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import { 
-  LayoutDashboard, 
-  CalendarDays, 
-  Settings2, 
-  Sparkles, 
-  Activity, 
-  ArrowLeft,
-  ChevronRight,
-  FolderHeart
-} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface SidebarItem {
   name: string;

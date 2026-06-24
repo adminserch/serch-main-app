@@ -1,19 +1,19 @@
 'use strict';
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useAuth, useUser } from '@clerk/nextjs';
-import { supabase, getSupabaseClient } from '@/lib/supabase';
 import { useToast } from '@/components/Providers';
-import { 
-  Calendar, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  MessageSquare, 
-  Check, 
-  Send 
+import { getSupabaseClient, supabase } from '@/lib/supabase';
+import { useAuth, useUser } from '@clerk/nextjs';
+import {
+  Calendar,
+  Check,
+  CheckCircle,
+  Clock,
+  MessageSquare,
+  Send,
+  XCircle
 } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface Appointment {
   id: string;
