@@ -3,6 +3,8 @@
 
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
+import { useToast } from '@/components/Providers';
+import { getSupabaseClient } from '@/lib/supabase';
 import { useAuth, UserButton, useUser } from '@clerk/nextjs';
 import {
   ArrowLeft,
@@ -139,7 +141,8 @@ function AdminSidebarContent() {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user } = useUser();
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn, getToken } = useAuth();
+  const { toast } = useToast();
   const [authorized, setAuthorized] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
@@ -166,7 +169,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       if (!user) return;
       
       try {
-        const response = await fetch('/api/users/sync', { method: 'POST' });
+        const token = await getToken();
+        const response = await fetch('/api/users/sync', {
+          method: 'POST',
+          headers: token ? {
+            'Authorization': `Bearer ${token}`
+          } : {}
+        });
         if (!response.ok) {
           router.push('/');
           return;
@@ -175,6 +184,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         const resData = await response.json();
         if (resData.success && resData.user && resData.user.role === 'admin') {
           setAuthorized(true);
+
+          // Check for pending provider approval counts
+          try {
+            const client = getSupabaseClient(token);
+            const { count, error: countError } = await client
+              .from('providers')
+              .select('id', { count: 'exact', head: true })
+              .eq('status', 'pending');
+            
+            if (!countError && count !== null && count > 0) {
+              toast(`Attention: There are ${count} provider registration requests awaiting approval.`, 'warning', 300000);
+            }
+          } catch (countErr) {
+            console.error('Failed to fetch pending provider count:', countErr);
+          }
         } else {
           router.push('/');
         }
@@ -184,7 +208,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       }
     }
     checkRole();
-  }, [isLoaded, isSignedIn, user]);
+  }, [isLoaded, isSignedIn, user, getToken]);
 
   if (!authorized) {
     return (

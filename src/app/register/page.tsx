@@ -46,7 +46,16 @@ export default function RegisterProviderPage() {
   const [streetName, setStreetName] = useState('');
   const [stateProvinceRegion, setStateProvinceRegion] = useState('');
   const [postalZipCode, setPostalZipCode] = useState('');
+  const [postalError, setPostalError] = useState('');
   const [country, setCountry] = useState('');
+
+  const isValidPostalZip = (code: string) => {
+    if (!code) return true;
+    const clean = code.trim().toUpperCase();
+    const caRegex = /^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/;
+    const usRegex = /^\d{5}(-\d{4})?$/;
+    return caRegex.test(clean) || usRegex.test(clean);
+  };
 
   useEffect(() => {
     const parts = [
@@ -166,7 +175,12 @@ export default function RegisterProviderPage() {
 
       if (userError || !dbUser) {
         try {
-          const syncRes = await fetch('/api/users/sync', { method: 'POST' });
+          const syncRes = await fetch('/api/users/sync', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
           if (syncRes.ok) {
             const retryRes = await client
               .from('users')
@@ -252,7 +266,9 @@ export default function RegisterProviderPage() {
         .select('id')
         .single();
 
-      if (providerError) throw providerError;
+      if (providerError || !provider) {
+        throw providerError || new Error('Provider creation failed.');
+      }
 
       // 5. Create the new service
       let finalCategoryId = serviceCategoryId;
@@ -572,10 +588,16 @@ export default function RegisterProviderPage() {
               <input
                 type="text"
                 value={postalZipCode}
-                onChange={(e) => setPostalZipCode(e.target.value)}
+                onChange={(e) => {
+                  setPostalZipCode(e.target.value.toUpperCase());
+                  setPostalError('');
+                }}
                 placeholder="e.g. T2P 2M5"
-                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+                className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent ${postalError ? 'border-red-500' : 'border-champagne'}`}
               />
+              {postalError && (
+                <p className="mt-1 text-xs text-red-500 font-medium">{postalError}</p>
+              )}
             </div>
           </div>
 
@@ -628,6 +650,11 @@ export default function RegisterProviderPage() {
                 !address.trim()
               }
               onClick={() => {
+                if (!isValidPostalZip(postalZipCode)) {
+                  setPostalError('Please enter a valid Canadian Postal Code (e.g. T2P 2M5) or US ZIP Code (e.g. 90210).');
+                  return;
+                }
+                setPostalError('');
                 setBusinessNameError('');
                 setStep(3);
               }}

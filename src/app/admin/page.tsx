@@ -333,8 +333,12 @@ function AdminDashboardContent() {
         return;
       }
 
-      // Verify user role via secure server sync API to avoid client-side RLS/JWT config errors
-      const response = await fetch('/api/users/sync', { method: 'POST' });
+      const response = await fetch('/api/users/sync', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (!response.ok || !response.headers.get('content-type')?.includes('application/json')) {
         router.push('/');
         return;

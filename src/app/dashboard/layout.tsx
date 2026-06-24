@@ -26,7 +26,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useUser();
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn, getToken } = useAuth();
   const [authorized, setAuthorized] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
@@ -52,7 +52,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (!user) return;
       
       try {
-        const response = await fetch('/api/users/sync', { method: 'POST' });
+        const token = await getToken();
+        const response = await fetch('/api/users/sync', {
+          method: 'POST',
+          headers: token ? {
+            'Authorization': `Bearer ${token}`
+          } : {}
+        });
         if (!response.ok) {
           router.push('/');
           return;
@@ -70,7 +76,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       }
     }
     checkRole();
-  }, [isLoaded, isSignedIn, user]);
+  }, [isLoaded, isSignedIn, user, getToken]);
 
   if (isLoaded && !isSignedIn) {
     return (

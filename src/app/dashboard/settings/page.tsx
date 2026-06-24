@@ -56,7 +56,16 @@ export default function ProviderSettings() {
   const [streetName, setStreetName] = useState('');
   const [stateProvinceRegion, setStateProvinceRegion] = useState('');
   const [postalZipCode, setPostalZipCode] = useState('');
+  const [postalError, setPostalError] = useState('');
   const [country, setCountry] = useState('');
+
+  const isValidPostalZip = (code: string) => {
+    if (!code) return true;
+    const clean = code.trim().toUpperCase();
+    const caRegex = /^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/;
+    const usRegex = /^\d{5}(-\d{4})?$/;
+    return caRegex.test(clean) || usRegex.test(clean);
+  };
 
   const [logoUrl, setLogoUrl] = useState('');
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -349,6 +358,13 @@ export default function ProviderSettings() {
   const handleSaveLocation = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!provider) return;
+
+    if (!isValidPostalZip(postalZipCode)) {
+      setPostalError('Please enter a valid Canadian Postal Code (e.g. T2P 2M5) or US ZIP Code (e.g. 90210).');
+      toast('Please enter a valid Canadian Postal Code or US ZIP Code.', 'error');
+      return;
+    }
+    setPostalError('');
 
     setSavingLocation(true);
     try {
@@ -690,10 +706,16 @@ export default function ProviderSettings() {
               <input
                 type="text"
                 value={postalZipCode}
-                onChange={(e) => setPostalZipCode(e.target.value)}
+                onChange={(e) => {
+                  setPostalZipCode(e.target.value.toUpperCase());
+                  setPostalError('');
+                }}
                 placeholder="e.g. T2P 2M5"
-                className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent"
+                className={`w-full border rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent ${postalError ? 'border-red-500' : 'border-champagne'}`}
               />
+              {postalError && (
+                <p className="mt-1 text-[10px] text-red-500 font-medium">{postalError}</p>
+              )}
             </div>
           </div>
 

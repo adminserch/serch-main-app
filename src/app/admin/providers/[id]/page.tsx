@@ -152,8 +152,12 @@ export default function ProviderDetailsPage() {
 
       const client = getSupabaseClient(token);
 
-      // Verify user role via secure server sync API to avoid client-side RLS/JWT config errors
-      const syncResponse = await fetch('/api/users/sync', { method: 'POST' });
+      const syncResponse = await fetch('/api/users/sync', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (!syncResponse.ok || !syncResponse.headers.get('content-type')?.includes('application/json')) {
         router.push('/');
         return;
@@ -198,11 +202,17 @@ export default function ProviderDetailsPage() {
       });
 
       // 2. Fetch services
-      const { data: sData } = await client
-        .from('services')
-        .select('*')
-        .eq('provider_id', providerId);
-      setServices(sData || []);
+      const sResponse = await fetch(`/api/services?providerId=${providerId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (sResponse.ok) {
+        const sData = await sResponse.json();
+        setServices(sData.services || []);
+      } else {
+        setServices([]);
+      }
 
       // 3. Fetch bookings
       const { data: bData } = await client
@@ -355,13 +365,17 @@ export default function ProviderDetailsPage() {
     e.preventDefault();
     try {
       const token = await getToken();
-      const client = getSupabaseClient(token);
 
       if (editingService) {
         // Edit Service
-        const { error } = await client
-          .from('services')
-          .update({
+        const res = await fetch('/api/services', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            id: editingService.id,
             name: serviceForm.name,
             description: serviceForm.description,
             price: Number(serviceForm.price),
@@ -369,15 +383,20 @@ export default function ProviderDetailsPage() {
             category_id: serviceForm.category_id,
             is_active: serviceForm.is_active
           })
-          .eq('id', editingService.id);
+        });
 
-        if (error) throw error;
+        const resData = await res.json();
+        if (!res.ok) throw new Error(resData.error || 'Failed to update service');
         toast('Service updated successfully', 'success');
       } else {
         // Create Service
-        const { error } = await client
-          .from('services')
-          .insert({
+        const res = await fetch('/api/services', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
             provider_id: providerId,
             name: serviceForm.name,
             description: serviceForm.description,
@@ -386,9 +405,11 @@ export default function ProviderDetailsPage() {
             category_id: serviceForm.category_id,
             is_active: serviceForm.is_active,
             images: []
-          });
+          })
+        });
 
-        if (error) throw error;
+        const resData = await res.json();
+        if (!res.ok) throw new Error(resData.error || 'Failed to add service');
         toast('Service added successfully', 'success');
       }
 
@@ -403,14 +424,16 @@ export default function ProviderDetailsPage() {
     if (!confirm('Are you sure you want to delete this service?')) return;
     try {
       const token = await getToken();
-      const client = getSupabaseClient(token);
 
-      const { error } = await client
-        .from('services')
-        .delete()
-        .eq('id', serviceId);
+      const res = await fetch(`/api/services?id=${serviceId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
 
-      if (error) throw error;
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Failed to delete service');
       toast('Service deleted successfully', 'success');
       checkAdminAndLoadData();
     } catch (err: any) {

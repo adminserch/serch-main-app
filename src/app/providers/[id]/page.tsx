@@ -62,7 +62,7 @@ export default function ProviderProfilePage() {
   const router = useRouter();
   const providerId = params.id as string;
 
-  const { isLoaded: isAuthLoaded, isSignedIn, signOut } = useAuth();
+  const { isLoaded: isAuthLoaded, isSignedIn, signOut, getToken } = useAuth();
   const { user } = useUser();
   const [dbRole, setDbRole] = useState<string | null>(null);
   const [roleLoading, setRoleLoading] = useState(true);
@@ -119,7 +119,13 @@ export default function ProviderProfilePage() {
 
         if (userError || !userData) {
           // Self-healing: sync if user is not in db yet
-          const response = await fetch('/api/users/sync', { method: 'POST' });
+          const token = await getToken();
+          const response = await fetch('/api/users/sync', {
+            method: 'POST',
+            headers: token ? {
+              'Authorization': `Bearer ${token}`
+            } : {}
+          });
           if (response.ok) {
             const { data: retryData } = await supabase
               .from('users')
@@ -142,7 +148,7 @@ export default function ProviderProfilePage() {
       }
     }
     loadUserRole();
-  }, [user]);
+  }, [user, getToken]);
 
   // Load provider details, services, reviews
   useEffect(() => {

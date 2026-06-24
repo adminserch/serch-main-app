@@ -109,7 +109,12 @@ function CheckoutContent() {
 
       if (userError || !dbUser) {
         try {
-          const syncRes = await fetch('/api/users/sync', { method: 'POST' });
+          const syncRes = await fetch('/api/users/sync', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
           if (syncRes.ok) {
             const retryRes = await supabaseClient
               .from('users')
@@ -167,8 +172,8 @@ function CheckoutContent() {
         .select('id')
         .single();
 
-      if (bookingError) {
-        throw bookingError;
+      if (bookingError || !booking) {
+        throw bookingError || new Error('Booking creation failed.');
       }
 
       // 3. Send notifications (Resend mock request)
