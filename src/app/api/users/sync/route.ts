@@ -23,26 +23,27 @@ export async function POST() {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    // Check if user already exists
+    // Check if user already exists by clerk_user_id OR email
     const { data: existingUser } = await supabaseAdmin
       .from('users')
       .select('id, role')
-      .eq('clerk_user_id', userId)
+      .or(`clerk_user_id.eq.${userId},email.eq.${email}`)
       .maybeSingle();
 
     let data, error;
 
     if (existingUser) {
-      // User exists, update profile details but preserve role
+      // User exists, update profile details and ensure clerk_user_id is linked
       const { data: updated, error: updateError } = await supabaseAdmin
         .from('users')
         .update({
+          clerk_user_id: userId,
           email,
           full_name: fullName,
           avatar_url: avatarUrl,
           phone
         })
-        .eq('clerk_user_id', userId)
+        .eq('id', existingUser.id)
         .select('id, role')
         .single();
       data = updated;

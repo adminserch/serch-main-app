@@ -14,8 +14,6 @@ import {
   MapPin, 
   Clock, 
   DollarSign, 
-  Calendar as CalendarIcon, 
-  MessageSquare, 
   Globe,
   Lightbulb
 } from 'lucide-react';
@@ -56,6 +54,7 @@ interface Provider {
   latitude: number | null;
   longitude: number | null;
   website: string | null;
+  logo_url: string | null;
 }
 
 export default function ProviderProfilePage() {
@@ -152,7 +151,7 @@ export default function ProviderProfilePage() {
         // 1. Fetch provider details
         const { data: pData } = await supabase
           .from('providers')
-          .select('id, business_name, description, service_city, service_district, is_verified, latitude, longitude, website')
+          .select('id, business_name, description, service_city, service_district, is_verified, latitude, longitude, website, logo_url')
           .eq('id', providerId)
           .single();
 
@@ -169,7 +168,8 @@ export default function ProviderProfilePage() {
             is_verified: true,
             latitude: 14.5547,
             longitude: 121.0244,
-            website: 'www.elenarostova.com'
+            website: 'www.elenarostova.com',
+            logo_url: null
           });
         }
 
@@ -468,17 +468,30 @@ export default function ProviderProfilePage() {
           {/* Left side: Profile Info, Map, Reviews */}
           <div className="w-full lg:w-3/5 flex flex-col gap-8">
             <div className="bg-card-bg border border-champagne/60 rounded-2xl p-8 shadow-sm transition-colors duration-300">
-              <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-                <h1 className="font-display text-3xl font-bold text-espresso transition-colors duration-300">{provider.business_name}</h1>
-                {provider.is_verified && (
-                  <div className={`border text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm transition-colors duration-300 ${
-                    isDark 
-                      ? 'bg-purple-950/40 border-purple-800 text-accent' 
-                      : 'bg-purple-50 border-purple-200 text-purple-800'
-                  }`}>
-                    <ShieldCheck className="w-4 h-4" /> Verified Provider
+              <div className="flex flex-col sm:flex-row gap-6 items-start mb-6">
+                {/* Logo / Profile Image */}
+                <div className="w-20 h-20 rounded-2xl overflow-hidden bg-stone-50 border border-champagne/60 flex-shrink-0 flex items-center justify-center">
+                  {provider.logo_url ? (
+                    <img src={provider.logo_url} alt={provider.business_name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-2xl font-bold text-accent font-sans">{provider.business_name.charAt(0)}</span>
+                  )}
+                </div>
+                
+                <div className="flex-grow">
+                  <div className="flex flex-wrap items-center justify-between gap-4 mb-2">
+                    <h1 className="font-display text-3xl font-bold text-espresso transition-colors duration-300">{provider.business_name}</h1>
+                    {provider.is_verified && (
+                      <div className={`border text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm transition-colors duration-300 ${
+                        isDark 
+                          ? 'bg-purple-950/40 border-purple-800 text-accent' 
+                          : 'bg-purple-50 border-purple-200 text-purple-800'
+                      }`}>
+                        <ShieldCheck className="w-4 h-4" /> Verified Provider
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
 
               <div className="flex flex-wrap items-center gap-4 text-sm text-stone-500 dark:text-stone-400 mb-6 font-sans">

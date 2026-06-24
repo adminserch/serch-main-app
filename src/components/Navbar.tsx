@@ -62,17 +62,16 @@ export default function Navbar() {
   return (
     <>
       {/* Top Navbar (Sticky on all screens) */}
-      <nav className={`fixed top-0 w-full z-50 transition-colors duration-300 border-b shadow-sm ${
-        isDark 
-          ? 'bg-slate-950/80 backdrop-blur-md border-slate-800' 
+      <nav className={`fixed top-0 w-full z-50 transition-colors duration-300 border-b shadow-sm ${isDark
+          ? 'bg-slate-950/80 backdrop-blur-md border-slate-800'
           : 'bg-white/80 backdrop-blur-md border-champagne/50'
-      }`}>
-        <div className="flex justify-between items-center px-6 md:px-12 h-20 max-w-7xl mx-auto w-full">
+        }`}>
+        <div className="flex justify-between items-center px-6 md:px-12 h-20 w-full">
           <div className="flex items-center gap-10">
             <Link href="/" className="font-display text-2xl font-bold text-primary tracking-tight flex items-center">
-              <Image 
-                src={logoImg} 
-                alt="Serch Logo" 
+              <Image
+                src={logoImg}
+                alt="Serch Logo"
                 height={48}
                 className={`h-12 w-auto object-contain transition-all duration-300 ${isDark ? 'invert brightness-200' : ''}`}
                 priority
@@ -102,11 +101,10 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={toggleTheme}
-              className={`p-2 rounded-xl transition-colors ${
-                isDark ? 'hover:bg-slate-800 text-amber-400' : 'hover:bg-stone-100 text-stone-500'
-              }`}
+              className={`p-2 rounded-xl transition-colors ${isDark ? 'hover:bg-slate-800 text-amber-400' : 'hover:bg-stone-100 text-stone-500'
+                }`}
               aria-label="Toggle Dark Mode"
             >
               <Lightbulb className="w-5 h-5" />
@@ -124,17 +122,16 @@ export default function Navbar() {
             ) : (
               <div className="flex items-center gap-2 sm:gap-3">
                 <SignInButton mode="modal">
-                  <button className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl font-medium text-xs sm:text-sm transition-all duration-200 ${
-                    isDark ? 'text-slate-200 hover:bg-slate-800' : 'text-primary hover:bg-champagne/45'
-                  }`}>
+                  <button className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl font-medium text-xs sm:text-sm transition-all duration-200 ${isDark ? 'text-slate-200 hover:bg-slate-800' : 'text-primary hover:bg-champagne/45'
+                    }`}>
                     Sign In
                   </button>
                 </SignInButton>
-                <SignInButton mode="modal" fallbackRedirectUrl="/dashboard" forceRedirectUrl="/dashboard">
+                {/* <SignInButton mode="modal" fallbackRedirectUrl="/dashboard" forceRedirectUrl="/dashboard">
                   <button className="font-medium text-xs sm:text-sm px-3.5 py-1.5 sm:px-5 sm:py-2 rounded-xl transition-all duration-200 bg-purple-600 hover:bg-purple-700 text-white shadow-sm cursor-pointer">
                     Sign-in as Provider
                   </button>
-                </SignInButton>
+                </SignInButton> */}
               </div>
             )}
           </div>
@@ -142,9 +139,8 @@ export default function Navbar() {
       </nav>
 
       {/* Mobile Sticky Bottom Navbar */}
-      <div className={`fixed bottom-0 left-0 right-0 z-50 backdrop-blur-md border-t flex justify-around items-center md:hidden shadow-lg py-2.5 px-4 transition-colors duration-300 ${
-        isDark ? 'bg-slate-950/90 border-slate-800' : 'bg-white/90 border-champagne/60'
-      }`}>
+      <div className={`fixed bottom-0 left-0 right-0 z-50 backdrop-blur-md border-t flex justify-around items-center md:hidden shadow-lg py-2.5 px-4 transition-colors duration-300 ${isDark ? 'bg-slate-950/90 border-slate-800' : 'bg-white/90 border-champagne/60'
+        }`}>
         <Link href="/" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/' ? 'text-accent' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-250'}`}>
           <Home className="w-5 h-5" />
           <span className="text-[10px] font-semibold font-sans">Home</span>

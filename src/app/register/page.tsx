@@ -10,8 +10,6 @@ import { useToast } from '@/components/Providers';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { 
-  Building2, 
-  MapPin, 
   Upload, 
   CheckCircle, 
   ArrowRight, 
@@ -32,9 +30,11 @@ export default function RegisterProviderPage() {
 
   // Form states
   const [businessName, setBusinessName] = useState('');
+  const [businessNameError, setBusinessNameError] = useState('');
   const [description, setDescription] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
   const [website, setWebsite] = useState('');
+  const [websiteError, setWebsiteError] = useState('');
   
   const [city, setCity] = useState('');
   const [district, setDistrict] = useState('');
@@ -66,22 +66,71 @@ export default function RegisterProviderPage() {
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoName, setLogoName] = useState('');
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
 
-  const availableCategories = [
-    'Home Cleaning',
-    'Aircon Repair',
-    'Roof Repair',
-    'Plumbing',
-    'Electrical',
-    'Painting',
-    'Gardening & Landscaping',
-  ];
+  useEffect(() => {
+    if (!logoFile) {
+      setLogoPreviewUrl(null);
+      return;
+    }
+    const objectUrl = URL.createObjectURL(logoFile);
+    setLogoPreviewUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [logoFile]);
 
-  const handleCategoryToggle = (cat: string) => {
-    setCategories((prev) =>
-      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
-    );
-  };
+  const [serviceName, setServiceName] = useState('');
+  const [serviceDescription, setServiceDescription] = useState('');
+  const [servicePrice, setServicePrice] = useState('100');
+  const [serviceDuration, setServiceDuration] = useState('60'); // default 60 mins = 1 hour
+  const [serviceCategoryId, setServiceCategoryId] = useState('');
+  const [serviceIsActive, setServiceIsActive] = useState(true);
+  const [serviceImageFile, setServiceImageFile] = useState<File | null>(null);
+  const [serviceImageName, setServiceImageName] = useState('');
+  const [serviceImagePreviewUrl, setServiceImagePreviewUrl] = useState<string | null>(null);
+  const [dbCategories, setDbCategories] = useState<{ id: string; name: string }[]>([]);
+
+  useEffect(() => {
+    if (!serviceImageFile) {
+      setServiceImagePreviewUrl(null);
+      return;
+    }
+    const objectUrl = URL.createObjectURL(serviceImageFile);
+    setServiceImagePreviewUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [serviceImageFile]);
+
+  useEffect(() => {
+    async function loadDbCategories() {
+      try {
+        const { data, error } = await supabase
+          .from('categories')
+          .select('id, name')
+          .eq('is_active', true)
+          .order('name', { ascending: true });
+        
+        if (!error && data && data.length > 0) {
+          setDbCategories(data);
+          setServiceCategoryId(data[0].id);
+        } else {
+          const fallbackCats = [
+            { id: '11111111-1111-1111-1111-111111111111', name: 'Home Cleaning' },
+            { id: '22222222-2222-2222-2222-222222222222', name: 'Aircon Repair' },
+            { id: '33333333-3333-3333-3333-333333333333', name: 'Roof Repair' },
+            { id: '44444444-4444-4444-4444-444444444444', name: 'Plumbing' },
+            { id: '55555555-5555-5555-5555-555555555555', name: 'Electrical' },
+            { id: '66666666-6666-6666-6666-666666666666', name: 'Painting' },
+            { id: '77777777-7777-7777-7777-777777777777', name: 'Gardening & Landscaping' }
+          ];
+          setDbCategories(fallbackCats);
+          setServiceCategoryId(fallbackCats[0].id);
+        }
+      } catch (err) {
+        console.error('Error loading db categories:', err);
+      }
+    }
+    loadDbCategories();
+  }, []);
+
 
   const handleLocationChange = (lat: number, lng: number) => {
     setLatitude(lat);
@@ -138,22 +187,7 @@ export default function RegisterProviderPage() {
         throw new Error('User record not found in database.');
       }
 
-      // 2. Upload permit (mock bucket url or actual upload)
-      let permitUrl = 'https://supabase-storage-url.com/permits/dummy.pdf';
-      if (permitFile) {
-        const fileExt = permitFile.name.split('.').pop();
-        const filePath = `${dbUser.id}/permit-${Math.random()}.${fileExt}`;
-        const { error: uploadError } = await client.storage
-          .from('permits')
-          .upload(filePath, permitFile);
-
-        if (!uploadError) {
-          const { data } = client.storage.from('permits').getPublicUrl(filePath);
-          permitUrl = data.publicUrl;
-        }
-      }
-
-      // 2.2 Upload company logo
+      // 2. Upload company logo if provided
       let logoUrl = null;
       if (logoFile) {
         const fileExt = logoFile.name.split('.').pop();
@@ -177,7 +211,22 @@ export default function RegisterProviderPage() {
         }
       }
 
-      // 3. Create provider
+      // 3. Upload service image if provided
+      let serviceImageUrl = null;
+      if (serviceImageFile) {
+        const fileExt = serviceImageFile.name.split('.').pop();
+        const filePath = `${dbUser.id}/service-${Math.random()}.${fileExt}`;
+        const { error: serviceImageUploadError } = await client.storage
+          .from('permits')
+          .upload(filePath, serviceImageFile);
+
+        if (!serviceImageUploadError) {
+          const { data } = client.storage.from('permits').getPublicUrl(filePath);
+          serviceImageUrl = data.publicUrl;
+        }
+      }
+
+      // 4. Create provider
       const { data: provider, error: providerError } = await client
         .from('providers')
         .insert({
@@ -191,7 +240,7 @@ export default function RegisterProviderPage() {
           latitude: latitude,
           longitude: longitude,
           website: website,
-          business_permit_url: permitUrl,
+          business_permit_url: 'https://supabase-storage-url.com/permits/dummy.pdf', // default placeholder for permit URL
           status: 'pending', // awaits admin approval
           plan: 'free',
           house_building_number: houseBuildingNumber,
@@ -205,13 +254,41 @@ export default function RegisterProviderPage() {
 
       if (providerError) throw providerError;
 
-      // 4. Update user role in users table to 'provider'
+      // 5. Create the new service
+      let finalCategoryId = serviceCategoryId;
+      if (!finalCategoryId || finalCategoryId.startsWith('11111111') || finalCategoryId.startsWith('22222222')) {
+        const { data: catData } = await client
+          .from('categories')
+          .select('id')
+          .eq('is_active', true)
+          .limit(1);
+        if (catData && catData.length > 0) {
+          finalCategoryId = catData[0].id;
+        }
+      }
+
+      const { error: serviceError } = await client
+        .from('services')
+        .insert({
+          provider_id: provider.id,
+          name: serviceName,
+          description: serviceDescription || '',
+          price: Number(servicePrice),
+          duration_minutes: Number(serviceDuration),
+          category_id: finalCategoryId || null,
+          is_active: serviceIsActive,
+          images: serviceImageUrl ? [serviceImageUrl] : []
+        });
+
+      if (serviceError) throw serviceError;
+
+      // 6. Update user role in users table to 'provider'
       await client
         .from('users')
         .update({ role: 'provider' })
         .eq('id', dbUser.id);
 
-      // 5. Send registration notification email mock
+      // 7. Send registration notification email mock
       await fetch('/api/notifications/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -246,7 +323,7 @@ export default function RegisterProviderPage() {
                 {s}
               </div>
               <span className={`text-xs font-semibold ${step >= s ? 'text-slate-800' : 'text-stone-400'}`}>
-                {s === 1 ? 'Business Info' : s === 2 ? 'Location' : 'Verification'}
+                {s === 1 ? 'Business Info' : s === 2 ? 'Location' : 'Add Service'}
               </span>
               {s < 3 && <div className="h-0.5 w-12 bg-stone-200"></div>}
             </div>
@@ -263,14 +340,26 @@ export default function RegisterProviderPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Business Name</label>
+            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
+              Business Name <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
+              onChange={(e) => {
+                setBusinessName(e.target.value);
+                if (e.target.value.trim()) {
+                  setBusinessNameError('');
+                }
+              }}
               placeholder="e.g. Elite Cleaning Service"
-              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+              className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent ${
+                businessNameError ? 'border-red-500 bg-red-50/10' : 'border-champagne'
+              }`}
             />
+            {businessNameError && (
+              <p className="text-xs text-red-500 mt-1">{businessNameError}</p>
+            )}
           </div>
 
           <div>
@@ -285,26 +374,23 @@ export default function RegisterProviderPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Categories</label>
-            <div className="flex flex-wrap gap-2">
-              {availableCategories.map((cat) => {
-                const selected = categories.includes(cat);
-                return (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => handleCategoryToggle(cat)}
-                    className={`px-3 py-1.5 rounded-full text-xs border transition-all ${
-                      selected
-                        ? 'bg-accent border-accent text-white font-semibold'
-                        : 'bg-white border-champagne text-stone-600'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                );
-              })}
-            </div>
+            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Category</label>
+            <select
+              value={categories[0] || ''}
+              onChange={(e) => {
+                const val = e.target.value;
+                setCategories(val ? [val] : []);
+              }}
+              required
+              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent bg-white"
+            >
+              <option value="" disabled>Select a category...</option>
+              {dbCategories.map((cat) => (
+                <option key={cat.id} value={cat.name}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -312,10 +398,25 @@ export default function RegisterProviderPage() {
             <input
               type="text"
               value={website}
-              onChange={(e) => setWebsite(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                setWebsite(val);
+                if (!val) {
+                  setWebsiteError('');
+                } else if (/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/.test(val)) {
+                  setWebsiteError('');
+                } else {
+                  setWebsiteError('Please enter a valid website URL (e.g. www.domain.com)');
+                }
+              }}
               placeholder="e.g. www.eliteclean.com"
-              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+              className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent ${
+                websiteError ? 'border-red-500 bg-red-50/10' : 'border-champagne'
+              }`}
             />
+            {websiteError && (
+              <p className="text-xs text-red-500 mt-1">{websiteError}</p>
+            )}
           </div>
 
           <div>
@@ -340,10 +441,36 @@ export default function RegisterProviderPage() {
             </div>
           </div>
 
+          {logoPreviewUrl && (
+            <div className="w-full">
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Logo Preview</label>
+              <div className="border border-champagne/80 rounded-2xl p-6 bg-stone-50/50 flex items-center justify-center relative overflow-hidden min-h-[160px]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={logoPreviewUrl}
+                  alt="Company Logo Preview"
+                  className="max-h-40 object-contain rounded-lg"
+                />
+              </div>
+            </div>
+          )}
+
           <button
             type="button"
-            disabled={!businessName || categories.length === 0}
-            onClick={() => setStep(2)}
+            disabled={categories.length === 0}
+            onClick={() => {
+              if (!businessName.trim()) {
+                setBusinessNameError('Business Name is required');
+                return;
+              }
+              if (website.trim() && !/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/.test(website)) {
+                setWebsiteError('Please enter a valid website URL (e.g. www.domain.com)');
+                return;
+              }
+              setBusinessNameError('');
+              setWebsiteError('');
+              setStep(2);
+            }}
             className="bg-primary hover:bg-slate-800 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 mt-4 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
           >
             Next Step <ArrowRight className="w-4 h-4" />
@@ -360,15 +487,27 @@ export default function RegisterProviderPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Place/Business Name</label>
+            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
+              Place/Business Name <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               required
               value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
+              onChange={(e) => {
+                setBusinessName(e.target.value);
+                if (e.target.value.trim()) {
+                  setBusinessNameError('');
+                }
+              }}
               placeholder="Enter place or business name for the map pin header..."
-              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+              className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent ${
+                businessNameError ? 'border-red-500 bg-red-50/10' : 'border-champagne'
+              }`}
             />
+            {businessNameError && (
+              <p className="text-xs text-red-500 mt-1">{businessNameError}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -483,8 +622,15 @@ export default function RegisterProviderPage() {
             </button>
             <button
               type="button"
-              disabled={!city || !district}
-              onClick={() => setStep(3)}
+              disabled={
+                !businessName.trim() ||
+                !city.trim() ||
+                !address.trim()
+              }
+              onClick={() => {
+                setBusinessNameError('');
+                setStep(3);
+              }}
               className="w-1/2 bg-primary hover:bg-slate-800 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
             >
               Next Step <ArrowRight className="w-4 h-4" />
@@ -493,27 +639,131 @@ export default function RegisterProviderPage() {
         </div>
       )}
 
-      {/* Step 3: Verification Documents */}
+      {/* Step 3: Add New Service */}
       {step === 3 && (
         <div className="bg-white border border-champagne/60 rounded-2xl p-8 shadow-sm flex flex-col gap-6">
-          <div>
-            <h1 className="font-display text-2xl font-bold text-espresso mb-2">Verify your Business</h1>
-            <p className="text-stone-500 text-sm">Upload your business permit (PDF/Image) to complete verification.</p>
+          <div className="flex justify-between items-center pb-2">
+            <h1 className="font-display text-2xl font-bold text-espresso">Add New Service</h1>
           </div>
 
-          <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
+          <div>
+            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Name</label>
             <input
-              type="file"
-              onChange={handleFileUpload}
-              className="absolute inset-0 opacity-0 cursor-pointer"
-              accept=".pdf,.png,.jpg,.jpeg"
+              type="text"
+              required
+              value={serviceName}
+              onChange={(e) => setServiceName(e.target.value)}
+              placeholder="e.g. Master Bedroom Cleaning"
+              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
             />
-            <Upload className="w-8 h-8 text-stone-400 mb-2" />
-            <span className="text-xs font-bold text-slate-700 font-sans">
-              {permitName || 'Click to upload business permit PDF'}
-            </span>
-            <span className="text-[10px] text-stone-400 mt-1 font-sans">Max file size 5MB</span>
           </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Description</label>
+            <textarea
+              required
+              value={serviceDescription}
+              onChange={(e) => setServiceDescription(e.target.value)}
+              placeholder="Detail what is included in this service..."
+              rows={4}
+              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent resize-none"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Price (CAD)</label>
+              <input
+                type="number"
+                required
+                value={servicePrice}
+                onChange={(e) => setServicePrice(e.target.value)}
+                placeholder="100"
+                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Duration (Minutes)</label>
+              <select
+                value={serviceDuration}
+                onChange={(e) => setServiceDuration(e.target.value)}
+                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent bg-white"
+              >
+                <option value="15">15 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="45">45 minutes</option>
+                <option value="60">1 hour</option>
+                <option value="90">1.5 hours</option>
+                <option value="120">2 hours</option>
+                <option value="180">3 hours</option>
+                <option value="240">4 hours</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Category</label>
+            <select
+              value={serviceCategoryId}
+              onChange={(e) => setServiceCategoryId(e.target.value)}
+              className="w-full border border-champagne rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-accent bg-white"
+            >
+              {dbCategories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="serviceIsActive"
+              checked={serviceIsActive}
+              onChange={(e) => setServiceIsActive(e.target.checked)}
+              className="w-4 h-4 rounded text-accent focus:ring-accent border-champagne"
+            />
+            <label htmlFor="serviceIsActive" className="text-sm font-semibold text-slate-700 select-none">
+              Active (Visible on search and profiles)
+            </label>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Image</label>
+            <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
+              <input
+                type="file"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    setServiceImageFile(e.target.files[0]);
+                    setServiceImageName(e.target.files[0].name);
+                  }
+                }}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                accept="image/*"
+              />
+              <Upload className="w-8 h-8 text-stone-400 mb-2" />
+              <span className="text-xs font-bold text-slate-700 font-sans">
+                {serviceImageName || 'Upload service image'}
+              </span>
+              <span className="text-[10px] text-stone-400 mt-1 font-sans">JPEG, PNG formats</span>
+            </div>
+          </div>
+
+          {serviceImagePreviewUrl && (
+            <div className="w-full">
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Image Preview</label>
+              <div className="border border-champagne/80 rounded-2xl p-6 bg-stone-50/50 flex items-center justify-center relative overflow-hidden min-h-[160px]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={serviceImagePreviewUrl}
+                  alt="Service Image Preview"
+                  className="max-h-40 object-contain rounded-lg"
+                />
+              </div>
+            </div>
+          )}
 
           <div className="flex gap-4 mt-4">
             <button
@@ -525,9 +775,9 @@ export default function RegisterProviderPage() {
             </button>
             <button
               type="button"
-              disabled={!permitFile && !loading}
+              disabled={!serviceName || !servicePrice || loading}
               onClick={handleSubmit}
-              className="w-1/2 bg-accent hover:bg-purple-700 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
+              className="w-1/2 bg-primary hover:bg-slate-800 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>

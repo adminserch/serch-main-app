@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useAuth, useUser, UserButton } from '@clerk/nextjs';
+import { useAuth, useUser } from '@clerk/nextjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase, getSupabaseClient } from '@/lib/supabase';
 import { useToast } from '@/components/Providers';
@@ -652,7 +652,9 @@ function AdminDashboardContent() {
                       {/* Right: Info Details */}
                       <div className="min-w-0 flex-1">
                         <h3 className="font-sans font-bold text-espresso text-base flex items-center gap-2">
-                          {p.business_name}
+                          <Link href={`/admin/providers/${p.id}`} className="hover:text-accent hover:underline">
+                            {p.business_name}
+                          </Link>
                           {p.is_verified && <Award className="w-4 h-4 text-accent" />}
                         </h3>
                         <p className="text-stone-500 text-xs mt-1 font-sans">{p.description}</p>
@@ -776,22 +778,55 @@ function AdminDashboardContent() {
                       &lt;
                     </button>
 
-                    {Array.from({ length: totalPages }).map((_, i) => {
-                      const pageNum = i + 1;
-                      return (
-                        <button
-                          type="button"
-                          key={pageNum}
-                          onClick={() => setCurrentPage(pageNum)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${currentPage === pageNum
-                              ? 'bg-accent border-accent text-white shadow-xs'
-                              : 'bg-white border-champagne text-stone-600 hover:border-gold'
-                            }`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
+                    {(() => {
+                      const pages: (number | string)[] = [];
+                      const range = 1;
+                      for (let i = 1; i <= totalPages; i++) {
+                        if (
+                          i === 1 ||
+                          i === totalPages ||
+                          (i >= currentPage - range && i <= currentPage + range)
+                        ) {
+                          pages.push(i);
+                        } else if (
+                          (i === 2 && currentPage - range > 2) ||
+                          (i === totalPages - 1 && currentPage + range < totalPages - 1)
+                        ) {
+                          pages.push('...');
+                        }
+                      }
+                      const filteredPages = pages.filter((page, index) => {
+                        if (page === '...' && pages[index - 1] === '...') {
+                          return false;
+                        }
+                        return true;
+                      });
+
+                      return filteredPages.map((page, idx) => {
+                        if (page === '...') {
+                          return (
+                            <span key={`dots-${idx}`} className="px-2 text-stone-400 text-xs select-none">
+                              ...
+                            </span>
+                          );
+                        }
+
+                        const pageNum = page as number;
+                        return (
+                          <button
+                            type="button"
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${currentPage === pageNum
+                                ? 'bg-accent border-accent text-white shadow-xs'
+                                : 'bg-white border-champagne text-stone-600 hover:border-gold'
+                              }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      });
+                    })()}
 
                     <button
                       type="button"

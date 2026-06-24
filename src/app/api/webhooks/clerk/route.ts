@@ -64,26 +64,27 @@ export async function POST(req: Request) {
       return new Response('Missing required fields', { status: 400 });
     }
 
-    // Check if user already exists
+    // Check if user already exists by clerk_user_id OR email
     const { data: existingUser } = await supabaseAdmin
       .from('users')
       .select('id')
-      .eq('clerk_user_id', id)
+      .or(`clerk_user_id.eq.${id},email.eq.${email}`)
       .maybeSingle();
 
     let dbError;
 
     if (existingUser) {
-      // User exists, update profile details but preserve role
+      // User exists, update profile details and ensure clerk_user_id is linked
       const { error } = await supabaseAdmin
         .from('users')
         .update({
+          clerk_user_id: id,
           email,
           full_name,
           avatar_url,
           phone
         })
-        .eq('clerk_user_id', id);
+        .eq('id', existingUser.id);
       dbError = error;
     } else {
       // User does not exist, insert with default role 'seeker'
