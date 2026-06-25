@@ -39,6 +39,9 @@ export async function POST(req: Request) {
       }).catch(err => console.error('Notification error:', err));
 
     } else if (action === 'toggle_verified') {
+      if (!payload || typeof payload !== 'object') {
+        return NextResponse.json({ error: 'Missing providerId' }, { status: 400 });
+      }
       const { providerId } = payload;
       if (!providerId) {
         return NextResponse.json({ error: 'Missing providerId' }, { status: 400 });
