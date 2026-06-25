@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 import { useToast } from '@/components/Providers';
 import { getSupabaseClient, supabase } from '@/lib/supabase';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { useAuth, useUser } from '@clerk/nextjs';
 import {
   ArrowLeft,
@@ -150,7 +151,9 @@ export default function RegisterProviderPage() {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      const isPdf = file.type 
+        ? file.type === 'application/pdf' 
+        : file.name.toLowerCase().endsWith('.pdf');
       if (!isPdf) {
         setPermitFileError('Only PDF files are allowed.');
         setPermitFile(null);
@@ -169,7 +172,7 @@ export default function RegisterProviderPage() {
     let uploadedLogoPath: string | null = null;
     let uploadedPermitPath: string | null = null;
     let uploadedServiceImagePath: string | null = null;
-    let clientRef: any = null;
+    let clientRef: SupabaseClient | null = null;
 
     try {
       const token = await getToken();
@@ -323,14 +326,27 @@ export default function RegisterProviderPage() {
       
       // Clean up successfully uploaded storage files
       if (clientRef) {
-        if (uploadedLogoBucket && uploadedLogoPath) {
-          await clientRef.storage.from(uploadedLogoBucket).remove([uploadedLogoPath]).catch(console.error);
-        }
-        if (uploadedPermitPath) {
-          await clientRef.storage.from('permits').remove([uploadedPermitPath]).catch(console.error);
-        }
-        if (uploadedServiceImagePath) {
-          await clientRef.storage.from('permits').remove([uploadedServiceImagePath]).catch(console.error);
+        try {
+          if (uploadedLogoBucket && uploadedLogoPath) {
+            const { error: removeErr } = await clientRef.storage.from(uploadedLogoBucket).remove([uploadedLogoPath]);
+            if (removeErr) {
+              console.error('Failed to remove uploaded logo on registration failure:', removeErr);
+            }
+          }
+          if (uploadedPermitPath) {
+            const { error: removeErr } = await clientRef.storage.from('permits').remove([uploadedPermitPath]);
+            if (removeErr) {
+              console.error('Failed to remove uploaded permit on registration failure:', removeErr);
+            }
+          }
+          if (uploadedServiceImagePath) {
+            const { error: removeErr } = await clientRef.storage.from('permits').remove([uploadedServiceImagePath]);
+            if (removeErr) {
+              console.error('Failed to remove uploaded service image on registration failure:', removeErr);
+            }
+          }
+        } catch (cleanupErr) {
+          console.error('Unexpected error during storage file cleanup:', cleanupErr);
         }
       }
 

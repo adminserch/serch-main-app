@@ -73,6 +73,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid business permit storage path prefix' }, { status: 400 });
     }
 
+    // Convert storage path key to public URL
+    const { data: permitUrlData } = supabaseAdmin.storage
+      .from('permits')
+      .getPublicUrl(businessPermitUrl);
+    const resolvedPermitUrl = permitUrlData.publicUrl;
+
 
     // Create provider
     const { data: provider, error: providerError } = await supabaseAdmin
@@ -88,7 +94,7 @@ export async function POST(req: Request) {
         latitude: latitude || null,
         longitude: longitude || null,
         website: website || null,
-        business_permit_url: businessPermitUrl,
+        business_permit_url: resolvedPermitUrl,
         status: 'pending',
         plan: 'free',
         house_building_number: houseBuildingNumber || null,
