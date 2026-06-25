@@ -21,9 +21,19 @@ if (fs.existsSync(envPath)) {
   });
 }
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+const missingVars = [];
+if (!supabaseUrl) missingVars.push('NEXT_PUBLIC_SUPABASE_URL');
+if (!supabaseServiceKey) missingVars.push('SUPABASE_SERVICE_ROLE_KEY');
+if (!supabaseAnonKey) missingVars.push('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+
+if (missingVars.length > 0) {
+  console.error('Error: Missing required environment variables:', missingVars.join(', '));
+  process.exit(1);
+}
 
 const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -34,21 +44,28 @@ async function run() {
     console.error('get_policies RPC failed:', error);
     process.exit(1);
   }
+  console.log('Retrieved policies:', JSON.stringify(data, null, 2));
 
   const supabaseAnon = createClient(supabaseUrl, supabaseAnonKey);
   
   console.log('Testing select on services as anon:');
+  const providerId = process.env.PROVIDER_ID || process.argv[2] || '5170ab5b-6341-4c0f-8f76-648a09dfe9e9';
   const { data: anonServices, error: anonErr } = await supabaseAnon
     .from('services')
     .select('*')
-    .eq('provider_id', '5170ab5b-6341-4c0f-8f76-648a09dfe9e9');
+    .eq('provider_id', providerId);
     
   if (anonErr) {
     console.error('Anon select error:', anonErr);
     process.exit(1);
-  } else {
-    console.log('Anon select results:', JSON.stringify(anonServices, null, 2));
   }
+  
+  if (!anonServices || anonServices.length === 0) {
+    console.error(`Error: No services found for provider ID: ${providerId}`);
+    process.exit(1);
+  }
+  
+  console.log('Anon select results:', JSON.stringify(anonServices, null, 2));
 }
 
 run();

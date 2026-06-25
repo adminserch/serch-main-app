@@ -4,6 +4,8 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   let providerIdToClean: string | null = null;
+  let originalRole: string | null = null;
+  let userIdToRestore: string | null = null;
   try {
     const { userId: clerkUserId } = await auth();
     if (!clerkUserId) {
@@ -13,13 +15,16 @@ export async function POST(req: Request) {
     // Get user from users table
     const { data: dbUser, error: userError } = await supabaseAdmin
       .from('users')
-      .select('id')
+      .select('id, role')
       .eq('clerk_user_id', clerkUserId)
       .single();
 
     if (userError || !dbUser) {
       return NextResponse.json({ error: 'User record not found in database.' }, { status: 404 });
     }
+
+    originalRole = dbUser.role;
+    userIdToRestore = dbUser.id;
 
     const {
       businessName,
@@ -57,9 +62,15 @@ export async function POST(req: Request) {
       parsedPrice < 0 ||
       isNaN(parsedDuration) ||
       parsedDuration <= 0 ||
-      !serviceCategoryId
+      !serviceCategoryId ||
+      !businessPermitUrl ||
+      !businessPermitUrl.trim()
     ) {
-      return NextResponse.json({ error: 'Missing or invalid required business or service fields' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing or invalid required business, service fields, or business permit URL' }, { status: 400 });
+    }
+
+    if (!businessPermitUrl.startsWith(`${dbUser.id}/`)) {
+      return NextResponse.json({ error: 'Invalid business permit storage path prefix' }, { status: 400 });
     }
 
 
@@ -77,7 +88,7 @@ export async function POST(req: Request) {
         latitude: latitude || null,
         longitude: longitude || null,
         website: website || null,
-        business_permit_url: businessPermitUrl || 'https://supabase-storage-url.com/permits/dummy.pdf',
+        business_permit_url: businessPermitUrl,
         status: 'pending',
         plan: 'free',
         house_building_number: houseBuildingNumber || null,
@@ -135,31 +146,72 @@ export async function POST(req: Request) {
     // Success - disable rollback cleanup
     providerIdToClean = null;
 
-    // Mock send notification
+    // Mock send notification with a timeout
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const notificationUrl = `${baseUrl}/api/notifications/send`;
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+    
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-      const notificationUrl = `${baseUrl}/api/notifications/send`;
-      await fetch(notificationUrl, {
+      const res = await fetch(notificationUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ providerId: provider.id, type: 'provider_registered' }),
+        signal: controller.signal
       });
-    } catch (err) {
-      console.warn('Failed to send registration notification:', err);
+      if (!res.ok) {
+        console.warn('Registration notification response not OK:', res.status);
+      }
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        console.warn('Registration notification request timed out.');
+      } else {
+        console.warn('Failed to send registration notification:', err);
+      }
+    } finally {
+      clearTimeout(timeoutId);
     }
 
     return NextResponse.json({ success: true, providerId: provider.id });
   } catch (err: unknown) {
     console.error('Registration error:', err);
     if (providerIdToClean) {
-      console.log('Rolling back provider creation for provider ID:', providerIdToClean);
       try {
-        await supabaseAdmin
+        // Delete services associated with this provider first due to FK constraints
+        const { error: serviceDelError } = await supabaseAdmin
+          .from('services')
+          .delete()
+          .eq('provider_id', providerIdToClean);
+        if (serviceDelError) {
+          console.error('Rollback failed to delete services:', serviceDelError);
+          throw serviceDelError;
+        }
+
+        // Delete provider row
+        const { error: providerDelError } = await supabaseAdmin
           .from('providers')
           .delete()
           .eq('id', providerIdToClean);
+        if (providerDelError) {
+          console.error('Rollback failed to delete provider:', providerDelError);
+          throw providerDelError;
+        }
+
+        // Restore original user role
+        if (userIdToRestore && originalRole) {
+          const { error: roleRestoreError } = await supabaseAdmin
+            .from('users')
+            .update({ role: originalRole })
+            .eq('id', userIdToRestore);
+          if (roleRestoreError) {
+            console.error('Rollback failed to restore user role:', roleRestoreError);
+            throw roleRestoreError;
+          }
+        }
       } catch (rollbackErr) {
-        console.error('Failed to rollback provider creation:', rollbackErr);
+        console.error('Failed to rollback registration data:', rollbackErr);
+        throw rollbackErr;
       }
     }
     const message = err instanceof Error ? err.message : 'Unknown registration error';

@@ -188,9 +188,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           // Securely check for pending provider approval counts via API to bypass client RLS issues
           try {
             const dataRes = await fetch('/api/admin/data', {
-              headers: {
+              headers: token ? {
                 'Authorization': `Bearer ${token}`
-              }
+              } : {}
             });
             if (dataRes.ok) {
               const adminData = await dataRes.json();

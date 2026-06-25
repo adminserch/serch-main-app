@@ -72,6 +72,7 @@ export default function RegisterProviderPage() {
 
   const [permitFile, setPermitFile] = useState<File | null>(null);
   const [permitName, setPermitName] = useState('');
+  const [permitFileError, setPermitFileError] = useState('');
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoName, setLogoName] = useState('');
@@ -149,13 +150,27 @@ export default function RegisterProviderPage() {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setPermitFile(file);
-      setPermitName(file.name);
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      if (!isPdf) {
+        setPermitFileError('Only PDF files are allowed.');
+        setPermitFile(null);
+        setPermitName('');
+      } else {
+        setPermitFileError('');
+        setPermitFile(file);
+        setPermitName(file.name);
+      }
     }
   };
 
   const handleSubmit = async () => {
     setLoading(true);
+    let uploadedLogoBucket: string | null = null;
+    let uploadedLogoPath: string | null = null;
+    let uploadedPermitPath: string | null = null;
+    let uploadedServiceImagePath: string | null = null;
+    let clientRef: any = null;
+
     try {
       const token = await getToken();
       if (!token) {
@@ -165,6 +180,7 @@ export default function RegisterProviderPage() {
       }
 
       const client = getSupabaseClient(token);
+      clientRef = client;
 
       // 1. Get user uuid
       let { data: dbUser, error: userError } = await client
@@ -206,41 +222,63 @@ export default function RegisterProviderPage() {
       if (logoFile) {
         const fileExt = logoFile.name.split('.').pop();
         const filePath = `${dbUser.id}/logo-${Math.random()}.${fileExt}`;
-        const { error: logoUploadError } = await supabase.storage
+        const { error: logoUploadError } = await client.storage
           .from('logos')
           .upload(filePath, logoFile);
 
         if (!logoUploadError) {
-          const { data } = supabase.storage.from('logos').getPublicUrl(filePath);
+          const { data } = client.storage.from('logos').getPublicUrl(filePath);
           logoUrl = data.publicUrl;
+          uploadedLogoBucket = 'logos';
+          uploadedLogoPath = filePath;
         } else {
           // Fallback to permits bucket if logos bucket is not configured
-          const { error: fallbackError } = await supabase.storage
+          const { error: fallbackError } = await client.storage
             .from('permits')
             .upload(filePath, logoFile);
           if (!fallbackError) {
-            const { data } = supabase.storage.from('permits').getPublicUrl(filePath);
+            const { data } = client.storage.from('permits').getPublicUrl(filePath);
             logoUrl = data.publicUrl;
+            uploadedLogoBucket = 'permits';
+            uploadedLogoPath = filePath;
           }
         }
       }
 
-      // 3. Upload service image if provided
+      // 3. Upload business permit PDF (required)
+      if (!permitFile) {
+        throw new Error('Business permit PDF is required.');
+      }
+      const permitExt = permitFile.name.split('.').pop() || 'pdf';
+      const permitPath = `${dbUser.id}/permit-${Date.now()}.${permitExt}`;
+      const { error: permitUploadError } = await client.storage
+        .from('permits')
+        .upload(permitPath, permitFile);
+
+      if (permitUploadError) {
+        throw new Error('Failed to upload business permit: ' + permitUploadError.message);
+      }
+
+      uploadedPermitPath = permitPath;
+      const businessPermitUrl = permitPath;
+
+      // 4. Upload service image if provided
       let serviceImageUrl = null;
       if (serviceImageFile) {
         const fileExt = serviceImageFile.name.split('.').pop();
         const filePath = `${dbUser.id}/service-${Math.random()}.${fileExt}`;
-        const { error: serviceImageUploadError } = await supabase.storage
+        const { error: serviceImageUploadError } = await client.storage
           .from('permits')
           .upload(filePath, serviceImageFile);
 
         if (!serviceImageUploadError) {
-          const { data } = supabase.storage.from('permits').getPublicUrl(filePath);
+          const { data } = client.storage.from('permits').getPublicUrl(filePath);
           serviceImageUrl = data.publicUrl;
+          uploadedServiceImagePath = filePath;
         }
       }
 
-      // 4. Create provider and service via server-side API endpoint to bypass client RLS issues
+      // 5. Create provider and service via server-side API endpoint to bypass client RLS issues
       const registerRes = await fetch('/api/providers/register', {
         method: 'POST',
         headers: {
@@ -268,7 +306,8 @@ export default function RegisterProviderPage() {
           serviceDuration,
           serviceCategoryId,
           serviceIsActive,
-          serviceImageUrl
+          serviceImageUrl,
+          businessPermitUrl
         })
       });
 
@@ -281,6 +320,20 @@ export default function RegisterProviderPage() {
       setStep(4);
     } catch (err: unknown) {
       console.error(err);
+      
+      // Clean up successfully uploaded storage files
+      if (clientRef) {
+        if (uploadedLogoBucket && uploadedLogoPath) {
+          await clientRef.storage.from(uploadedLogoBucket).remove([uploadedLogoPath]).catch(console.error);
+        }
+        if (uploadedPermitPath) {
+          await clientRef.storage.from('permits').remove([uploadedPermitPath]).catch(console.error);
+        }
+        if (uploadedServiceImagePath) {
+          await clientRef.storage.from('permits').remove([uploadedServiceImagePath]).catch(console.error);
+        }
+      }
+
       const errMsg = err instanceof Error ? err.message : 'Unknown error';
       toast('Registration failed: ' + errMsg, 'error');
     } finally {
@@ -437,9 +490,32 @@ export default function RegisterProviderPage() {
             </div>
           )}
 
+          <div>
+            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
+              Business Permit PDF <span className="text-red-500">*</span>
+            </label>
+            <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
+              <input
+                type="file"
+                onChange={handleFileUpload}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                accept=".pdf,application/pdf"
+                required
+              />
+              <Upload className="w-8 h-8 text-stone-400 mb-2" />
+              <span className="text-xs font-bold text-slate-700 font-sans">
+                {permitName || 'Click to upload business permit PDF'}
+              </span>
+              <span className="text-[10px] text-stone-400 mt-1 font-sans">PDF format only</span>
+            </div>
+            {permitFileError && (
+              <p className="text-xs text-red-500 mt-1">{permitFileError}</p>
+            )}
+          </div>
+
           <button
             type="button"
-            disabled={categories.length === 0}
+            disabled={categories.length === 0 || !permitFile || !!permitFileError}
             onClick={() => {
               if (!businessName.trim()) {
                 setBusinessNameError('Business Name is required');

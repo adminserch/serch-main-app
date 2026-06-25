@@ -211,7 +211,17 @@ export default function ProviderDetailsPage() {
         const sData = await sResponse.json();
         setServices(sData.services || []);
       } else {
-        setServices([]);
+        let errorMessage = sResponse.statusText;
+        const contentType = sResponse.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          try {
+            const errData = await sResponse.json();
+            errorMessage = errData.error || errData.message || errorMessage;
+          } catch {
+            // Ignore JSON parsing failure
+          }
+        }
+        throw new Error(`Failed to fetch services (HTTP ${sResponse.status}): ${errorMessage}`);
       }
 
       // 3. Fetch bookings

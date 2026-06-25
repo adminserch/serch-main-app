@@ -48,7 +48,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Provider ID is required' }, { status: 400 });
     }
 
-    const authStatus = await getProviderAndVerify().catch(() => ({ authorized: false, isAdmin: false, providerId: null }));
+    const authStatus = await getProviderAndVerify();
     const isOwner = authStatus.authorized && authStatus.providerId === providerId;
     const isAdmin = authStatus.authorized && authStatus.isAdmin;
 
@@ -83,11 +83,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const price = Number(rawPrice);
-    const duration_minutes = Number(rawDuration);
+    if (
+      (typeof rawPrice !== 'string' && typeof rawPrice !== 'number') ||
+      (typeof rawDuration !== 'string' && typeof rawDuration !== 'number')
+    ) {
+      return NextResponse.json({ error: 'Price and duration must be strings or numbers' }, { status: 400 });
+    }
 
-    if (isNaN(price) || price < 0 || isNaN(duration_minutes) || duration_minutes <= 0) {
-      return NextResponse.json({ error: 'Invalid price or duration' }, { status: 400 });
+    const priceStr = typeof rawPrice === 'string' ? rawPrice.trim() : rawPrice;
+    const durationStr = typeof rawDuration === 'string' ? rawDuration.trim() : rawDuration;
+
+    if (priceStr === '' || durationStr === '') {
+      return NextResponse.json({ error: 'Price and duration cannot be empty strings' }, { status: 400 });
+    }
+
+    const price = Number(priceStr);
+    const duration_minutes = Number(durationStr);
+
+    if (!Number.isFinite(price) || price < 0 || !Number.isInteger(duration_minutes) || duration_minutes <= 0) {
+      return NextResponse.json({ error: 'Invalid price or duration (duration must be a positive integer)' }, { status: 400 });
     }
 
     const providerId = authStatus.isAdmin ? provider_id : authStatus.providerId;
@@ -154,18 +168,32 @@ export async function PUT(req: Request) {
     if (name !== undefined) updateData.name = name;
     if (description !== undefined) updateData.description = description;
 
-    if (rawPrice !== undefined) {
-      const price = Number(rawPrice);
-      if (isNaN(price) || price < 0) {
+    if (rawPrice !== undefined && rawPrice !== null) {
+      if (typeof rawPrice !== 'string' && typeof rawPrice !== 'number') {
+        return NextResponse.json({ error: 'Price must be a string or number' }, { status: 400 });
+      }
+      const priceStr = typeof rawPrice === 'string' ? rawPrice.trim() : rawPrice;
+      if (priceStr === '') {
+        return NextResponse.json({ error: 'Price cannot be an empty string' }, { status: 400 });
+      }
+      const price = Number(priceStr);
+      if (!Number.isFinite(price) || price < 0) {
         return NextResponse.json({ error: 'Invalid price' }, { status: 400 });
       }
       updateData.price = price;
     }
 
-    if (rawDuration !== undefined) {
-      const duration_minutes = Number(rawDuration);
-      if (isNaN(duration_minutes) || duration_minutes <= 0) {
-        return NextResponse.json({ error: 'Invalid duration' }, { status: 400 });
+    if (rawDuration !== undefined && rawDuration !== null) {
+      if (typeof rawDuration !== 'string' && typeof rawDuration !== 'number') {
+        return NextResponse.json({ error: 'Duration must be a string or number' }, { status: 400 });
+      }
+      const durationStr = typeof rawDuration === 'string' ? rawDuration.trim() : rawDuration;
+      if (durationStr === '') {
+        return NextResponse.json({ error: 'Duration cannot be an empty string' }, { status: 400 });
+      }
+      const duration_minutes = Number(durationStr);
+      if (!Number.isInteger(duration_minutes) || duration_minutes <= 0) {
+        return NextResponse.json({ error: 'Invalid duration (must be a positive integer)' }, { status: 400 });
       }
       updateData.duration_minutes = duration_minutes;
     }
