@@ -185,16 +185,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         if (resData.success && resData.user && resData.user.role === 'admin') {
           setAuthorized(true);
 
-          // Check for pending provider approval counts
+          interface AdminProvider {
+            status: string;
+          }
+          // Securely check for pending provider approval counts via API to bypass client RLS issues
           try {
-            const client = getSupabaseClient(token);
-            const { count, error: countError } = await client
-              .from('providers')
-              .select('id', { count: 'exact', head: true })
-              .eq('status', 'pending');
-            
-            if (!countError && count !== null && count > 0) {
-              toast(`Attention: There are ${count} provider registration requests awaiting approval.`, 'warning', 300000);
+            const dataRes = await fetch('/api/admin/data', {
+              headers: token ? {
+                'Authorization': `Bearer ${token}`
+              } : {}
+            });
+            if (dataRes.ok) {
+              const adminData = await dataRes.json();
+              const providers = adminData.providers;
+              const pendingCount = Array.isArray(providers)
+                ? (providers as AdminProvider[]).filter(p => p.status === 'pending').length
+                : 0;
+              if (pendingCount > 0) {
+                toast(`Attention: There are ${pendingCount} provider registration requests awaiting approval.`, 'warning', 300000);
+              }
             }
           } catch (countErr) {
             console.error('Failed to fetch pending provider count:', countErr);

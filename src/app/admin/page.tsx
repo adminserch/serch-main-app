@@ -413,7 +413,7 @@ function AdminDashboardContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'toggle_verified',
-          payload: { providerId, currentVerified: current }
+          payload: { providerId }
         })
       });
 

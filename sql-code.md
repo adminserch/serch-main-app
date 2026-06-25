@@ -651,6 +651,29 @@ ON CONFLICT (slug) DO NOTHING;
 
 ---
 
+## 7.5 Database Functions / RPCs
+
+```sql
+CREATE OR REPLACE FUNCTION toggle_provider_verified(provider_uuid uuid)
+RETURNS boolean AS $$
+DECLARE
+  new_state boolean;
+BEGIN
+  UPDATE providers
+  SET is_verified = NOT is_verified
+  WHERE id = provider_uuid
+  RETURNING is_verified INTO new_state;
+  RETURN new_state;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+REVOKE EXECUTE ON FUNCTION toggle_provider_verified(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION toggle_provider_verified(uuid) TO service_role;
+GRANT EXECUTE ON FUNCTION toggle_provider_verified(uuid) TO postgres;
+```
+
+---
+
 ## 8. Useful Queries
 
 ### Get available providers with active services

@@ -48,7 +48,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Provider ID is required' }, { status: 400 });
     }
 
-    const authStatus = await getProviderAndVerify().catch(() => ({ authorized: false, isAdmin: false, providerId: null }));
+    const authStatus = await getProviderAndVerify();
     const isOwner = authStatus.authorized && authStatus.providerId === providerId;
     const isAdmin = authStatus.authorized && authStatus.isAdmin;
 
@@ -63,9 +63,10 @@ export async function GET(req: Request) {
     if (error) throw error;
 
     return NextResponse.json({ success: true, services: data || [] });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Fetch services error:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
@@ -76,10 +77,31 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: authStatus.error }, { status: authStatus.status });
     }
 
-    const { name, description, price, duration_minutes, category_id, is_active, images, provider_id } = await req.json();
+    const { name, description, price: rawPrice, duration_minutes: rawDuration, category_id, is_active, images, provider_id } = await req.json();
 
-    if (!name || !price || !duration_minutes || !category_id) {
+    if (!name || !category_id || rawPrice === undefined || rawPrice === null || rawDuration === undefined || rawDuration === null) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    if (
+      (typeof rawPrice !== 'string' && typeof rawPrice !== 'number') ||
+      (typeof rawDuration !== 'string' && typeof rawDuration !== 'number')
+    ) {
+      return NextResponse.json({ error: 'Price and duration must be strings or numbers' }, { status: 400 });
+    }
+
+    const priceStr = typeof rawPrice === 'string' ? rawPrice.trim() : rawPrice;
+    const durationStr = typeof rawDuration === 'string' ? rawDuration.trim() : rawDuration;
+
+    if (priceStr === '' || durationStr === '') {
+      return NextResponse.json({ error: 'Price and duration cannot be empty strings' }, { status: 400 });
+    }
+
+    const price = Number(priceStr);
+    const duration_minutes = Number(durationStr);
+
+    if (!Number.isFinite(price) || price < 0 || !Number.isInteger(duration_minutes) || duration_minutes <= 0) {
+      return NextResponse.json({ error: 'Invalid price or duration (duration must be a positive integer)' }, { status: 400 });
     }
 
     const providerId = authStatus.isAdmin ? provider_id : authStatus.providerId;
@@ -93,8 +115,8 @@ export async function POST(req: Request) {
         provider_id: providerId,
         name,
         description: description || '',
-        price: Number(price),
-        duration_minutes: Number(duration_minutes),
+        price,
+        duration_minutes,
         category_id,
         is_active: is_active !== undefined ? is_active : true,
         images: images || []
@@ -119,7 +141,7 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: authStatus.error }, { status: authStatus.status });
     }
 
-    const { id, name, description, price, duration_minutes, category_id, is_active, images } = await req.json();
+    const { id, name, description, price: rawPrice, duration_minutes: rawDuration, category_id, is_active, images } = await req.json();
 
     if (!id) {
       return NextResponse.json({ error: 'Service ID is required' }, { status: 400 });
@@ -145,8 +167,37 @@ export async function PUT(req: Request) {
     const updateData: any = {};
     if (name !== undefined) updateData.name = name;
     if (description !== undefined) updateData.description = description;
-    if (price !== undefined) updateData.price = Number(price);
-    if (duration_minutes !== undefined) updateData.duration_minutes = Number(duration_minutes);
+
+    if (rawPrice !== undefined && rawPrice !== null) {
+      if (typeof rawPrice !== 'string' && typeof rawPrice !== 'number') {
+        return NextResponse.json({ error: 'Price must be a string or number' }, { status: 400 });
+      }
+      const priceStr = typeof rawPrice === 'string' ? rawPrice.trim() : rawPrice;
+      if (priceStr === '') {
+        return NextResponse.json({ error: 'Price cannot be an empty string' }, { status: 400 });
+      }
+      const price = Number(priceStr);
+      if (!Number.isFinite(price) || price < 0) {
+        return NextResponse.json({ error: 'Invalid price' }, { status: 400 });
+      }
+      updateData.price = price;
+    }
+
+    if (rawDuration !== undefined && rawDuration !== null) {
+      if (typeof rawDuration !== 'string' && typeof rawDuration !== 'number') {
+        return NextResponse.json({ error: 'Duration must be a string or number' }, { status: 400 });
+      }
+      const durationStr = typeof rawDuration === 'string' ? rawDuration.trim() : rawDuration;
+      if (durationStr === '') {
+        return NextResponse.json({ error: 'Duration cannot be an empty string' }, { status: 400 });
+      }
+      const duration_minutes = Number(durationStr);
+      if (!Number.isInteger(duration_minutes) || duration_minutes <= 0) {
+        return NextResponse.json({ error: 'Invalid duration (must be a positive integer)' }, { status: 400 });
+      }
+      updateData.duration_minutes = duration_minutes;
+    }
+
     if (category_id !== undefined) updateData.category_id = category_id;
     if (is_active !== undefined) updateData.is_active = is_active;
     if (images !== undefined) updateData.images = images;

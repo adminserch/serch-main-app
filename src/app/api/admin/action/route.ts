@@ -39,13 +39,28 @@ export async function POST(req: Request) {
       }).catch(err => console.error('Notification error:', err));
 
     } else if (action === 'toggle_verified') {
-      const { providerId, currentVerified } = payload;
-      const { error } = await supabaseAdmin
-        .from('providers')
-        .update({ is_verified: !currentVerified })
-        .eq('id', providerId);
+      if (!payload || typeof payload !== 'object') {
+        return NextResponse.json({ error: 'Missing providerId' }, { status: 400 });
+      }
+      const { providerId } = payload;
+      if (!providerId) {
+        return NextResponse.json({ error: 'Missing providerId' }, { status: 400 });
+      }
+
+      const { data, error } = await supabaseAdmin
+        .rpc('toggle_provider_verified', { provider_uuid: providerId });
 
       if (error) throw error;
+
+      if (data === null) {
+        return NextResponse.json({ error: `Provider not found: ${providerId}` }, { status: 404 });
+      }
+
+      if (typeof data !== 'boolean') {
+        return NextResponse.json({ error: 'Invalid verification result' }, { status: 500 });
+      }
+
+      return NextResponse.json({ success: true, is_verified: data });
 
     } else if (action === 'add_category') {
       const { name, slug, icon, is_active } = payload;
