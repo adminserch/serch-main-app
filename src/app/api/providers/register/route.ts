@@ -73,6 +73,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid business permit storage path prefix' }, { status: 400 });
     }
 
+    const lowercasePermitUrl = businessPermitUrl.toLowerCase();
+    const isPdf = lowercasePermitUrl.endsWith('.pdf');
+    const isPermitPath = lowercasePermitUrl.includes('/permit-');
+    if (!isPdf || !isPermitPath) {
+      return NextResponse.json({ error: 'Invalid business permit path or file type. Only PDF permit documents are allowed.' }, { status: 400 });
+    }
+
     // Convert storage path key to public URL
     const { data: permitUrlData } = supabaseAdmin.storage
       .from('permits')
@@ -169,8 +176,8 @@ export async function POST(req: Request) {
       if (!res.ok) {
         console.warn('Registration notification response not OK:', res.status);
       }
-    } catch (err: any) {
-      if (err.name === 'AbortError') {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === 'AbortError') {
         console.warn('Registration notification request timed out.');
       } else {
         console.warn('Failed to send registration notification:', err);
@@ -217,7 +224,7 @@ export async function POST(req: Request) {
         }
       } catch (rollbackErr) {
         console.error('Failed to rollback registration data:', rollbackErr);
-        throw rollbackErr;
+        // Log failure but do not rethrow to keep standard json error response intact
       }
     }
     const message = err instanceof Error ? err.message : 'Unknown registration error';

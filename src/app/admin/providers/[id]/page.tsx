@@ -273,6 +273,10 @@ export default function ProviderDetailsPage() {
   const handleUpdateStatus = async (newStatus: 'pending' | 'approved' | 'rejected' | 'suspended') => {
     try {
       const token = await getToken();
+      if (!token) {
+        toast('Not authenticated. Please sign in again.', 'error');
+        return;
+      }
 
       const res = await fetch('/api/admin/action', {
         method: 'POST',
@@ -286,8 +290,24 @@ export default function ProviderDetailsPage() {
         })
       });
 
-      const resData = await res.json();
-      if (!res.ok) throw new Error(resData.error || 'Failed to update status');
+      let errorMessage = res.statusText;
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          const resData = await res.json();
+          errorMessage = resData.error || resData.message || errorMessage;
+        } catch {
+          // Ignore
+        }
+      } else {
+        try {
+          errorMessage = await res.text() || errorMessage;
+        } catch {
+          // Ignore
+        }
+      }
+
+      if (!res.ok) throw new Error(errorMessage || `Failed to update status (HTTP ${res.status})`);
 
       toast(`Provider status updated to ${newStatus}`, 'success');
       checkAdminAndLoadData();
@@ -300,6 +320,10 @@ export default function ProviderDetailsPage() {
     if (!provider) return;
     try {
       const token = await getToken();
+      if (!token) {
+        toast('Not authenticated. Please sign in again.', 'error');
+        return;
+      }
 
       const res = await fetch('/api/admin/action', {
         method: 'POST',
@@ -309,12 +333,28 @@ export default function ProviderDetailsPage() {
         },
         body: JSON.stringify({
           action: 'toggle_verified',
-          payload: { providerId, currentVerified: provider.is_verified }
+          payload: { providerId }
         })
       });
 
-      const resData = await res.json();
-      if (!res.ok) throw new Error(resData.error || 'Failed to toggle verification');
+      let errorMessage = res.statusText;
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          const resData = await res.json();
+          errorMessage = resData.error || resData.message || errorMessage;
+        } catch {
+          // Ignore
+        }
+      } else {
+        try {
+          errorMessage = await res.text() || errorMessage;
+        } catch {
+          // Ignore
+        }
+      }
+
+      if (!res.ok) throw new Error(errorMessage || `Failed to toggle verification (HTTP ${res.status})`);
 
       toast(provider.is_verified ? 'Verification revoked' : 'Provider verified successfully', 'success');
       checkAdminAndLoadData();

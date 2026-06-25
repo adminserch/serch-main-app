@@ -173,6 +173,7 @@ export default function RegisterProviderPage() {
     let uploadedPermitPath: string | null = null;
     let uploadedServiceImagePath: string | null = null;
     let clientRef: SupabaseClient | null = null;
+    let shouldCleanup = true;
 
     try {
       const token = await getToken();
@@ -282,37 +283,45 @@ export default function RegisterProviderPage() {
       }
 
       // 5. Create provider and service via server-side API endpoint to bypass client RLS issues
-      const registerRes = await fetch('/api/providers/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          businessName,
-          description,
-          logoUrl,
-          categories,
-          city,
-          district,
-          latitude,
-          longitude,
-          website,
-          houseBuildingNumber,
-          streetName,
-          stateProvinceRegion,
-          postalZipCode,
-          country,
-          serviceName,
-          serviceDescription,
-          servicePrice,
-          serviceDuration,
-          serviceCategoryId,
-          serviceIsActive,
-          serviceImageUrl,
-          businessPermitUrl
-        })
-      });
+      let registerRes;
+      try {
+        registerRes = await fetch('/api/providers/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            businessName,
+            description,
+            logoUrl,
+            categories,
+            city,
+            district,
+            latitude,
+            longitude,
+            website,
+            houseBuildingNumber,
+            streetName,
+            stateProvinceRegion,
+            postalZipCode,
+            country,
+            serviceName,
+            serviceDescription,
+            servicePrice,
+            serviceDuration,
+            serviceCategoryId,
+            serviceIsActive,
+            serviceImageUrl,
+            businessPermitUrl
+          })
+        });
+      } catch (fetchErr) {
+        // Ambiguous network error: fetch itself failed, we do not know if the database created the records.
+        // Disable cleanup to avoid deleting successfully uploaded files.
+        shouldCleanup = false;
+        throw fetchErr;
+      }
 
       const registerData = await registerRes.json();
       if (!registerRes.ok) {
@@ -325,7 +334,7 @@ export default function RegisterProviderPage() {
       console.error(err);
       
       // Clean up successfully uploaded storage files
-      if (clientRef) {
+      if (shouldCleanup && clientRef) {
         try {
           if (uploadedLogoBucket && uploadedLogoPath) {
             const { error: removeErr } = await clientRef.storage.from(uploadedLogoBucket).remove([uploadedLogoPath]);

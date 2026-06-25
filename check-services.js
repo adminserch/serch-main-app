@@ -37,6 +37,13 @@ if (missingVars.length > 0) {
 
 const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
+const providerId = process.env.PROVIDER_ID || process.argv[2];
+if (!providerId) {
+  console.error('Error: PROVIDER_ID is required to run this script.');
+  console.error('Usage: PROVIDER_ID=<uuid> node check-services.js or node check-services.js <uuid>');
+  process.exit(1);
+}
+
 async function run() {
   console.log('Querying pg_policies:');
   const { data, error } = await supabaseAdmin.rpc('get_policies');
@@ -49,7 +56,6 @@ async function run() {
   const supabaseAnon = createClient(supabaseUrl, supabaseAnonKey);
   
   console.log('Testing select on services as anon:');
-  const providerId = process.env.PROVIDER_ID || process.argv[2] || '5170ab5b-6341-4c0f-8f76-648a09dfe9e9';
   const { data: anonServices, error: anonErr } = await supabaseAnon
     .from('services')
     .select('*')

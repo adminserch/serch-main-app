@@ -185,6 +185,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         if (resData.success && resData.user && resData.user.role === 'admin') {
           setAuthorized(true);
 
+          interface AdminProvider {
+            status: string;
+          }
           // Securely check for pending provider approval counts via API to bypass client RLS issues
           try {
             const dataRes = await fetch('/api/admin/data', {
@@ -194,7 +197,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             });
             if (dataRes.ok) {
               const adminData = await dataRes.json();
-              const pendingCount = adminData.providers?.filter((p: any) => p.status === 'pending').length || 0;
+              const providers = adminData.providers;
+              const pendingCount = Array.isArray(providers)
+                ? (providers as AdminProvider[]).filter(p => p.status === 'pending').length
+                : 0;
               if (pendingCount > 0) {
                 toast(`Attention: There are ${pendingCount} provider registration requests awaiting approval.`, 'warning', 300000);
               }

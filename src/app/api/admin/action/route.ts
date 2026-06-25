@@ -39,10 +39,18 @@ export async function POST(req: Request) {
       }).catch(err => console.error('Notification error:', err));
 
     } else if (action === 'toggle_verified') {
-      const { providerId, currentVerified } = payload;
+      const { providerId } = payload;
+      const { data: providerData, error: fetchError } = await supabaseAdmin
+        .from('providers')
+        .select('is_verified')
+        .eq('id', providerId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
       const { error } = await supabaseAdmin
         .from('providers')
-        .update({ is_verified: !currentVerified })
+        .update({ is_verified: !providerData.is_verified })
         .eq('id', providerId);
 
       if (error) throw error;
