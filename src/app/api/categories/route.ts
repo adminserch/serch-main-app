@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { auth } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
 
 // Helper to verify role is either provider or admin
 async function verifyAuthorized() {

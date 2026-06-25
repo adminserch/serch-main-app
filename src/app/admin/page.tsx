@@ -1,34 +1,31 @@
 'use strict';
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
-import Link from 'next/link';
-import { useAuth, useUser } from '@clerk/nextjs';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase, getSupabaseClient } from '@/lib/supabase';
 import { useToast } from '@/components/Providers';
+import { getSupabaseClient } from '@/lib/supabase';
+import { useAuth, useUser } from '@clerk/nextjs';
 import {
-  Users,
+  Award,
   Building2,
   CalendarDays,
-  ShieldAlert,
-  Award,
-  FolderEdit,
-  Trash2,
   Check,
-  XCircle,
-  Eye,
-  Sliders,
-  Star,
-  Plus,
-  Upload,
-  X,
-  Search,
-  Hash,
   Edit2,
-  FolderHeart
+  Eye,
+  FolderEdit,
+  FolderHeart,
+  Plus,
+  Search,
+  Star,
+  Trash2,
+  Upload,
+  Users,
+  X,
+  XCircle
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { Suspense, useEffect, useState } from 'react';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 
@@ -336,8 +333,12 @@ function AdminDashboardContent() {
         return;
       }
 
-      // Verify user role via secure server sync API to avoid client-side RLS/JWT config errors
-      const response = await fetch('/api/users/sync', { method: 'POST' });
+      const response = await fetch('/api/users/sync', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (!response.ok || !response.headers.get('content-type')?.includes('application/json')) {
         router.push('/');
         return;

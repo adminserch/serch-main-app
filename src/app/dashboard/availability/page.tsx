@@ -1,11 +1,11 @@
 'use strict';
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useAuth, useUser } from '@clerk/nextjs';
-import { supabase, getSupabaseClient } from '@/lib/supabase';
 import { useToast } from '@/components/Providers';
-import { Clock, Trash2 } from 'lucide-react';
+import { getSupabaseClient, supabase } from '@/lib/supabase';
+import { useAuth, useUser } from '@clerk/nextjs';
+import { Trash2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 

@@ -1,15 +1,15 @@
 'use strict';
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth, useUser, SignIn } from '@clerk/nextjs';
-import { supabase, getSupabaseClient } from '@/lib/supabase';
-import { useToast } from '@/components/Providers';
-import { Calendar, Clock, ArrowLeft, NotepadText, ShieldCheck } from 'lucide-react';
-import Link from 'next/link';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import Navbar from '@/components/Navbar';
+import { useToast } from '@/components/Providers';
+import { getSupabaseClient, supabase } from '@/lib/supabase';
+import { SignIn, useAuth, useUser } from '@clerk/nextjs';
+import { ArrowLeft, Calendar, Clock, NotepadText, ShieldCheck } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
 
 interface Service {
   id: string;
@@ -109,7 +109,12 @@ function CheckoutContent() {
 
       if (userError || !dbUser) {
         try {
-          const syncRes = await fetch('/api/users/sync', { method: 'POST' });
+          const syncRes = await fetch('/api/users/sync', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
           if (syncRes.ok) {
             const retryRes = await supabaseClient
               .from('users')
@@ -167,8 +172,8 @@ function CheckoutContent() {
         .select('id')
         .single();
 
-      if (bookingError) {
-        throw bookingError;
+      if (bookingError || !booking) {
+        throw bookingError || new Error('Booking creation failed.');
       }
 
       // 3. Send notifications (Resend mock request)

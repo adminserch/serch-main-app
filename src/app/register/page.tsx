@@ -1,21 +1,21 @@
 'use strict';
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth, useUser } from '@clerk/nextjs';
-import { supabase, getSupabaseClient } from '@/lib/supabase';
-import { useToast } from '@/components/Providers';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { 
-  Upload, 
-  CheckCircle, 
-  ArrowRight, 
-  ArrowLeft 
+import Navbar from '@/components/Navbar';
+import { useToast } from '@/components/Providers';
+import { getSupabaseClient, supabase } from '@/lib/supabase';
+import { useAuth, useUser } from '@clerk/nextjs';
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle,
+  Upload
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 
@@ -46,7 +46,16 @@ export default function RegisterProviderPage() {
   const [streetName, setStreetName] = useState('');
   const [stateProvinceRegion, setStateProvinceRegion] = useState('');
   const [postalZipCode, setPostalZipCode] = useState('');
+  const [postalError, setPostalError] = useState('');
   const [country, setCountry] = useState('');
+
+  const isValidPostalZip = (code: string) => {
+    if (!code) return true;
+    const clean = code.trim().toUpperCase();
+    const caRegex = /^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/;
+    const usRegex = /^\d{5}(-\d{4})?$/;
+    return caRegex.test(clean) || usRegex.test(clean);
+  };
 
   useEffect(() => {
     const parts = [
@@ -166,7 +175,12 @@ export default function RegisterProviderPage() {
 
       if (userError || !dbUser) {
         try {
-          const syncRes = await fetch('/api/users/sync', { method: 'POST' });
+          const syncRes = await fetch('/api/users/sync', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
           if (syncRes.ok) {
             const retryRes = await client
               .from('users')
@@ -192,20 +206,20 @@ export default function RegisterProviderPage() {
       if (logoFile) {
         const fileExt = logoFile.name.split('.').pop();
         const filePath = `${dbUser.id}/logo-${Math.random()}.${fileExt}`;
-        const { error: logoUploadError } = await client.storage
+        const { error: logoUploadError } = await supabase.storage
           .from('logos')
           .upload(filePath, logoFile);
 
         if (!logoUploadError) {
-          const { data } = client.storage.from('logos').getPublicUrl(filePath);
+          const { data } = supabase.storage.from('logos').getPublicUrl(filePath);
           logoUrl = data.publicUrl;
         } else {
           // Fallback to permits bucket if logos bucket is not configured
-          const { error: fallbackError } = await client.storage
+          const { error: fallbackError } = await supabase.storage
             .from('permits')
             .upload(filePath, logoFile);
           if (!fallbackError) {
-            const { data } = client.storage.from('permits').getPublicUrl(filePath);
+            const { data } = supabase.storage.from('permits').getPublicUrl(filePath);
             logoUrl = data.publicUrl;
           }
         }
@@ -216,91 +230,59 @@ export default function RegisterProviderPage() {
       if (serviceImageFile) {
         const fileExt = serviceImageFile.name.split('.').pop();
         const filePath = `${dbUser.id}/service-${Math.random()}.${fileExt}`;
-        const { error: serviceImageUploadError } = await client.storage
+        const { error: serviceImageUploadError } = await supabase.storage
           .from('permits')
           .upload(filePath, serviceImageFile);
 
         if (!serviceImageUploadError) {
-          const { data } = client.storage.from('permits').getPublicUrl(filePath);
+          const { data } = supabase.storage.from('permits').getPublicUrl(filePath);
           serviceImageUrl = data.publicUrl;
         }
       }
 
-      // 4. Create provider
-      const { data: provider, error: providerError } = await client
-        .from('providers')
-        .insert({
-          user_id: dbUser.id,
-          business_name: businessName,
-          description: description,
-          logo_url: logoUrl,
-          service_categories: categories,
-          service_city: city,
-          service_district: district,
-          latitude: latitude,
-          longitude: longitude,
-          website: website,
-          business_permit_url: 'https://supabase-storage-url.com/permits/dummy.pdf', // default placeholder for permit URL
-          status: 'pending', // awaits admin approval
-          plan: 'free',
-          house_building_number: houseBuildingNumber,
-          street_name: streetName,
-          state_province_region: stateProvinceRegion,
-          postal_zip_code: postalZipCode,
-          country: country,
-        })
-        .select('id')
-        .single();
-
-      if (providerError) throw providerError;
-
-      // 5. Create the new service
-      let finalCategoryId = serviceCategoryId;
-      if (!finalCategoryId || finalCategoryId.startsWith('11111111') || finalCategoryId.startsWith('22222222')) {
-        const { data: catData } = await client
-          .from('categories')
-          .select('id')
-          .eq('is_active', true)
-          .limit(1);
-        if (catData && catData.length > 0) {
-          finalCategoryId = catData[0].id;
-        }
-      }
-
-      const { error: serviceError } = await client
-        .from('services')
-        .insert({
-          provider_id: provider.id,
-          name: serviceName,
-          description: serviceDescription || '',
-          price: Number(servicePrice),
-          duration_minutes: Number(serviceDuration),
-          category_id: finalCategoryId || null,
-          is_active: serviceIsActive,
-          images: serviceImageUrl ? [serviceImageUrl] : []
-        });
-
-      if (serviceError) throw serviceError;
-
-      // 6. Update user role in users table to 'provider'
-      await client
-        .from('users')
-        .update({ role: 'provider' })
-        .eq('id', dbUser.id);
-
-      // 7. Send registration notification email mock
-      await fetch('/api/notifications/send', {
+      // 4. Create provider and service via server-side API endpoint to bypass client RLS issues
+      const registerRes = await fetch('/api/providers/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ providerId: provider.id, type: 'provider_registered' }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          businessName,
+          description,
+          logoUrl,
+          categories,
+          city,
+          district,
+          latitude,
+          longitude,
+          website,
+          houseBuildingNumber,
+          streetName,
+          stateProvinceRegion,
+          postalZipCode,
+          country,
+          serviceName,
+          serviceDescription,
+          servicePrice,
+          serviceDuration,
+          serviceCategoryId,
+          serviceIsActive,
+          serviceImageUrl
+        })
       });
+
+      const registerData = await registerRes.json();
+      if (!registerRes.ok) {
+        throw new Error(registerData.error || 'Failed to submit application');
+      }
 
       toast('Registration submitted! Awaiting admin verification.', 'success');
       setStep(4);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      toast('Registration mock-submitted (Demo Mode)', 'success');
-      setStep(4);
+      const errMsg = err instanceof Error ? err.message : 'Unknown error';
+      toast('Registration failed: ' + errMsg, 'error');
     } finally {
       setLoading(false);
     }
@@ -572,10 +554,16 @@ export default function RegisterProviderPage() {
               <input
                 type="text"
                 value={postalZipCode}
-                onChange={(e) => setPostalZipCode(e.target.value)}
+                onChange={(e) => {
+                  setPostalZipCode(e.target.value.toUpperCase());
+                  setPostalError('');
+                }}
                 placeholder="e.g. T2P 2M5"
-                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+                className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent ${postalError ? 'border-red-500' : 'border-champagne'}`}
               />
+              {postalError && (
+                <p className="mt-1 text-xs text-red-500 font-medium">{postalError}</p>
+              )}
             </div>
           </div>
 
@@ -628,6 +616,11 @@ export default function RegisterProviderPage() {
                 !address.trim()
               }
               onClick={() => {
+                if (!isValidPostalZip(postalZipCode)) {
+                  setPostalError('Please enter a valid Canadian Postal Code (e.g. T2P 2M5) or US ZIP Code (e.g. 90210).');
+                  return;
+                }
+                setPostalError('');
                 setBusinessNameError('');
                 setStep(3);
               }}

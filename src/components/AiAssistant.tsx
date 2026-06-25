@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useUser, useAuth } from '@clerk/nextjs';
 import { getSupabaseClient } from '@/lib/supabase';
-import { Sparkles, Bot, Send } from 'lucide-react';
+import { useAuth, useUser } from '@clerk/nextjs';
+import { Bot, Send, Sparkles } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface Booking {
   id: string;

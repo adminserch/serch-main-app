@@ -1,26 +1,23 @@
 'use strict';
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { UserButton, useAuth, useUser, SignInButton, SignUpButton } from '@clerk/nextjs';
-import { supabase } from '@/lib/supabase';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { 
-  Search as SearchIcon, 
-  MapPin, 
-  Star, 
-  ShieldCheck, 
-  SlidersHorizontal,
-  ChevronRight,
-  Plus,
+import Navbar from '@/components/Navbar';
+import { supabase } from '@/lib/supabase';
+import { useAuth, useUser } from '@clerk/nextjs';
+import {
   Check,
-  X,
-  Compass
+  MapPin,
+  Plus,
+  Search as SearchIcon,
+  ShieldCheck,
+  Star,
+  X
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
 
 // Dynamically import Map component to prevent SSR issues
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });

@@ -1,17 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import Footer from '@/components/Footer';
+import Navbar from '@/components/Navbar';
 import searchButtonLogo from '@/images/serch-button-logo.png';
-import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 import {
   useUser
 } from '@clerk/nextjs';
-import { supabase } from '@/lib/supabase';
-import { Search, MapPin, Star, ShieldCheck, Sparkles, Home, ChevronRight } from 'lucide-react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import { ChevronRight, Home, MapPin, Search, ShieldCheck, Sparkles, Star } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface FeaturedProvider {
   id: string;

@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { auth } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
 
 async function getProviderAndVerify() {
   const { userId } = await auth();
@@ -40,6 +40,35 @@ async function getProviderAndVerify() {
   return { authorized: true, providerId: providerData.id, isAdmin: false, userId: userData.id };
 }
 
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const providerId = searchParams.get('providerId');
+    if (!providerId) {
+      return NextResponse.json({ error: 'Provider ID is required' }, { status: 400 });
+    }
+
+    const authStatus = await getProviderAndVerify().catch(() => ({ authorized: false, isAdmin: false, providerId: null }));
+    const isOwner = authStatus.authorized && authStatus.providerId === providerId;
+    const isAdmin = authStatus.authorized && authStatus.isAdmin;
+
+    let query = supabaseAdmin.from('services').select('*').eq('provider_id', providerId);
+
+    // If not admin or owner, only fetch active services
+    if (!isAdmin && !isOwner) {
+      query = query.eq('is_active', true);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    return NextResponse.json({ success: true, services: data || [] });
+  } catch (err: any) {
+    console.error('Fetch services error:', err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const authStatus = await getProviderAndVerify();
@@ -47,13 +76,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: authStatus.error }, { status: authStatus.status });
     }
 
-    const { name, description, price, duration_minutes, category_id, is_active, images } = await req.json();
+    const { name, description, price, duration_minutes, category_id, is_active, images, provider_id } = await req.json();
 
     if (!name || !price || !duration_minutes || !category_id) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const providerId = authStatus.providerId;
+    const providerId = authStatus.isAdmin ? provider_id : authStatus.providerId;
+    if (!providerId) {
+      return NextResponse.json({ error: 'Provider ID is required' }, { status: 400 });
+    }
 
     const { data, error } = await supabaseAdmin
       .from('services')
@@ -78,6 +110,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+
 
 export async function PUT(req: Request) {
   try {

@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import Providers from "@/components/Providers";
+import { ClerkProvider } from "@clerk/nextjs";
+import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {

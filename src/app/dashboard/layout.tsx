@@ -1,22 +1,20 @@
 'use strict';
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import Footer from '@/components/Footer';
+import Navbar from '@/components/Navbar';
+import { SignIn, useAuth, UserButton, useUser } from '@clerk/nextjs';
+import {
+  Activity,
+  ArrowLeft,
+  CalendarDays,
+  LayoutDashboard,
+  Settings2,
+  Sparkles
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { UserButton, useUser, useAuth, SignIn } from '@clerk/nextjs';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import { 
-  LayoutDashboard, 
-  CalendarDays, 
-  Settings2, 
-  Sparkles, 
-  Activity, 
-  ArrowLeft,
-  ChevronRight,
-  FolderHeart
-} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface SidebarItem {
   name: string;
@@ -28,7 +26,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useUser();
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn, getToken } = useAuth();
   const [authorized, setAuthorized] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
@@ -54,7 +52,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (!user) return;
       
       try {
-        const response = await fetch('/api/users/sync', { method: 'POST' });
+        const token = await getToken();
+        const response = await fetch('/api/users/sync', {
+          method: 'POST',
+          headers: token ? {
+            'Authorization': `Bearer ${token}`
+          } : {}
+        });
         if (!response.ok) {
           router.push('/');
           return;
@@ -72,7 +76,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       }
     }
     checkRole();
-  }, [isLoaded, isSignedIn, user]);
+  }, [isLoaded, isSignedIn, user, getToken]);
 
   if (isLoaded && !isSignedIn) {
     return (

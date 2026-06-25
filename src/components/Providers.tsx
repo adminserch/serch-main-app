@@ -1,15 +1,15 @@
 'use strict';
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { getSupabaseClient, supabase } from '@/lib/supabase';
+import { useAuth, useUser } from '@clerk/nextjs';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useUser, useAuth } from '@clerk/nextjs';
-import { supabase, getSupabaseClient } from '@/lib/supabase';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import AiAssistant from './AiAssistant';
 
 // Toast Context Types
-type ToastType = 'success' | 'error' | 'info';
+type ToastType = 'success' | 'error' | 'info' | 'warning';
 
 interface Toast {
   id: string;
@@ -18,7 +18,7 @@ interface Toast {
 }
 
 interface ToastContextType {
-  toast: (message: string, type?: ToastType) => void;
+  toast: (message: string, type?: ToastType, duration?: number) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -203,8 +203,12 @@ function UserSync() {
       if (!user) return;
 
       try {
+        const token = await getToken();
         const response = await fetch('/api/users/sync', {
           method: 'POST',
+          headers: token ? {
+            'Authorization': `Bearer ${token}`
+          } : {}
         });
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
@@ -228,12 +232,14 @@ function UserSync() {
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const toast = (message: string, type: ToastType = 'info') => {
+  const toast = (message: string, type: ToastType = 'info', duration = 4000) => {
     const id = Math.random().toString(36).substring(2, 9);
     setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
+    if (duration > 0) {
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+      }, duration);
+    }
   };
 
   return (
@@ -254,6 +260,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                   ? 'bg-purple-50 border-purple-200 text-purple-800'
                   : t.type === 'error'
                   ? 'bg-red-50 border-red-200 text-red-800'
+                  : t.type === 'warning'
+                  ? 'bg-amber-50 border-amber-300 text-amber-900 border-2 font-semibold shadow-xl'
                   : 'bg-slate-50 border-slate-200 text-slate-800'
               }`}
             >

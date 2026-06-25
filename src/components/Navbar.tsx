@@ -1,17 +1,16 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import logoImg from '@/images/SERCH Logo 6.png';
+import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
+import { CalendarDays, Home, LayoutDashboard, Lightbulb, Search, ShieldCheck, User } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
-import { supabase } from '@/lib/supabase';
-import { Home, Search, CalendarDays, LayoutDashboard, ShieldCheck, User, Lightbulb } from 'lucide-react';
-import Image from 'next/image';
-import logoImg from '@/images/SERCH Logo 6.png';
+import { useEffect, useState } from 'react';
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { isSignedIn, userId } = useAuth();
+  const { isSignedIn, userId, getToken } = useAuth();
   const [dbRole, setDbRole] = useState<string | null>(null);
 
   const [isDark, setIsDark] = useState(false);
@@ -45,19 +44,28 @@ export default function Navbar() {
     async function loadRole() {
       if (userId) {
         try {
-          const { data } = await supabase
-            .from('users')
-            .select('role')
-            .eq('clerk_user_id', userId)
-            .single();
-          if (data) setDbRole(data.role);
+          const token = await getToken();
+          const response = await fetch('/api/users/sync', {
+            method: 'POST',
+            headers: token ? {
+              'Authorization': `Bearer ${token}`
+            } : {}
+          });
+          if (response.ok) {
+            const resData = await response.json();
+            if (resData.success && resData.user) {
+              setDbRole(resData.user.role);
+            }
+          }
         } catch (err) {
           console.error('Error fetching role in Navbar:', err);
         }
+      } else {
+        setDbRole(null);
       }
     }
     loadRole();
-  }, [userId]);
+  }, [userId, getToken]);
 
   return (
     <>

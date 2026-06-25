@@ -1,21 +1,18 @@
 'use strict';
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useAuth, useUser } from '@clerk/nextjs';
-import { supabase, getSupabaseClient } from '@/lib/supabase';
 import { useToast } from '@/components/Providers';
-import { 
-  Calendar, 
-  Clock, 
-  CheckCircle2, 
-  AlertCircle, 
-  Sparkles, 
-  Award, 
-  FileCheck,
-  ChevronRight
+import { getSupabaseClient } from '@/lib/supabase';
+import { useAuth, useUser } from '@clerk/nextjs';
+import {
+  AlertCircle,
+  Award,
+  Calendar,
+  ChevronRight,
+  Clock
 } from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 interface Stats {
   total: number;
