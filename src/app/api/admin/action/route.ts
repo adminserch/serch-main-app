@@ -40,20 +40,12 @@ export async function POST(req: Request) {
 
     } else if (action === 'toggle_verified') {
       const { providerId } = payload;
-      const { data: providerData, error: fetchError } = await supabaseAdmin
-        .from('providers')
-        .select('is_verified')
-        .eq('id', providerId)
-        .single();
-
-      if (fetchError) throw fetchError;
-
-      const { error } = await supabaseAdmin
-        .from('providers')
-        .update({ is_verified: !providerData.is_verified })
-        .eq('id', providerId);
+      const { data, error } = await supabaseAdmin
+        .rpc('toggle_provider_verified', { provider_uuid: providerId });
 
       if (error) throw error;
+
+      return NextResponse.json({ success: true, is_verified: data });
 
     } else if (action === 'add_category') {
       const { name, slug, icon, is_active } = payload;

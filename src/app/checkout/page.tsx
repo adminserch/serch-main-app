@@ -210,9 +210,15 @@ function CheckoutContent() {
         setErrorMsg("Booking failed: Row-level security restriction.");
         toast("Booking failed: RLS Policy error.", "error");
       } else {
-        // Fallback redirect for static demo
-        toast('Booking request mock-submitted (Demo Mode)', 'success');
-        router.push(`/bookings?success=true&bookingId=demo-booking`);
+        const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+        if (isDemoMode) {
+          // Fallback redirect for static demo
+          toast('Booking request mock-submitted (Demo Mode)', 'success');
+          router.push(`/bookings?success=true&bookingId=demo-booking`);
+        } else {
+          setErrorMsg(errorMessage);
+          toast(`Booking failed: ${errorMessage}`, "error");
+        }
       }
     } finally {
       setLoading(false);

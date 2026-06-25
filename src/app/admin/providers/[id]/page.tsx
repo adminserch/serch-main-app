@@ -338,10 +338,11 @@ export default function ProviderDetailsPage() {
       });
 
       let errorMessage = res.statusText;
+      let resData: any = null;
       const contentType = res.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
         try {
-          const resData = await res.json();
+          resData = await res.json();
           errorMessage = resData.error || resData.message || errorMessage;
         } catch {
           // Ignore
@@ -356,7 +357,11 @@ export default function ProviderDetailsPage() {
 
       if (!res.ok) throw new Error(errorMessage || `Failed to toggle verification (HTTP ${res.status})`);
 
-      toast(provider.is_verified ? 'Verification revoked' : 'Provider verified successfully', 'success');
+      const nextVerifiedState = resData && typeof resData.is_verified === 'boolean'
+        ? resData.is_verified
+        : !provider.is_verified;
+
+      toast(nextVerifiedState ? 'Provider verified successfully' : 'Verification revoked', 'success');
       checkAdminAndLoadData();
     } catch (err: any) {
       toast(err.message || 'Failed to toggle verification', 'error');
