@@ -279,9 +279,10 @@ export default function RegisterProviderPage() {
 
       toast('Registration submitted! Awaiting admin verification.', 'success');
       setStep(4);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      toast('Registration failed: ' + (err.message || 'Unknown error'), 'error');
+      const errMsg = err instanceof Error ? err.message : 'Unknown error';
+      toast('Registration failed: ' + errMsg, 'error');
     } finally {
       setLoading(false);
     }

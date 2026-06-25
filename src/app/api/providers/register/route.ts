@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
+  let providerIdToClean: string | null = null;
   try {
     const { userId: clerkUserId } = await auth();
     if (!clerkUserId) {
@@ -41,12 +42,26 @@ export async function POST(req: Request) {
       serviceDuration,
       serviceCategoryId,
       serviceIsActive,
-      serviceImageUrl
+      serviceImageUrl,
+      businessPermitUrl
     } = await req.json();
 
-    if (!businessName || !city) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    const parsedPrice = Number(servicePrice);
+    const parsedDuration = Number(serviceDuration);
+
+    if (
+      !businessName ||
+      !city ||
+      !serviceName ||
+      isNaN(parsedPrice) ||
+      parsedPrice < 0 ||
+      isNaN(parsedDuration) ||
+      parsedDuration <= 0 ||
+      !serviceCategoryId
+    ) {
+      return NextResponse.json({ error: 'Missing or invalid required business or service fields' }, { status: 400 });
     }
+
 
     // Create provider
     const { data: provider, error: providerError } = await supabaseAdmin
@@ -62,7 +77,7 @@ export async function POST(req: Request) {
         latitude: latitude || null,
         longitude: longitude || null,
         website: website || null,
-        business_permit_url: 'https://supabase-storage-url.com/permits/dummy.pdf',
+        business_permit_url: businessPermitUrl || 'https://supabase-storage-url.com/permits/dummy.pdf',
         status: 'pending',
         plan: 'free',
         house_building_number: houseBuildingNumber || null,
@@ -77,10 +92,13 @@ export async function POST(req: Request) {
     if (providerError || !provider) {
       throw providerError || new Error('Provider creation failed.');
     }
+    
+    providerIdToClean = provider.id;
 
     // Create service
     let finalCategoryId = serviceCategoryId;
-    if (!finalCategoryId || finalCategoryId.startsWith('11111111') || finalCategoryId.startsWith('22222222')) {
+    const isFallbackId = finalCategoryId && /^([1-7])\1{7}/.test(finalCategoryId);
+    if (!finalCategoryId || isFallbackId) {
       const { data: catData } = await supabaseAdmin
         .from('categories')
         .select('id')
@@ -114,9 +132,13 @@ export async function POST(req: Request) {
 
     if (roleError) throw roleError;
 
+    // Success - disable rollback cleanup
+    providerIdToClean = null;
+
     // Mock send notification
     try {
-      await fetch(`${req.headers.get('origin') || ''}/api/notifications/send`, {
+      const notificationUrl = new URL('/api/notifications/send', req.url).toString();
+      await fetch(notificationUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ providerId: provider.id, type: 'provider_registered' }),
@@ -128,6 +150,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, providerId: provider.id });
   } catch (err: any) {
     console.error('Registration error:', err);
+    if (providerIdToClean) {
+      console.log('Rolling back provider creation for provider ID:', providerIdToClean);
+      try {
+        await supabaseAdmin
+          .from('providers')
+          .delete()
+          .eq('id', providerIdToClean);
+      } catch (rollbackErr) {
+        console.error('Failed to rollback provider creation:', rollbackErr);
+      }
+    }
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
