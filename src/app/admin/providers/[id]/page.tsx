@@ -338,12 +338,17 @@ export default function ProviderDetailsPage() {
       });
 
       let errorMessage = res.statusText;
-      let resData: any = null;
+      interface ActionResponse {
+        error?: string;
+        message?: string;
+        is_verified?: boolean;
+      }
+      let resData: ActionResponse | null = null;
       const contentType = res.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
         try {
           resData = await res.json();
-          errorMessage = resData.error || resData.message || errorMessage;
+          errorMessage = (resData?.error) || (resData?.message) || errorMessage;
         } catch {
           // Ignore
         }

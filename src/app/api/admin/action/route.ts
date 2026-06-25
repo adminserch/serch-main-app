@@ -40,10 +40,18 @@ export async function POST(req: Request) {
 
     } else if (action === 'toggle_verified') {
       const { providerId } = payload;
+      if (!providerId) {
+        return NextResponse.json({ error: 'Missing providerId' }, { status: 400 });
+      }
+
       const { data, error } = await supabaseAdmin
         .rpc('toggle_provider_verified', { provider_uuid: providerId });
 
       if (error) throw error;
+
+      if (typeof data !== 'boolean') {
+        return NextResponse.json({ error: 'Invalid verification result' }, { status: 500 });
+      }
 
       return NextResponse.json({ success: true, is_verified: data });
 

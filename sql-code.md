@@ -665,7 +665,11 @@ BEGIN
   RETURNING is_verified INTO new_state;
   RETURN new_state;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+REVOKE EXECUTE ON FUNCTION toggle_provider_verified(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION toggle_provider_verified(uuid) TO service_role;
+GRANT EXECUTE ON FUNCTION toggle_provider_verified(uuid) TO postgres;
 ```
 
 ---
