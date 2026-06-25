@@ -49,6 +49,10 @@ export async function POST(req: Request) {
 
       if (error) throw error;
 
+      if (data === null) {
+        return NextResponse.json({ error: `Provider not found: ${providerId}` }, { status: 404 });
+      }
+
       if (typeof data !== 'boolean') {
         return NextResponse.json({ error: 'Invalid verification result' }, { status: 500 });
       }
