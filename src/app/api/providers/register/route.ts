@@ -137,7 +137,8 @@ export async function POST(req: Request) {
 
     // Mock send notification
     try {
-      const notificationUrl = new URL('/api/notifications/send', req.url).toString();
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      const notificationUrl = `${baseUrl}/api/notifications/send`;
       await fetch(notificationUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -148,7 +149,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, providerId: provider.id });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Registration error:', err);
     if (providerIdToClean) {
       console.log('Rolling back provider creation for provider ID:', providerIdToClean);
@@ -161,6 +162,7 @@ export async function POST(req: Request) {
         console.error('Failed to rollback provider creation:', rollbackErr);
       }
     }
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    const message = err instanceof Error ? err.message : 'Unknown registration error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

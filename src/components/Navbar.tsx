@@ -53,12 +53,15 @@ export default function Navbar() {
           });
           if (response.ok) {
             const resData = await response.json();
-            if (resData.success && resData.user) {
+            if (resData.success && resData.user && resData.user.role) {
               setDbRole(resData.user.role);
+              return;
             }
           }
+          setDbRole(null);
         } catch (err) {
           console.error('Error fetching role in Navbar:', err);
+          setDbRole(null);
         }
       } else {
         setDbRole(null);

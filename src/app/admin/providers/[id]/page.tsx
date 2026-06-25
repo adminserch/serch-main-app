@@ -263,21 +263,21 @@ export default function ProviderDetailsPage() {
   const handleUpdateStatus = async (newStatus: 'pending' | 'approved' | 'rejected' | 'suspended') => {
     try {
       const token = await getToken();
-      const client = getSupabaseClient(token);
 
-      const { error } = await client
-        .from('providers')
-        .update({ status: newStatus })
-        .eq('id', providerId);
-
-      if (error) throw error;
-
-      // Mock notify email
-      await fetch('/api/notifications/send', {
+      const res = await fetch('/api/admin/action', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ providerId, type: `provider_${newStatus}` })
-      }).catch(err => console.error(err));
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          action: 'update_status',
+          payload: { providerId, status: newStatus }
+        })
+      });
+
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Failed to update status');
 
       toast(`Provider status updated to ${newStatus}`, 'success');
       checkAdminAndLoadData();
@@ -290,14 +290,21 @@ export default function ProviderDetailsPage() {
     if (!provider) return;
     try {
       const token = await getToken();
-      const client = getSupabaseClient(token);
 
-      const { error } = await client
-        .from('providers')
-        .update({ is_verified: !provider.is_verified })
-        .eq('id', providerId);
+      const res = await fetch('/api/admin/action', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          action: 'toggle_verified',
+          payload: { providerId, currentVerified: provider.is_verified }
+        })
+      });
 
-      if (error) throw error;
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Failed to toggle verification');
 
       toast(provider.is_verified ? 'Verification revoked' : 'Provider verified successfully', 'success');
       checkAdminAndLoadData();
@@ -446,14 +453,22 @@ export default function ProviderDetailsPage() {
     if (!confirm('Are you sure you want to delete this review?')) return;
     try {
       const token = await getToken();
-      const client = getSupabaseClient(token);
 
-      const { error } = await client
-        .from('reviews')
-        .delete()
-        .eq('id', reviewId);
+      const res = await fetch('/api/admin/action', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          action: 'delete_review',
+          payload: { reviewId }
+        })
+      });
 
-      if (error) throw error;
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Failed to delete review');
+
       toast('Review deleted successfully', 'success');
       checkAdminAndLoadData();
     } catch (err: any) {
@@ -467,21 +482,21 @@ export default function ProviderDetailsPage() {
 
     try {
       const token = await getToken();
-      const client = getSupabaseClient(token);
 
-      // Revert user role
-      await client
-        .from('users')
-        .update({ role: 'seeker' })
-        .eq('id', provider.user_id);
+      const res = await fetch('/api/admin/action', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          action: 'delete_provider',
+          payload: { providerId }
+        })
+      });
 
-      // Delete provider profile
-      const { error } = await client
-        .from('providers')
-        .delete()
-        .eq('id', providerId);
-
-      if (error) throw error;
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Failed to delete provider');
 
       toast('Provider profile deleted completely', 'success');
       router.push('/admin?tab=providers');

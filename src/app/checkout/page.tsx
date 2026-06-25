@@ -173,7 +173,9 @@ function CheckoutContent() {
         .single();
 
       if (bookingError || !booking) {
-        throw bookingError || new Error('Booking creation failed.');
+        const error = new Error(bookingError?.message || 'Booking creation failed.');
+        (error as any).isBookingCreationError = true;
+        throw error;
       }
 
       // 3. Send notifications (Resend mock request)
@@ -194,7 +196,10 @@ function CheckoutContent() {
       router.push(`/bookings?success=true&bookingId=${booking.id}`);
     } catch (err: any) {
       console.error(err);
-      if (err.message && err.message.includes('RLS')) {
+      if (err.isBookingCreationError) {
+        setErrorMsg(err.message || "Booking creation failed.");
+        toast(`Booking failed: ${err.message || "Booking creation failed."}`, "error");
+      } else if (err.message && err.message.includes('RLS')) {
         setErrorMsg("Booking failed: Row-level security restriction.");
         toast("Booking failed: RLS Policy error.", "error");
       } else {
