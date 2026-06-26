@@ -2,13 +2,12 @@
 
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
-import searchButtonLogo from '@/images/serch-button-logo.png';
+import heroBgImg from '@/images/hero-bg.png';
 import { supabase } from '@/lib/supabase';
 import {
   useUser
 } from '@clerk/nextjs';
-import { ChevronRight, Home, MapPin, Search, ShieldCheck, Sparkles, Star } from 'lucide-react';
-import Image from 'next/image';
+import { ChevronDown, ChevronRight, Home, MapPin, Search, Star, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -158,132 +157,203 @@ export default function LandingPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-36 pb-32 px-6 overflow-hidden bg-gradient-to-b from-champagne/40 via-champagne/20 to-transparent dark:from-zinc-950 dark:via-zinc-900 dark:to-transparent">
-        <div className="max-w-5xl mx-auto relative z-10 text-center">
-          <div className="inline-flex items-center gap-1.5 bg-card-bg border border-champagne dark:border-zinc-800 px-3 py-1 rounded-full shadow-sm mb-6 transition-colors duration-300">
-            <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse" />
-            <span className={`text-[11px] font-semibold tracking-wider uppercase transition-colors duration-300 ${
-              isDark ? 'text-accent' : 'text-slate-700'
-            }`}>Curated Local Marketplace</span>
-          </div>
-          <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight text-espresso mb-6 leading-tight transition-colors duration-300">
-            Find Trusted Services Near You — <span className="text-accent">Fast</span>
+      <section className="relative text-white py-24 md:py-32 overflow-hidden" style={{
+        backgroundImage: `url(${heroBgImg.src})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}>
+        <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
+          <h1 className="font-serif text-5xl md:text-7xl font-bold leading-tight mb-8">
+            What <span className="italic font-light text-blue-305">service</span><br />do you need?
           </h1>
-          <p className="font-sans text-lg md:text-xl text-stone-605 dark:text-slate-300 max-w-2xl mx-auto mb-6 leading-relaxed transition-colors duration-300">
-            SERCH connects you with trusted local professionals and businesses anytime, anywhere.
-          </p>
-          <div className="font-display text-5xl md:text-7xl font-bold tracking-tight text-espresso mb-6 leading-tight transition-colors duration-300">
-            Find. <span className="text-accent">Book</span>. Trust.
-          </div>
-          {/* Search Bar */}
-          <form onSubmit={handleSearch} className="bg-card-bg/95 backdrop-blur rounded-2xl md:rounded-full p-2.5 mx-auto max-w-4xl shadow-lg border border-champagne/60 dark:border-zinc-800 flex flex-col md:flex-row items-center gap-2 transition-colors duration-300">
-            <div className="flex-grow flex items-center bg-stone-50 dark:bg-zinc-900 border border-transparent dark:border-zinc-800 rounded-xl md:rounded-full px-5 py-3 w-full focus-within:border-accent/40 transition-colors">
-              <Search className="text-stone-400 w-5 h-5 mr-3 flex-shrink-0" />
+          {/* Search Container */}
+          <form onSubmit={handleSearch} className="bg-white rounded-2xl md:rounded-full p-2 flex flex-col md:flex-row items-stretch md:items-center gap-2 shadow-2xl">
+            <div className="flex-grow flex items-center px-4 py-3 gap-3">
+              <Search className="h-6 w-6 text-slate-400" />
               <input
-                className="w-full bg-transparent border-none focus:outline-none text-espresso font-sans placeholder:text-stone-400 p-0 text-md"
-                placeholder="What service do you need?"
+                className="w-full border-none focus:ring-0 text-slate-800 text-lg placeholder:text-slate-400 focus:outline-none bg-transparent"
+                placeholder="Search services (e.g. house cleaning, plumbing)"
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
             </div>
-
-            <button 
-              type="submit" 
-              className={`flex-shrink-0 transition-all active:scale-95 hover:opacity-90 font-semibold text-md px-6 py-3.5 rounded-xl md:rounded-full shadow-sm flex items-center gap-2 cursor-pointer ${
-                isDark 
-                  ? 'bg-accent hover:opacity-90 text-white' 
-                  : 'bg-primary hover:bg-slate-800 text-white'
-              }`}
+            <div className="hidden md:block h-10 w-px bg-slate-200"></div>
+            <div className="flex items-center px-4 py-3 gap-2 group cursor-pointer">
+              <MapPin className="h-5 w-5 text-[#3366cc]" />
+              <span className="text-slate-700 font-medium whitespace-nowrap">Calgary, AB</span>
+              <ChevronDown className="h-4 w-4 text-slate-400 group-hover:text-[#3366cc] transition-colors" />
+            </div>
+            <button
+              type="submit"
+              className="bg-[#3366cc] hover:bg-[#001a4d] text-white px-8 py-3 md:py-4 rounded-xl md:rounded-full font-bold transition-all transform active:scale-95 cursor-pointer text-center"
             >
-              <Image
-                src={searchButtonLogo}
-                alt="Search Icon"
-                height={24}
-                className={`h-6 w-6 object-cover rounded-full border-2 ${isDark ? 'border-white' : 'border-white'}`}
-                priority
-              />
-              <span>Search</span>
+              Search
             </button>
           </form>
+        </div>
+      </section>
 
-          {/* Popular Categories tag links */}
-          <div className="mt-8 flex flex-wrap justify-center gap-3 text-xs text-stone-600 dark:text-stone-300 font-sans">
-            <span className="px-4 py-2 rounded-full bg-card-bg border border-champagne dark:border-zinc-850 hover:border-gold dark:hover:border-zinc-700 hover:bg-champagne/10 dark:hover:bg-zinc-900 cursor-pointer transition-all shadow-sm" onClick={() => setQuery('Cleaning')}>Home Cleaning</span>
-            <span className="px-4 py-2 rounded-full bg-card-bg border border-champagne dark:border-zinc-850 hover:border-gold dark:hover:border-zinc-700 hover:bg-champagne/10 dark:hover:bg-zinc-900 cursor-pointer transition-all shadow-sm" onClick={() => setQuery('Aircon')}>Aircon Repair</span>
-            <span className="px-4 py-2 rounded-full bg-card-bg border border-champagne dark:border-zinc-850 hover:border-gold dark:hover:border-zinc-700 hover:bg-champagne/10 dark:hover:bg-zinc-900 cursor-pointer transition-all shadow-sm" onClick={() => setQuery('Roofing')}>Roof Repair</span>
-            <span className="px-4 py-2 rounded-full bg-card-bg border border-champagne dark:border-zinc-850 hover:border-gold dark:hover:border-zinc-700 hover:bg-champagne/10 dark:hover:bg-zinc-900 cursor-pointer transition-all shadow-sm" onClick={() => setQuery('Plumbing')}>Plumbing</span>
+      {/* Popular Categories Section */}
+      <section className="py-8 bg-background transition-colors duration-300" data-purpose="popular-categories">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <span className="text-[#3366cc] font-semibold tracking-widest uppercase text-xs block">Explore</span>
+              <h2 className="text-3xl md:text-4xl font-bold mt-2 text-foreground font-serif">Popular Categories</h2>
+            </div>
+            <Link href="/search" className="text-[#3366cc] font-semibold hover:underline flex items-center gap-1 group text-sm">
+              View all
+              <ChevronRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            {/* Category Item 1 */}
+            <div onClick={() => { setQuery('Cleaning'); router.push('/search?query=Cleaning'); }} className="transition-all duration-300 border border-champagne rounded-2xl p-8 flex flex-col items-center text-center group cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:shadow-champagne/10 bg-card-bg">
+              <div className="w-20 h-20 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center mb-6 group-hover:bg-[#3366cc] transition-colors">
+                <svg className="h-10 w-10 text-[#3366cc] group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
+                </svg>
+              </div>
+              <span className="font-bold text-foreground">Home Services</span>
+            </div>
+            {/* Category Item 2 */}
+            <div onClick={() => { setQuery('Maintenance'); router.push('/search?query=Maintenance'); }} className="transition-all duration-300 border border-champagne rounded-2xl p-8 flex flex-col items-center text-center group cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:shadow-champagne/10 bg-card-bg">
+              <div className="w-20 h-20 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center mb-6 group-hover:bg-[#3366cc] transition-colors">
+                <svg className="h-10 w-10 text-[#3366cc] group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
+                  <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
+                </svg>
+              </div>
+              <span className="font-bold text-foreground">Maintenance</span>
+            </div>
+            {/* Category Item 3 */}
+            <div onClick={() => { setQuery('Lessons'); router.push('/search?query=Lessons'); }} className="transition-all duration-300 border border-champagne rounded-2xl p-8 flex flex-col items-center text-center group cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:shadow-champagne/10 bg-card-bg">
+              <div className="w-20 h-20 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center mb-6 group-hover:bg-[#3366cc] transition-colors">
+                <svg className="h-10 w-10 text-[#3366cc] group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
+                </svg>
+              </div>
+              <span className="font-bold text-foreground">Lessons &amp; Tutoring</span>
+            </div>
+            {/* Category Item 4 */}
+            <div onClick={() => { setQuery('Automotive'); router.push('/search?query=Automotive'); }} className="transition-all duration-300 border border-champagne rounded-2xl p-8 flex flex-col items-center text-center group cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:shadow-champagne/10 bg-card-bg">
+              <div className="w-20 h-20 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center mb-6 group-hover:bg-[#3366cc] transition-colors">
+                <svg className="h-10 w-10 text-[#3366cc] group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
+                </svg>
+              </div>
+              <span className="font-bold text-foreground">Automotive</span>
+            </div>
+            {/* Category Item 5 */}
+            <div onClick={() => { setQuery('Health'); router.push('/search?query=Health'); }} className="transition-all duration-300 border border-champagne rounded-2xl p-8 flex flex-col items-center text-center group cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:shadow-champagne/10 bg-card-bg">
+              <div className="w-20 h-20 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center mb-6 group-hover:bg-[#3366cc] transition-colors">
+                <svg className="h-10 w-10 text-[#3366cc] group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
+                </svg>
+              </div>
+              <span className="font-bold text-foreground">Health &amp; Wellness</span>
+            </div>
+            {/* Category Item 6 */}
+            <div onClick={() => { setQuery('Beauty'); router.push('/search?query=Beauty'); }} className="transition-all duration-300 border border-champagne rounded-2xl p-8 flex flex-col items-center text-center group cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:shadow-champagne/10 bg-card-bg">
+              <div className="w-20 h-20 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center mb-6 group-hover:bg-[#3366cc] transition-colors">
+                <svg className="h-10 w-10 text-[#3366cc] group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19.423 15.621a2 2 0 00.49.921l1.241 1.241a2 2 0 010 2.828l-1.241 1.241a2 2 0 01-2.828 0l-1.241-1.241a2 2 0 00-.921-.49 2 2 0 01-1.503-1.503 2 2 0 00-.49-.921l-1.241-1.241a2 2 0 010-2.828l1.241-1.241a2 2 0 012.828 0l1.241 1.241a2 2 0 00.921.49 2 2 0 011.503 1.503z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
+                </svg>
+              </div>
+              <span className="font-bold text-foreground">Beauty &amp; Personal</span>
+            </div>
+            {/* Category Item 7 */}
+            <div onClick={() => { setQuery('Repairs'); router.push('/search?query=Repairs'); }} className="transition-all duration-300 border border-champagne rounded-2xl p-8 flex flex-col items-center text-center group cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:shadow-champagne/10 bg-card-bg">
+              <div className="w-20 h-20 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center mb-6 group-hover:bg-[#3366cc] transition-colors">
+                <svg className="h-10 w-10 text-[#3366cc] group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
+                </svg>
+              </div>
+              <span className="font-bold text-foreground">Repairs &amp; Services</span>
+            </div>
+            {/* Category Item 8 */}
+            <div onClick={() => router.push('/search')} className="transition-all duration-300 border border-champagne rounded-2xl p-8 flex flex-col items-center text-center group bg-[#f4f7ff] dark:bg-zinc-900 cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:shadow-champagne/10">
+              <div className="w-20 h-20 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center mb-6 group-hover:bg-[#3366cc] transition-colors">
+                <svg className="h-10 w-10 text-[#3366cc] group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 6h16M4 12h16m-7 6h7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
+                </svg>
+              </div>
+              <span className="font-bold text-foreground">More Categories</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Bento Grid: Featured Professionals */}
-      <section className="py-20 px-6 max-w-7xl mx-auto w-full">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
-          <div>
-            <h2 className={`font-display text-3xl md:text-4xl font-bold mb-3 transition-colors duration-300 ${
-              isDark ? 'text-accent' : 'text-espresso'
-            }`}>Providers</h2>
-            <p className="font-sans text-stone-550 dark:text-stone-400">
-              Discover highly-rated experts, meticulously vetted for quality, reliability, and professional excellence.
-            </p>
+      {/* Featured Providers Section */}
+      <section className="py-8 bg-zinc-50 dark:bg-zinc-950 transition-colors duration-300" data-purpose="featured-providers">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <span className="text-[#3366cc] font-semibold tracking-widest uppercase text-xs block">Recommended</span>
+              <h2 className="text-3xl md:text-4xl font-bold mt-2 text-foreground font-serif">Featured Providers</h2>
+            </div>
+            <Link href="/search" className="text-[#3366cc] font-semibold hover:underline text-sm">
+              View all
+            </Link>
           </div>
-          <Link href="/search" className="font-sans font-semibold text-accent hover:text-purple-700 flex items-center gap-1 group transition-colors text-sm">
-            View All Providers <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {providersToShow.map((prov) => (
-            <div key={prov.id} className="bg-card-bg rounded-2xl overflow-hidden shadow-sm hover:shadow-md border border-champagne/60 dark:border-zinc-800 transition-all duration-300 flex flex-col group">
-              <div className="h-52 bg-champagne/30 dark:bg-zinc-900/40 relative flex items-center justify-center overflow-hidden transition-colors duration-300">
-                <div className="absolute top-4 left-4 bg-card-bg/90 backdrop-blur-sm px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm border border-champagne/40 dark:border-zinc-800 z-10 transition-colors duration-300">
-                  <ShieldCheck className="w-4 h-4 text-accent" />
-                  <span className={`text-[10px] font-bold uppercase tracking-wider transition-colors duration-300 ${
-                    isDark ? 'text-accent' : 'text-slate-700'
-                  }`}>Verified Provider</span>
-                </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {providersToShow.map((prov, index) => {
+              // Custom tags matching reference mockup
+              const tagLabel = index === 0 ? 'Top Rated' : index === 1 ? 'Verified' : 'New';
+              const tagStyle = index === 0
+                ? 'bg-blue-50 dark:bg-blue-950/40 text-[#3366cc] dark:text-blue-300'
+                : index === 1
+                  ? 'bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-350'
+                  : 'bg-blue-50 dark:bg-blue-950/40 text-[#3366cc] dark:text-blue-300';
 
-                {prov.logo_url ? (
-                  <img src={prov.logo_url} alt={prov.business_name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-champagne/50 to-gold/30 dark:from-zinc-800 dark:to-zinc-900/40 flex items-center justify-center text-stone-400 group-hover:scale-105 transition-transform duration-700 transition-colors duration-300">
-                    <Home className="w-16 h-16 opacity-30" />
-                  </div>
-                )}
-              </div>
+              return (
+                <div key={prov.id} className="bg-card-bg rounded-3xl overflow-hidden border border-champagne group flex flex-col justify-between shadow-sm">
+                  <div>
+                    <div className="aspect-[16/10] overflow-hidden relative bg-slate-100 dark:bg-zinc-900 flex items-center justify-center">
+                      {prov.logo_url ? (
+                        <img src={prov.logo_url} alt={prov.business_name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-zinc-900 dark:to-zinc-800 flex items-center justify-center text-slate-400 group-hover:scale-105 transition-transform duration-500">
+                          <Home className="w-16 h-16 opacity-20 text-[#3366cc]" />
+                        </div>
+                      )}
+                      <button className="absolute top-4 right-4 w-10 h-10 bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm rounded-full flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-red-500 transition-colors shadow-sm cursor-pointer z-10">
+                        <Heart className="h-6 w-6" />
+                      </button>
+                    </div>
 
-              <div className="p-6 flex-grow flex flex-col justify-between">
-                <div>
-                  <div className="flex justify-between items-start gap-2 mb-2">
-                    <h3 className="font-display text-lg font-bold text-espresso group-hover:text-accent transition-colors duration-300">
-                      {prov.business_name}
-                    </h3>
-                    <div className="flex items-center gap-1 bg-stone-50 dark:bg-zinc-900 border border-champagne/50 dark:border-zinc-800 px-2 py-0.5 rounded-lg flex-shrink-0 transition-colors duration-300">
-                      <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{prov.avg_rating}</span>
+                    <div className="p-8 pb-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className={`${tagStyle} text-[10px] uppercase font-bold px-2 py-1 rounded`}>
+                          {tagLabel}
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-bold text-foreground mb-1 group-hover:text-[#3366cc] transition-colors font-serif">
+                        {prov.business_name}
+                      </h3>
+                      <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">
+                        {prov.description ? (prov.description.length > 80 ? prov.description.slice(0, 80) + '...' : prov.description) : 'Local Professional'}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400 text-xs mb-4 transition-colors duration-300">
-                    <MapPin className="w-3.5 h-3.5" />
-                    <span>{prov.service_district}, {prov.service_city}</span>
+                  <div className="p-8 pt-0">
+                    <div className="flex items-center justify-between border-t border-champagne pt-6">
+                      <div className="flex items-center gap-1.5">
+                        <Star className="h-5 w-5 text-amber-450 fill-amber-400 stroke-amber-400" />
+                        <span className="font-bold text-foreground">{prov.avg_rating || '4.8'}</span>
+                        <span className="text-slate-450 text-sm">({prov.review_count || '128'} reviews)</span>
+                      </div>
+                      <span className="text-foreground font-bold">From $45/hr</span>
+                    </div>
                   </div>
-
-                  <p className="text-stone-600 dark:text-stone-300 text-sm font-sans line-clamp-3 leading-relaxed transition-colors duration-300">
-                    {prov.description}
-                  </p>
                 </div>
-
-                <div className="mt-6 pt-4 border-t border-champagne/40 dark:border-zinc-800 flex items-center justify-between transition-colors duration-300">
-                  <span className="text-xs text-stone-400 dark:text-stone-500 font-sans">{prov.review_count} Reviews</span>
-                  <Link href={`/providers/${prov.id}`} className="text-xs font-semibold text-primary hover:text-accent dark:text-white dark:hover:text-accent transition-colors flex items-center gap-0.5">
-                    View Profile <ChevronRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
+              );
+            })}
+          </div>
         </div>
       </section>
 

@@ -153,56 +153,58 @@ export default function AiAssistant() {
     <div className="fixed bottom-24 right-6 z-40">
       <button
         onClick={() => setShowAiAssistant(!showAiAssistant)}
-        className="bg-primary hover:bg-slate-800 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-1.5"
+        className="text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+        style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)' }}
       >
-        <Sparkles className="w-5 h-5 text-amber-300" />
+        <Sparkles className="w-5 h-5 text-sky-200 fill-sky-250" />
         <span className="text-xs font-bold font-sans">Ask AI</span>
       </button>
 
       {showAiAssistant && (
-        <div className="absolute bottom-16 right-0 bg-white border border-champagne rounded-2xl shadow-2xl w-80 h-[400px] flex flex-col overflow-hidden">
+        <div className="absolute bottom-16 right-0 bg-white/95 backdrop-blur-md border border-stone-200 rounded-2xl shadow-2xl w-80 h-[400px] flex flex-col overflow-hidden">
           {/* Header */}
-          <div className="bg-primary text-white p-3 flex justify-between items-center">
+          <div className="text-white p-3.5 flex justify-between items-center" style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)' }}>
             <div className="flex items-center gap-1.5">
-              <Bot className="w-5 h-5 text-amber-300" />
+              <Bot className="w-5 h-5 text-sky-200" />
               <span className="text-xs font-bold font-sans">Serch AI Assistant</span>
             </div>
-            <button onClick={() => setShowAiAssistant(false)} className="text-stone-300 hover:text-white font-bold text-lg leading-none">&times;</button>
+            <button onClick={() => setShowAiAssistant(false)} className="text-white/80 hover:text-white font-bold text-lg leading-none cursor-pointer">&times;</button>
           </div>
 
           {/* Messages */}
           <div className="flex-grow p-3 overflow-y-auto flex flex-col gap-2">
             {aiMessages.map((msg, idx) => (
               <div key={idx} className={`flex gap-1.5 items-start ${msg.sender === 'user' ? 'justify-end' : ''}`}>
-                {msg.sender === 'ai' && <Bot className="w-4 h-4 text-stone-400 mt-1 flex-shrink-0" />}
+                {msg.sender === 'ai' && <Bot className="w-4 h-4 text-violet-600 mt-1 flex-shrink-0" />}
                 <div className={`p-2.5 rounded-xl text-[11px] font-sans leading-relaxed max-w-[80%] ${
                   msg.sender === 'user' 
-                    ? 'bg-accent text-white rounded-tr-none' 
-                    : 'bg-stone-50 border border-stone-200/55 text-espresso rounded-tl-none'
-                }`}>
+                    ? 'text-white rounded-tr-none' 
+                    : 'bg-stone-50 border border-stone-150 text-slate-850 rounded-tl-none'
+                }`}
+                style={msg.sender === 'user' ? { background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)' } : undefined}>
                   {msg.text}
                 </div>
               </div>
             ))}
             {aiLoading && (
-              <div className="flex gap-1.5 items-center text-[10px] text-stone-400 p-1">
-                <span className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce"></span>
-                <span className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce delay-150"></span>
-                <span className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce delay-300"></span>
+              <div className="flex gap-1.5 items-center text-[10px] text-violet-600 p-1">
+                <span className="w-1.5 h-1.5 bg-violet-600 rounded-full animate-bounce"></span>
+                <span className="w-1.5 h-1.5 bg-violet-600 rounded-full animate-bounce delay-150"></span>
+                <span className="w-1.5 h-1.5 bg-violet-600 rounded-full animate-bounce delay-300"></span>
               </div>
             )}
           </div>
 
           {/* Input Form */}
-          <form onSubmit={handleSendAiMessage} className="p-3 border-t border-champagne/45 flex gap-2">
+          <form onSubmit={handleSendAiMessage} className="p-3 border-t border-stone-200 flex gap-2">
             <input
               type="text"
               value={aiInput}
               onChange={(e) => setAiInput(e.target.value)}
               placeholder="Ask about your bookings, schedule..."
-              className="flex-grow border border-champagne rounded-xl px-3 py-2 text-[11px] focus:outline-none focus:border-accent"
+              className="flex-grow border border-stone-200 rounded-xl px-3 py-2 text-[11px] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
             />
-            <button type="submit" className="p-2 bg-primary hover:bg-slate-800 text-white rounded-xl flex items-center justify-center">
+            <button type="submit" className="p-2 text-white rounded-xl flex items-center justify-center cursor-pointer hover:opacity-90" style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)' }}>
               <Send className="w-3.5 h-3.5" />
             </button>
           </form>
