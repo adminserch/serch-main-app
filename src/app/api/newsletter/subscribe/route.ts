@@ -1,9 +1,34 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { Resend } from 'resend';
+import { signToken } from '@/lib/token';
 
 // Simple regex for email validation
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Simple in-memory rate limiting map
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+function isRateLimited(key: string, limit: number, windowMs: number): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(key);
+
+  if (!record) {
+    rateLimitMap.set(key, { count: 1, resetTime: now + windowMs });
+    return false;
+  }
+
+  if (now > record.resetTime) {
+    rateLimitMap.set(key, { count: 1, resetTime: now + windowMs });
+    return false;
+  }
+
+  record.count++;
+  if (record.count > limit) {
+    return true;
+  }
+  return false;
+}
 
 export async function POST(request: Request) {
   try {
@@ -28,19 +53,24 @@ export async function POST(request: Request) {
 
     const cleanEmail = email.trim().toLowerCase();
 
-    // Insert into Supabase using supabaseAdmin to bypass RLS safely
+    // Rate limiting check
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown-ip';
+    if (isRateLimited(`ip:${ip}`, 5, 600000) || isRateLimited(`email:${cleanEmail}`, 5, 600000)) {
+      return NextResponse.json(
+        { error: 'Too many subscription attempts. Please try again in 10 minutes.' },
+        { status: 429 }
+      );
+    }
+
+    // Insert or update to is_active = false (opt-in pending confirmation) using upsert
     const { error: dbError } = await supabaseAdmin
       .from('newsletter_subscribers')
-      .insert([{ email: cleanEmail }]);
+      .upsert(
+        { email: cleanEmail, is_active: false },
+        { onConflict: 'email' }
+      );
 
     if (dbError) {
-      // Postgres unique_violation error code is '23505'
-      if (dbError.code === '23505') {
-        return NextResponse.json(
-          { error: 'You are already subscribed!' },
-          { status: 400 }
-        );
-      }
       console.error('Database insertion error:', dbError);
       return NextResponse.json(
         { error: 'Failed to save subscription. Please try again.' },
@@ -48,37 +78,40 @@ export async function POST(request: Request) {
       );
     }
 
-    // Try sending onboarding email via Resend
+    // Send opt-in/confirmation email via Resend
     const resendApiKey = process.env.RESEND_API_KEY;
     if (resendApiKey) {
       try {
-        const origin = new URL(request.url).origin;
-        const unsubscribeUrl = `${origin}/api/newsletter/unsubscribe?email=${encodeURIComponent(cleanEmail)}`;
+        const confirmToken = signToken(cleanEmail, 'confirm');
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+        const confirmUrl = `${baseUrl}/api/newsletter/confirm?token=${confirmToken}`;
+        
         const resend = new Resend(resendApiKey);
         await resend.emails.send({
           from: 'Newsletter <no-reply@useserch.com>',
           to: [cleanEmail],
-          subject: 'Welcome to the Serch Newsletter!',
+          subject: 'Please Confirm Your Subscription - Serch',
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
-              <h2 style="color: #0F172A; margin-bottom: 16px;">Welcome to Serch!</h2>
-              <p style="color: #334155; font-size: 16px; line-height: 1.5;">Thank you for subscribing to our newsletter. You'll now receive the latest service updates and local deals directly in your inbox.</p>
+              <h2 style="color: #0F172A; margin-bottom: 16px;">Confirm Your Subscription</h2>
+              <p style="color: #334155; font-size: 16px; line-height: 1.5;">Thank you for your interest in the Serch newsletter. Please click the button below to confirm your subscription.</p>
+              <div style="margin: 24px 0;">
+                <a href="${confirmUrl}" style="background-color: #0D9488; color: white; padding: 12px 24px; border-radius: 6px; font-weight: bold; text-decoration: none; display: inline-block;">Confirm Subscription</a>
+              </div>
               <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
-              <p style="color: #64748B; font-size: 12px; margin-bottom: 8px;">If you did not sign up for this newsletter, you can safely ignore this email.</p>
-              <p style="color: #64748B; font-size: 12px;">Want to stop receiving these emails? <a href="${unsubscribeUrl}" style="color: #0D9488; text-decoration: underline;">Unsubscribe here</a>.</p>
+              <p style="color: #64748B; font-size: 12px;">If you did not sign up for this newsletter, you can safely ignore this email.</p>
             </div>
           `
         });
       } catch (resendError) {
-        console.error('Resend email delivery failed:', resendError);
-        // Do not fail the user's primary database-confirmed subscription experience.
+        console.error('Resend confirmation email delivery failed:', resendError);
       }
     } else {
-      console.warn('RESEND_API_KEY is not defined. Skipping email dispatch.');
+      console.warn('RESEND_API_KEY is not defined. Skipping confirmation email dispatch.');
     }
 
     return NextResponse.json(
-      { message: 'Successfully subscribed to the newsletter!' },
+      { message: 'A confirmation link has been sent to your email address.' },
       { status: 200 }
     );
   } catch (error) {

@@ -9,6 +9,3 @@ CREATE TABLE IF NOT EXISTS newsletter_subscribers (
 -- Enable RLS
 ALTER TABLE newsletter_subscribers ENABLE ROW LEVEL SECURITY;
 
--- Allow insert access for server-side ingestion
-CREATE POLICY "Allow insert newsletter subscribers" ON newsletter_subscribers
-  FOR INSERT WITH CHECK (true);
