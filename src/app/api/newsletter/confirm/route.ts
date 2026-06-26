@@ -183,15 +183,15 @@ export async function POST(request: Request) {
 
     // Try sending Welcome onboarding email via Resend
     const resendApiKey = process.env.RESEND_API_KEY;
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
-    const isLocalhost = !baseUrl || baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
+    const host = request.headers.get('host') || 'myapp.useserch.com';
+    const protocol = request.headers.get('x-forwarded-proto') || 'https';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`;
+    const isLocalhost = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
     const isProduction = process.env.NODE_ENV === 'production';
 
     if (resendApiKey) {
       if (isLocalhost && isProduction) {
-        console.error('Skipping onboarding email dispatch: NEXT_PUBLIC_APP_URL is missing or set to localhost in production.');
-      } else if (!baseUrl) {
-        console.error('Skipping onboarding email dispatch: NEXT_PUBLIC_APP_URL is not configured.');
+        console.error('Skipping onboarding email dispatch: NEXT_PUBLIC_APP_URL is set to localhost in production.');
       } else {
         try {
           const unsubscribeToken = signToken(cleanEmail, 'unsubscribe');
