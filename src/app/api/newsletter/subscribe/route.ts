@@ -103,9 +103,7 @@ export async function POST(request: Request) {
 
     // Send opt-in/confirmation email via Resend
     const resendApiKey = process.env.RESEND_API_KEY;
-    const host = request.headers.get('host') || 'myapp.useserch.com';
-    const protocol = request.headers.get('x-forwarded-proto') || 'https';
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myapp.useserch.com';
 
     if (!resendApiKey) {
       console.error('RESEND_API_KEY is not defined.');

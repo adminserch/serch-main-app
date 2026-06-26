@@ -1,6 +1,9 @@
 import crypto from 'crypto';
 
-const SECRET = process.env.NEWSLETTER_TOKEN_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || 'serch-newsletter-secret-key-default-development-only-12345';
+const isProduction = process.env.NODE_ENV === 'production';
+const SECRET = process.env.NEWSLETTER_TOKEN_SECRET || 
+  process.env.SUPABASE_SERVICE_ROLE_KEY || 
+  (!isProduction ? 'serch-newsletter-secret-key-default-development-only-12345' : '');
 
 const CONFIRM_TTL = 24 * 60 * 60 * 1000; // 24 hours
 const UNSUBSCRIBE_TTL = 30 * 24 * 60 * 60 * 1000; // 30 days

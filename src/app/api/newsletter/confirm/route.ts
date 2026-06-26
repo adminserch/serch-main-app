@@ -185,8 +185,21 @@ export async function POST(request: Request) {
     const resendApiKey = process.env.RESEND_API_KEY;
     const host = request.headers.get('host') || 'myapp.useserch.com';
     const protocol = request.headers.get('x-forwarded-proto') || 'https';
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`;
-    const isLocalhost = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
+    
+    const APPROVED_HOSTS = ['myapp.useserch.com', 'localhost:3000', '127.0.0.1:3000'];
+    const isHostApproved = APPROVED_HOSTS.includes(host);
+    const fallbackUrl = isHostApproved ? `${protocol}://${host}` : 'https://myapp.useserch.com';
+    
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || fallbackUrl;
+    
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(baseUrl);
+    } catch {
+      parsedUrl = new URL('https://myapp.useserch.com');
+    }
+    
+    const isLocalhost = parsedUrl.hostname === 'localhost' || parsedUrl.hostname === '127.0.0.1';
     const isProduction = process.env.NODE_ENV === 'production';
 
     if (resendApiKey) {
