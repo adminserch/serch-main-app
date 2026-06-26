@@ -125,7 +125,11 @@ export default function Navbar() {
               <Lightbulb className="w-5 h-5" />
             </button>
 
-            <button className="text-[#5a5f63] hover:text-[#2563eb] transition-colors relative p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+            <button 
+              aria-label="Notifications (coming soon)"
+              onClick={() => alert("Notifications feature is coming soon!")}
+              className="text-[#5a5f63] hover:text-[#2563eb] transition-colors relative p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
               <Bell className="w-5 h-5" />
             </button>
 
@@ -161,29 +165,29 @@ export default function Navbar() {
       {/* Mobile Sticky Bottom Navbar */}
       <div className={`fixed bottom-0 left-0 right-0 z-50 backdrop-blur-md border-t flex justify-around items-center md:hidden shadow-lg py-2.5 px-4 transition-colors duration-300 ${isDark ? 'bg-slate-950/90 border-slate-800' : 'bg-white/90 border-champagne/60'
         }`}>
-        <Link href="/" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/' ? 'text-[#2563eb]' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-250'}`}>
+        <Link href="/" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/' ? 'text-[#2563eb]' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300'}`}>
           <Home className="w-5 h-5" />
           <span className="text-[10px] font-semibold font-sans">Home</span>
         </Link>
 
-        <Link href="/search" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/search' ? 'text-[#2563eb]' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-250'}`}>
+        <Link href="/search" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/search' ? 'text-[#2563eb]' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300'}`}>
           <Search className="w-5 h-5" />
           <span className="text-[10px] font-semibold font-sans">Search</span>
         </Link>
 
         {/* Dynamic central Bookings/Dashboard tab based on role */}
         {dbRole === 'admin' ? (
-          <Link href="/admin" className={`flex flex-col items-center gap-1 transition-colors ${pathname.startsWith('/admin') ? 'text-[#2563eb]' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-250'}`}>
+          <Link href="/admin" className={`flex flex-col items-center gap-1 transition-colors ${pathname.startsWith('/admin') ? 'text-[#2563eb]' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300'}`}>
             <ShieldCheck className="w-5 h-5" />
             <span className="text-[10px] font-semibold font-sans">Admin</span>
           </Link>
         ) : dbRole === 'provider' ? (
-          <Link href="/dashboard" className={`flex flex-col items-center gap-1 transition-colors ${pathname.startsWith('/dashboard') ? 'text-[#2563eb]' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-250'}`}>
+          <Link href="/dashboard" className={`flex flex-col items-center gap-1 transition-colors ${pathname.startsWith('/dashboard') ? 'text-[#2563eb]' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300'}`}>
             <LayoutDashboard className="w-5 h-5" />
             <span className="text-[10px] font-semibold font-sans">Dashboard</span>
           </Link>
         ) : (
-          <Link href="/bookings" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/bookings' ? 'text-[#2563eb]' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-250'}`}>
+          <Link href="/bookings" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/bookings' ? 'text-[#2563eb]' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300'}`}>
             <CalendarDays className="w-5 h-5" />
             <span className="text-[10px] font-semibold font-sans">Bookings</span>
           </Link>
@@ -197,7 +201,7 @@ export default function Navbar() {
           </div>
         ) : (
           <SignInButton mode="modal">
-            <button className="flex flex-col items-center gap-1 text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-250 transition-colors">
+            <button className="flex flex-col items-center gap-1 text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors">
               <User className="w-5 h-5" />
               <span className="text-[10px] font-semibold font-sans">Sign In</span>
             </button>

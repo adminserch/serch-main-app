@@ -43,6 +43,7 @@ export default function HowItWorks() {
                 className="bg-transparent border-none focus:ring-0 text-sm font-label px-4 w-full text-on-surface focus:outline-none"
                 placeholder="Search professionals..."
                 type="text"
+                aria-label="Search professionals"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />

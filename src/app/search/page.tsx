@@ -115,7 +115,6 @@ function SearchContent() {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [compareList, setCompareList] = useState<Provider[]>([]);
   const [showCompareDrawer, setShowCompareDrawer] = useState(false);
-  const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({ lat: 14.5995, lng: 120.9842 });
   const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
   const [isDark, setIsDark] = useState(false);
 
@@ -213,7 +212,6 @@ function SearchContent() {
           // Center on first provider with coordinates
           const withCoords = formatted.find(f => f.latitude && f.longitude);
           if (withCoords) {
-            setMapCenter({ lat: withCoords.latitude!, lng: withCoords.longitude! });
             setSelectedProviderId(withCoords.id);
           }
         } else {
@@ -295,10 +293,11 @@ function SearchContent() {
                   ].map((cat) => (
                     <label key={cat.id} className="flex items-center group cursor-pointer">
                       <input
-                        type="checkbox"
+                        type="radio"
+                        name="category-filter"
                         checked={selectedCategory === cat.id}
                         onChange={() => setSelectedCategory(cat.id)}
-                        className="rounded-sm border-outline-variant text-primary focus:ring-primary mr-3"
+                        className="border-outline-variant text-primary focus:ring-primary mr-3"
                       />
                       <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">{cat.label}</span>
                     </label>
@@ -344,7 +343,14 @@ function SearchContent() {
                             : 'bg-card-bg border-stone-200 dark:border-zinc-800 text-on-surface hover:bg-stone-50'
                         }`}
                       >
-                        {ratingVal === 0 ? 'Any' : `${ratingVal}⭐`}
+                        {ratingVal === 0 ? (
+                          'Any'
+                        ) : (
+                          <span className="flex items-center gap-1 justify-center">
+                            {ratingVal}
+                            <Star className="w-3 h-3 fill-current inline-block" />
+                          </span>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -385,10 +391,7 @@ function SearchContent() {
                     <div
                       key={p.id}
                       onClick={() => {
-                        if (p.latitude && p.longitude) {
-                          setMapCenter({ lat: p.latitude, lng: p.longitude });
-                          setSelectedProviderId(p.id);
-                        }
+                        setSelectedProviderId(p.id);
                       }}
                       className={`group bg-card-bg rounded-2xl overflow-hidden border ghost-border card-hover transition-all duration-500 flex flex-col justify-between cursor-pointer ${
                         selectedProviderId === p.id
@@ -489,31 +492,44 @@ function SearchContent() {
                   {/* Render page numbers */}
                   {Array.from({ length: totalPages }).map((_, i) => {
                     const pageNum = i + 1;
-                    // For long list of pages, show first few and ellipsis, or just render all since totalPages is usually small in MVPs
-                    if (totalPages > 4 && pageNum > 3 && pageNum < totalPages) {
-                      if (pageNum === 4) {
-                        return (
-                          <span key="ellipsis" className="px-2 text-outline">
-                            ...
-                          </span>
-                        );
-                      }
-                      return null;
+                    
+                    const isFirst = pageNum === 1;
+                    const isLast = pageNum === totalPages;
+                    const isWithinRange = Math.abs(pageNum - currentPage) <= 1;
+
+                    if (isFirst || isLast || isWithinRange) {
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`w-10 h-10 rounded-full font-bold transition-all cursor-pointer ${
+                            currentPage === pageNum
+                              ? 'bg-primary text-white'
+                              : 'hover:bg-surface-container text-on-surface-variant'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
                     }
 
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => setCurrentPage(pageNum)}
-                        className={`w-10 h-10 rounded-full font-bold transition-all cursor-pointer ${
-                          currentPage === pageNum
-                            ? 'bg-primary text-white'
-                            : 'hover:bg-surface-container text-on-surface-variant'
-                        }`}
-                      >
-                        {pageNum}
-                      </button>
-                    );
+                    if (pageNum === 2 && currentPage > 3) {
+                      return (
+                        <span key="leading-ellipsis" className="px-2 text-outline">
+                          ...
+                        </span>
+                      );
+                    }
+
+                    if (pageNum === totalPages - 1 && currentPage < totalPages - 2) {
+                      return (
+                        <span key="trailing-ellipsis" className="px-2 text-outline">
+                          ...
+                        </span>
+                      );
+                    }
+
+                    return null;
                   })}
 
                   {/* Next button > */}

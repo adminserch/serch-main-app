@@ -156,7 +156,7 @@ export default function AiAssistant() {
         className="text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
         style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)' }}
       >
-        <Sparkles className="w-5 h-5 text-sky-200 fill-sky-250" />
+        <Sparkles className="w-5 h-5 text-sky-200 fill-sky-200" />
         <span className="text-xs font-bold font-sans">Ask AI</span>
       </button>
 
@@ -179,7 +179,7 @@ export default function AiAssistant() {
                 <div className={`p-2.5 rounded-xl text-[11px] font-sans leading-relaxed max-w-[80%] ${
                   msg.sender === 'user' 
                     ? 'text-white rounded-tr-none' 
-                    : 'bg-stone-50 border border-stone-150 text-slate-850 rounded-tl-none'
+                    : 'bg-stone-50 border border-stone-200 text-slate-800 rounded-tl-none'
                 }`}
                 style={msg.sender === 'user' ? { background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)' } : undefined}>
                   {msg.text}
@@ -204,8 +204,8 @@ export default function AiAssistant() {
               placeholder="Ask about your bookings, schedule..."
               className="flex-grow border border-stone-200 rounded-xl px-3 py-2 text-[11px] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
             />
-            <button type="submit" className="p-2 text-white rounded-xl flex items-center justify-center cursor-pointer hover:opacity-90" style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)' }}>
-              <Send className="w-3.5 h-3.5" />
+            <button type="submit" aria-label="Send message" className="p-2 text-white rounded-xl flex items-center justify-center cursor-pointer hover:opacity-90" style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)' }}>
+              <Send className="w-3.5 h-3.5" aria-hidden="true" />
             </button>
           </form>
         </div>

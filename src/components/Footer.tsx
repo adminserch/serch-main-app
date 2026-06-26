@@ -38,13 +38,13 @@ export default function Footer() {
               Connecting local professionals with clients in minutes. The premier marketplace for reliable home and professional services.
             </p>
             <div className="flex gap-4">
-              <a className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#3366cc] transition-colors" href="#">
+              <a className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#3366cc] transition-colors" href="https://facebook.com" target="_blank" rel="noopener noreferrer">
                 <span className="sr-only">Facebook</span>
                 <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
                   <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"></path>
                 </svg>
               </a>
-              <a className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#3366cc] transition-colors" href="#">
+              <a className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#3366cc] transition-colors" href="https://x.com" target="_blank" rel="noopener noreferrer">
                 <span className="sr-only">Twitter</span>
                 <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
                   <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
@@ -76,10 +76,9 @@ export default function Footer() {
           <div className="md:col-span-4">
             <h4 className="font-bold mb-6 text-white text-sm tracking-wide uppercase">Newsletter</h4>
             <p className="text-slate-400 text-sm mb-4">Get the latest service updates and local deals.</p>
-            <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-2">
-              <input className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm focus:ring-[#3366cc] focus:border-[#3366cc] text-white focus:outline-none placeholder:text-slate-500" placeholder="Email address" type="email" />
-              <button className="bg-[#3366cc] hover:bg-blue-600 text-white font-bold py-3 rounded-lg text-sm transition-colors active:scale-95">Subscribe</button>
-            </form>
+            <div className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-slate-400 italic">
+              Newsletter subscription feature is coming soon!
+            </div>
           </div>
         </div>
         

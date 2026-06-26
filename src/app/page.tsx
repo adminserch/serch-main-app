@@ -9,6 +9,7 @@ import {
 } from '@clerk/nextjs';
 import { ChevronDown, ChevronRight, Home, MapPin, Search, Star, Heart } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -306,7 +307,7 @@ export default function LandingPage() {
               const tagStyle = index === 0
                 ? 'bg-blue-50 dark:bg-blue-950/40 text-[#3366cc] dark:text-blue-300'
                 : index === 1
-                  ? 'bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-350'
+                  ? 'bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400'
                   : 'bg-blue-50 dark:bg-blue-950/40 text-[#3366cc] dark:text-blue-300';
 
               return (
@@ -314,7 +315,7 @@ export default function LandingPage() {
                   <div>
                     <div className="aspect-[16/10] overflow-hidden relative bg-slate-100 dark:bg-zinc-900 flex items-center justify-center">
                       {prov.logo_url ? (
-                        <img src={prov.logo_url} alt={prov.business_name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <Image src={prov.logo_url} alt={prov.business_name} width={400} height={250} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-zinc-900 dark:to-zinc-800 flex items-center justify-center text-slate-400 group-hover:scale-105 transition-transform duration-500">
                           <Home className="w-16 h-16 opacity-20 text-[#3366cc]" />
@@ -343,9 +344,9 @@ export default function LandingPage() {
                   <div className="p-8 pt-0">
                     <div className="flex items-center justify-between border-t border-champagne pt-6">
                       <div className="flex items-center gap-1.5">
-                        <Star className="h-5 w-5 text-amber-450 fill-amber-400 stroke-amber-400" />
+                        <Star className="h-5 w-5 text-amber-500 fill-amber-400 stroke-amber-400" />
                         <span className="font-bold text-foreground">{prov.avg_rating || '4.8'}</span>
-                        <span className="text-slate-450 text-sm">({prov.review_count || '128'} reviews)</span>
+                        <span className="text-slate-400 text-sm">({prov.review_count ?? '128'} reviews)</span>
                       </div>
                       <span className="text-foreground font-bold">From $45/hr</span>
                     </div>
