@@ -30,23 +30,23 @@ DECLARE
   v_count INT;
 BEGIN
   -- Clean up expired entries
-  DELETE FROM rate_limits WHERE reset_time < p_now;
+  DELETE FROM public.rate_limits WHERE reset_time < p_now;
 
   -- Upsert key
-  INSERT INTO rate_limits (key, count, reset_time)
+  INSERT INTO public.rate_limits (key, count, reset_time)
   VALUES (p_key, 1, p_now + p_window_ms)
   ON CONFLICT (key) DO UPDATE
   SET 
     count = CASE 
-      WHEN rate_limits.reset_time < p_now THEN 1
-      ELSE rate_limits.count + 1
+      WHEN public.rate_limits.reset_time < p_now THEN 1
+      ELSE public.rate_limits.count + 1
     END,
     reset_time = CASE 
-      WHEN rate_limits.reset_time < p_now THEN p_now + p_window_ms
-      ELSE rate_limits.reset_time
+      WHEN public.rate_limits.reset_time < p_now THEN p_now + p_window_ms
+      ELSE public.rate_limits.reset_time
     END
-  RETURNING rate_limits.count INTO v_count;
+  RETURNING public.rate_limits.count INTO v_count;
 
   RETURN v_count > p_limit;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
