@@ -14,6 +14,7 @@ import {
   Home
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 
@@ -402,10 +403,12 @@ function SearchContent() {
                       <div>
                         <div className="h-48 relative overflow-hidden bg-slate-100 dark:bg-zinc-900 flex items-center justify-center">
                           {p.logo_url ? (
-                            <img
+                            <Image
                               src={p.logo_url}
                               alt={p.business_name}
-                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                              fill
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              className="object-cover transition-transform duration-700 group-hover:scale-110"
                             />
                           ) : (
                             <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-zinc-900 dark:to-zinc-800 flex items-center justify-center text-slate-400 transition-transform duration-700 group-hover:scale-110">
@@ -566,7 +569,7 @@ function SearchContent() {
               <h2 className="text-lg font-bold font-display text-espresso">Side-by-Side Comparison</h2>
               <button
                 onClick={() => setShowCompareDrawer(false)}
-                className="p-1 rounded-full hover:bg-stone-100 dark:hover:bg-zinc-800 text-stone-400 hover:text-stone-605"
+                className="p-1 rounded-full hover:bg-stone-100 dark:hover:bg-zinc-800 text-stone-400 hover:text-stone-600"
               >
                 <X className="w-5 h-5" />
               </button>
