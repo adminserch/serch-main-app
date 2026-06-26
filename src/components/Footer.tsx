@@ -3,22 +3,9 @@
 import logoImg from '@/images/SERCH Logo 6.png';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import NewsletterForm from './NewsletterForm';
 
 export default function Footer() {
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    function checkTheme() {
-      if (typeof window !== 'undefined') {
-        const isDarkTheme = document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
-        setIsDark(isDarkTheme);
-      }
-    }
-    checkTheme();
-    window.addEventListener('theme-change', checkTheme);
-    return () => window.removeEventListener('theme-change', checkTheme);
-  }, []);
 
   return (
     <footer className="bg-[#001a4d] text-white pt-24 pb-12 font-sans" data-purpose="footer">
@@ -76,9 +63,7 @@ export default function Footer() {
           <div className="md:col-span-4">
             <h4 className="font-bold mb-6 text-white text-sm tracking-wide uppercase">Newsletter</h4>
             <p className="text-slate-400 text-sm mb-4">Get the latest service updates and local deals.</p>
-            <div className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-slate-400 italic">
-              Newsletter subscription feature is coming soon!
-            </div>
+            <NewsletterForm />
           </div>
         </div>
         
