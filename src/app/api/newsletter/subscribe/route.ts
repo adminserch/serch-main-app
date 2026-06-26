@@ -3,9 +3,9 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { Resend } from 'resend';
 import { signToken } from '@/lib/token';
 import { isRateLimited } from '@/lib/rate-limiter';
+import { z } from 'zod';
 
-// Simple regex for email validation
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailSchema = z.string().trim().email('Please provide a valid email address.');
 
 function getClientIp(request: Request): string {
   const xForwardedFor = request.headers.get('x-forwarded-for');
@@ -41,14 +41,15 @@ export async function POST(request: Request) {
 
     const { email } = body;
 
-    if (!email || typeof email !== 'string' || !EMAIL_REGEX.test(email.trim())) {
+    const validationResult = emailSchema.safeParse(email);
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Please provide a valid email address.' },
+        { error: validationResult.error.errors[0].message },
         { status: 400 }
       );
     }
 
-    const cleanEmail = email.trim().toLowerCase();
+    const cleanEmail = validationResult.data.toLowerCase();
 
     // Rate limiting check using centralized store and normalized client IP
     const ip = getClientIp(request);

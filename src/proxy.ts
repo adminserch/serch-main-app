@@ -6,6 +6,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/users/sync',
   '/api/ai',
   '/api/newsletter/subscribe',
+  '/api/newsletter/confirm',
   '/api/newsletter/unsubscribe',
   '/search',
   '/providers(.*)',

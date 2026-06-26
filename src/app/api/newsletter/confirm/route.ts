@@ -183,28 +183,37 @@ export async function POST(request: Request) {
 
     // Try sending Welcome onboarding email via Resend
     const resendApiKey = process.env.RESEND_API_KEY;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    const isLocalhost = !baseUrl || baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
+    const isProduction = process.env.NODE_ENV === 'production';
+
     if (resendApiKey) {
-      try {
-        const unsubscribeToken = signToken(cleanEmail, 'unsubscribe');
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-        const unsubscribeUrl = `${baseUrl}/api/newsletter/unsubscribe?token=${unsubscribeToken}`;
-        const resend = new Resend(resendApiKey);
-        await resend.emails.send({
-          from: 'Newsletter <no-reply@useserch.com>',
-          to: [cleanEmail],
-          subject: 'Welcome to the Serch Newsletter!',
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
-              <h2 style="color: #0F172A; margin-bottom: 16px;">Welcome to Serch!</h2>
-              <p style="color: #334155; font-size: 16px; line-height: 1.5;">Thank you for subscribing to our newsletter. You'll now receive the latest service updates and local deals directly in your inbox.</p>
-              <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
-              <p style="color: #64748B; font-size: 12px; margin-bottom: 8px;">If you did not sign up for this newsletter, you can safely ignore this email.</p>
-              <p style="color: #64748B; font-size: 12px;">Want to stop receiving these emails? <a href="${unsubscribeUrl}" style="color: #0D9488; text-decoration: underline;">Unsubscribe here</a>.</p>
-            </div>
-          `
-        });
-      } catch (resendError) {
-        console.error('Resend onboarding email delivery failed:', resendError);
+      if (isLocalhost && isProduction) {
+        console.error('Skipping onboarding email dispatch: NEXT_PUBLIC_APP_URL is missing or set to localhost in production.');
+      } else if (!baseUrl) {
+        console.error('Skipping onboarding email dispatch: NEXT_PUBLIC_APP_URL is not configured.');
+      } else {
+        try {
+          const unsubscribeToken = signToken(cleanEmail, 'unsubscribe');
+          const unsubscribeUrl = `${baseUrl}/api/newsletter/unsubscribe?token=${unsubscribeToken}`;
+          const resend = new Resend(resendApiKey);
+          await resend.emails.send({
+            from: 'Newsletter <no-reply@useserch.com>',
+            to: [cleanEmail],
+            subject: 'Welcome to the Serch Newsletter!',
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <h2 style="color: #0F172A; margin-bottom: 16px;">Welcome to Serch!</h2>
+                <p style="color: #334155; font-size: 16px; line-height: 1.5;">Thank you for subscribing to our newsletter. You'll now receive the latest service updates and local deals directly in your inbox.</p>
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+                <p style="color: #64748B; font-size: 12px; margin-bottom: 8px;">If you did not sign up for this newsletter, you can safely ignore this email.</p>
+                <p style="color: #64748B; font-size: 12px;">Want to stop receiving these emails? <a href="${unsubscribeUrl}" style="color: #0D9488; text-decoration: underline;">Unsubscribe here</a>.</p>
+              </div>
+            `
+          });
+        } catch (resendError) {
+          console.error('Resend onboarding email delivery failed:', resendError);
+        }
       }
     } else {
       console.warn('RESEND_API_KEY is not defined. Skipping onboarding email dispatch.');
