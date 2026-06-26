@@ -103,20 +103,12 @@ export async function POST(request: Request) {
 
     // Send opt-in/confirmation email via Resend
     const resendApiKey = process.env.RESEND_API_KEY;
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myapp.useserch.com';
 
     if (!resendApiKey) {
       console.error('RESEND_API_KEY is not defined.');
       return NextResponse.json(
         { error: 'Email service configuration error. Please contact support.' },
-        { status: 500 }
-      );
-    }
-
-    if (!baseUrl) {
-      console.error('NEXT_PUBLIC_APP_URL is not defined.');
-      return NextResponse.json(
-        { error: 'Application configuration error. Please contact support.' },
         { status: 500 }
       );
     }

@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar';
 import { supabase } from '@/lib/supabase';
 import { useAuth, useUser } from '@clerk/nextjs';
 import {
-  MapPin,
+  
   Search as SearchIcon,
   ShieldCheck,
   Star,
