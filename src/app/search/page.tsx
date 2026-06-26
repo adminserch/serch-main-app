@@ -6,21 +6,17 @@ import Navbar from '@/components/Navbar';
 import { supabase } from '@/lib/supabase';
 import { useAuth, useUser } from '@clerk/nextjs';
 import {
-  Check,
   MapPin,
-  Plus,
   Search as SearchIcon,
   ShieldCheck,
   Star,
-  X
+  X,
+  Home
 } from 'lucide-react';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
-
-// Dynamically import Map component to prevent SSR issues
-const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 
 interface Provider {
   id: string;
@@ -120,7 +116,6 @@ function SearchContent() {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [compareList, setCompareList] = useState<Provider[]>([]);
   const [showCompareDrawer, setShowCompareDrawer] = useState(false);
-  const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({ lat: 14.5995, lng: 120.9842 });
   const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
   const [isDark, setIsDark] = useState(false);
 
@@ -218,7 +213,6 @@ function SearchContent() {
           // Center on first provider with coordinates
           const withCoords = formatted.find(f => f.latitude && f.longitude);
           if (withCoords) {
-            setMapCenter({ lat: withCoords.latitude!, lng: withCoords.longitude! });
             setSelectedProviderId(withCoords.id);
           }
         } else {
@@ -276,272 +270,292 @@ function SearchContent() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
+    <div className="flex flex-col min-h-screen bg-background text-on-surface transition-colors duration-300">
       {/* Top Navbar */}
       <Navbar />
 
       {/* Main Content Body */}
-      <div className="flex-grow pt-20 flex flex-col">
-        {/* Top Bar / Search Controls */}
-        <div className="bg-card-bg border-b border-champagne/60 dark:border-zinc-800 px-6 py-4 sticky top-20 z-45 transition-colors duration-300">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-              {/* Query */}
-              <div className="bg-stone-50 dark:bg-zinc-900 border border-champagne/60 dark:border-zinc-805 rounded-xl px-3 py-2 flex items-center gap-2 text-sm w-full sm:w-[450px] transition-colors duration-300">
+      <div className="flex-grow pt-20">
+        <main className="max-w-screen-2xl mx-auto px-4 md:px-8 py-6 md:py-10 flex flex-col lg:flex-row gap-8 lg:gap-12">
+          {/* Sidebar Filters */}
+          <aside className="w-full lg:w-72 flex-shrink-0 lg:sticky lg:top-24 lg:h-[calc(100vh-8rem)] overflow-y-auto pr-0 lg:pr-4 custom-scrollbar">
+            <h3 className="font-headline text-lg md:text-xl mb-4 md:mb-6 text-on-surface">Refine Search</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6 lg:gap-8">
+              {/* Categories */}
+              <section className="bg-card-bg p-4 rounded-2xl border border-champagne/60 dark:border-zinc-800 lg:border-none lg:p-0">
+                <label className="font-label text-xs font-bold uppercase tracking-widest text-outline mb-3 block">Popular Categories</label>
+                <div className="space-y-2">
+                  {[
+                    { id: 'all', label: 'All Services' },
+                    { id: 'Home Cleaning', label: 'Home Services' },
+                    { id: 'Maintenance', label: 'Maintenance' },
+                    { id: 'Creative Services', label: 'Creative Services' },
+                    { id: 'Lessons', label: 'Academic Lessons' }
+                  ].map((cat) => (
+                    <label key={cat.id} className="flex items-center group cursor-pointer">
+                      <input
+                        type="radio"
+                        name="category-filter"
+                        checked={selectedCategory === cat.id}
+                        onChange={() => setSelectedCategory(cat.id)}
+                        className="border-outline-variant text-primary focus:ring-primary mr-3"
+                      />
+                      <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">{cat.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </section>
+
+              {/* Price Range & Rating */}
+              <div className="space-y-6 lg:space-y-8">
+                <section className="bg-card-bg p-4 rounded-2xl border border-champagne/60 dark:border-zinc-800 lg:border-none lg:p-0">
+                  <label className="font-label text-xs font-bold uppercase tracking-widest text-outline mb-3 block">Price Filter</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: 'all', label: 'Any Price' },
+                      { id: '$', label: '$ Budget' },
+                      { id: '$$', label: '$$ Moderate' },
+                      { id: '$$$', label: '$$$ Luxury' }
+                    ].map((p) => (
+                      <label key={p.id} className="flex items-center group cursor-pointer">
+                        <input
+                          type="radio"
+                          name="price-filter"
+                          checked={priceFilter === p.id}
+                          onChange={() => setPriceFilter(p.id)}
+                          className="border-outline-variant text-primary focus:ring-primary mr-2"
+                        />
+                        <span className="font-body text-xs text-on-surface group-hover:text-primary transition-colors">{p.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="bg-card-bg p-4 rounded-2xl border border-champagne/60 dark:border-zinc-800 lg:border-none lg:p-0">
+                  <label className="font-label text-xs font-bold uppercase tracking-widest text-outline mb-3 block">Minimum Rating</label>
+                  <div className="flex gap-2">
+                    {[0, 4.5, 4.8].map((ratingVal) => (
+                      <button
+                        key={ratingVal}
+                        onClick={() => setMinRating(ratingVal)}
+                        className={`flex-grow px-3 py-2 rounded-lg border text-xs font-semibold font-label transition-all ${
+                          minRating === ratingVal
+                            ? 'bg-primary text-white border-primary'
+                            : 'bg-card-bg border-stone-200 dark:border-zinc-800 text-on-surface hover:bg-stone-50'
+                        }`}
+                      >
+                        {ratingVal === 0 ? (
+                          'Any'
+                        ) : (
+                          <span className="flex items-center gap-1 justify-center">
+                            {ratingVal}
+                            <Star className="w-3 h-3 fill-current inline-block" />
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            </div>
+          </aside>
+
+          {/* Main Content Area */}
+          <div className="flex-grow flex flex-col gap-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-champagne/60 dark:border-zinc-800 pb-4">
+              <div>
+                <span className="text-[10px] font-bold text-primary uppercase tracking-wider block mb-1">Search Results</span>
+                <h2 className="font-headline text-2xl font-bold text-on-surface">
+                  {filteredProviders.length} Available Providers
+                </h2>
+              </div>
+
+              {/* Text Search inside Area */}
+              <div className="bg-stone-50 dark:bg-zinc-900 border border-champagne/65 dark:border-zinc-800 rounded-full px-4 py-2.5 flex items-center gap-2 text-sm w-full md:w-[350px]">
                 <SearchIcon className="w-4 h-4 text-stone-400" />
-                <input 
-                  type="text" 
-                  placeholder="What service are you looking for?" 
+                <input
+                  type="text"
+                  placeholder="Filter by keyword..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-transparent border-none focus:outline-none w-full text-espresso"
+                  className="bg-transparent border-none focus:outline-none w-full text-on-surface placeholder:text-stone-400"
                 />
               </div>
             </div>
 
-            {/* Sliders / Filters */}
-            <div className="flex flex-wrap items-center gap-3">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="bg-card-bg border border-champagne dark:border-zinc-800 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-none transition-colors duration-300"
-              >
-                <option value="all">All Categories</option>
-                <option value="Home Cleaning">Home Cleaning</option>
-                <option value="Aircon Repair">Aircon Repair</option>
-                <option value="Roof Repair">Roof Repair</option>
-                <option value="Plumbing">Plumbing</option>
-                <option value="Electrical">Electrical</option>
-                <option value="Gardening & Landscaping">Gardening</option>
-              </select>
-
-              <select
-                value={priceFilter}
-                onChange={(e) => setPriceFilter(e.target.value)}
-                className="bg-card-bg border border-champagne dark:border-zinc-800 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-none transition-colors duration-300"
-              >
-                <option value="all">Any Price</option>
-                <option value="$">$ (Budget)</option>
-                <option value="$$">$$ (Moderate)</option>
-                <option value="$$$">$$$ (Luxury)</option>
-              </select>
-
-              <select
-                value={minRating}
-                onChange={(e) => setMinRating(Number(e.target.value))}
-                className="bg-card-bg border border-champagne dark:border-zinc-800 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-none transition-colors duration-300"
-              >
-                <option value={0}>Any Rating</option>
-                <option value={4.5}>4.5+ Stars</option>
-                <option value={4.8}>4.8+ Stars</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Content Body: Split Map / List */}
-        <div className="flex-grow flex flex-col lg:flex-row relative">
-          {/* Left Side: Results List */}
-          <div className="w-full lg:w-1/2 p-6 md:p-10 overflow-y-auto max-h-[calc(100vh-220px)] lg:max-h-[calc(100vh-160px)] flex flex-col gap-6">
-            <div>
-              <span className="text-[10px] font-bold text-accent uppercase tracking-wider block mb-1">Search Results</span>
-              <h2 className="font-display text-2xl font-bold text-espresso transition-colors duration-300">
-                {filteredProviders.length} Available Providers
-              </h2>
-            </div>
-
-            <div className="flex flex-col gap-5">
-              {paginatedProviders.map((p) => {
-                const isCompared = compareList.some(item => item.id === p.id);
-                return (
-                  <div 
-                    key={p.id} 
-                    onClick={() => {
-                      if (p.latitude && p.longitude) {
-                        setMapCenter({ lat: p.latitude, lng: p.longitude });
+            <div className="flex flex-col gap-8">
+              {/* Grid of Cards */}
+              <div className="flex-grow grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {paginatedProviders.map((p) => {
+                  const isCompared = compareList.some(item => item.id === p.id);
+                  return (
+                    <div
+                      key={p.id}
+                      onClick={() => {
                         setSelectedProviderId(p.id);
-                      }
-                    }}
-                    className={`bg-card-bg border p-6 shadow-xs hover:shadow-md hover:border-gold/60 transition-all flex flex-col justify-between gap-4 cursor-pointer rounded-2xl ${
-                      selectedProviderId === p.id 
-                        ? 'border-accent ring-2 ring-accent/20 bg-accent/5' 
-                        : 'border-champagne/60 dark:border-zinc-800'
-                    }`}
-                  >
-                    <div className="flex gap-4">
-                      {/* Left: Company Logo */}
-                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-stone-50 dark:bg-zinc-900 border border-champagne/40 dark:border-zinc-800 flex-shrink-0 flex items-center justify-center relative transition-colors duration-300">
-                        {p.logo_url ? (
-                          <img
-                             src={p.logo_url}
-                             alt={p.business_name}
-                             className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-champagne/20 border border-champagne/40 dark:border-zinc-800 rounded-xl flex items-center justify-center text-accent text-lg font-bold">
-                            {p.business_name.charAt(0)}
+                      }}
+                      className={`group bg-card-bg rounded-2xl overflow-hidden border ghost-border card-hover transition-all duration-500 flex flex-col justify-between cursor-pointer ${
+                        selectedProviderId === p.id
+                          ? 'border-primary ring-2 ring-primary/20'
+                          : 'border-champagne/60 dark:border-zinc-800'
+                      }`}
+                    >
+                      <div>
+                        <div className="h-48 relative overflow-hidden bg-slate-100 dark:bg-zinc-900 flex items-center justify-center">
+                          {p.logo_url ? (
+                            <Image
+                              src={p.logo_url}
+                              alt={p.business_name}
+                              fill
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              className="object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-zinc-900 dark:to-zinc-800 flex items-center justify-center text-slate-400 transition-transform duration-700 group-hover:scale-110">
+                              <Home className="w-16 h-16 opacity-20 text-[#3366cc]" />
+                            </div>
+                          )}
+                          {p.is_verified && (
+                            <div className="absolute top-4 right-4 bg-white/90 dark:bg-zinc-800/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter text-primary shadow-sm z-10">
+                              Verified Premium
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="p-6">
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <h3 className="font-headline text-xl font-bold mb-1 text-on-surface">{p.business_name}</h3>
+                              <div className="flex items-center text-tertiary">
+                                <Star className="w-4 h-4 text-amber-500 fill-amber-500 mr-1" />
+                                <span className="text-sm font-label font-bold text-on-surface">{p.avg_rating}</span>
+                                <span className="text-xs font-label text-outline ml-1">({p.review_count} reviews)</span>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <span className="block text-xs font-label text-outline uppercase tracking-wider">Starts from</span>
+                              <span className="text-xl font-bold font-display text-on-surface">$45<span className="text-sm font-normal text-on-surface-variant">/hr</span></span>
+                            </div>
                           </div>
+                          <p className="text-sm text-on-surface-variant font-body mb-6 line-clamp-2">{p.description || 'Professional and verified service provider.'}</p>
+                        </div>
+                      </div>
+
+                      <div className="p-6 pt-0 flex gap-3">
+                        {filteredProviders.length > 1 && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleCompare(p);
+                            }}
+                            className={`flex-grow font-label text-sm font-semibold py-3 rounded-xl transition-all border ${
+                              isCompared
+                                ? 'bg-primary/10 border-primary text-primary'
+                                : 'bg-surface-container-high hover:bg-surface-container-highest text-on-surface border-transparent'
+                            }`}
+                          >
+                            {isCompared ? 'Compared' : 'Compare'}
+                          </button>
                         )}
-                      </div>
-
-                      {/* Right: Provider Details */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-start gap-4 mb-1 flex-wrap">
-                          <h3 className="font-sans font-bold text-espresso text-base hover:text-accent transition-colors duration-300 truncate">
-                            <Link href={`/providers/${p.id}`} onClick={(e) => e.stopPropagation()}>{p.business_name}</Link>
-                          </h3>
-                          
-                          <div className="flex items-center gap-1.5 flex-shrink-0">
-                            {p.is_verified && (
-                              <span className={`border text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors duration-300 ${
-                                isDark 
-                                  ? 'bg-purple-950/40 border-purple-800 text-accent' 
-                                  : 'bg-purple-50 border-purple-200 text-purple-800'
-                              }`}>
-                                <ShieldCheck className="w-3.5 h-3.5" /> Verified Provider
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-4 text-xs text-stone-550 dark:text-stone-400 mb-3 font-sans transition-colors duration-300">
-                          <div className="flex items-center gap-0.5">
-                            <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                            <span className="font-bold text-slate-850 dark:text-slate-200">{p.avg_rating}</span>
-                            <span>({p.review_count} reviews)</span>
-                          </div>
-                          <span>•</span>
-                          <div className="flex items-center gap-0.5">
-                            <MapPin className="w-4 h-4" />
-                            <span>{p.service_district}, {p.service_city}</span>
-                          </div>
-                        </div>
-
-                        <p className="text-stone-600 dark:text-stone-300 text-xs font-sans leading-relaxed line-clamp-2 transition-colors duration-300">
-                          {p.description}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between border-t border-champagne/30 dark:border-zinc-800 pt-4 mt-1 transition-colors duration-300">
-                      {/* Compare Switch */}
-                      {filteredProviders.length > 1 ? (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleCompare(p);
-                          }}
-                          className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1 cursor-pointer ${
-                            isCompared
-                              ? 'bg-accent/10 border-accent text-accent'
-                              : 'bg-card-bg border-champagne dark:border-zinc-800 hover:border-gold text-slate-700 dark:text-slate-300 hover:bg-champagne/10 dark:hover:bg-zinc-900'
-                          }`}
+                        <Link
+                          href={`/providers/${p.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex-grow bg-gradient-to-r from-primary to-[#3366cc] text-white font-label text-sm font-semibold py-3 rounded-xl transition-all hover:shadow-lg hover:shadow-primary/20 text-center"
                         >
-                          {isCompared ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
-                          Compare
-                        </button>
-                      ) : (
-                        <div />
-                      )}
-
-                      <Link 
-                        href={`/providers/${p.id}`} 
-                        onClick={(e) => e.stopPropagation()}
-                        className={`text-xs font-bold py-2 px-4 rounded-xl transition-all shadow-xs ${
-                          isDark 
-                            ? 'bg-white hover:bg-slate-200 text-slate-950' 
-                            : 'bg-primary hover:bg-slate-800 text-white'
-                        }`}
-                      >
-                        View Profile
-                      </Link>
+                          View Profile
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+            </div>
 
-              {/* Pagination Controls */}
-              {totalPages > 1 && (
-                <div className="flex justify-between items-center mt-6 pt-4 border-t border-champagne/30 dark:border-zinc-800 flex-wrap gap-4 transition-colors duration-300">
-                  <span className="text-xs text-stone-500 dark:text-stone-400 font-sans">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      disabled={currentPage === 1}
-                      onClick={() => setCurrentPage(1)}
-                      className="px-2.5 py-1.5 rounded-lg border border-champagne dark:border-zinc-800 text-[10px] font-bold text-slate-700 dark:text-slate-300 bg-card-bg hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
-                      title="First Page"
-                    >
-                      &lt;&lt;
-                    </button>
-                    <button
-                      type="button"
-                      disabled={currentPage === 1}
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                      className="px-3 py-1.5 rounded-lg border border-champagne dark:border-zinc-800 text-[10px] font-bold text-slate-700 dark:text-slate-300 bg-card-bg hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
-                      title="Previous Page"
-                    >
-                      &lt;
-                    </button>
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-16 flex justify-center">
+                <nav className="flex items-center gap-2 font-label text-sm">
+                  {/* First Page button << */}
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(1)}
+                    className="w-10 h-10 rounded-full flex items-center justify-center border border-stone-200 dark:border-zinc-800 text-on-surface-variant hover:bg-surface-container transition-all disabled:opacity-30 cursor-pointer"
+                  >
+                    &lt;&lt;
+                  </button>
+                  {/* Prev button < */}
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    className="w-10 h-10 rounded-full flex items-center justify-center border border-stone-200 dark:border-zinc-800 text-on-surface-variant hover:bg-surface-container transition-all disabled:opacity-30 cursor-pointer"
+                  >
+                    &lt;
+                  </button>
 
-                    {Array.from({ length: totalPages }).map((_, i) => {
-                      const pageNum = i + 1;
+                  {/* Render page numbers */}
+                  {Array.from({ length: totalPages }).map((_, i) => {
+                    const pageNum = i + 1;
+                    
+                    const isFirst = pageNum === 1;
+                    const isLast = pageNum === totalPages;
+                    const isWithinRange = Math.abs(pageNum - currentPage) <= 1;
+
+                    if (isFirst || isLast || isWithinRange) {
                       return (
                         <button
-                          type="button"
                           key={pageNum}
                           onClick={() => setCurrentPage(pageNum)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                          className={`w-10 h-10 rounded-full font-bold transition-all cursor-pointer ${
                             currentPage === pageNum
-                              ? 'bg-accent border-accent text-white shadow-xs'
-                              : 'bg-card-bg border-champagne dark:border-zinc-800 text-stone-605 dark:text-stone-300 hover:border-gold'
+                              ? 'bg-primary text-white'
+                              : 'hover:bg-surface-container text-on-surface-variant'
                           }`}
                         >
                           {pageNum}
                         </button>
                       );
-                    })}
+                    }
 
-                    <button
-                      type="button"
-                      disabled={currentPage === totalPages}
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                      className="px-3 py-1.5 rounded-lg border border-champagne dark:border-zinc-800 text-[10px] font-bold text-slate-700 dark:text-slate-300 bg-card-bg hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
-                      title="Next Page"
-                    >
-                      &gt;
-                    </button>
-                    <button
-                      type="button"
-                      disabled={currentPage === totalPages}
-                      onClick={() => setCurrentPage(totalPages)}
-                      className="px-2.5 py-1.5 rounded-lg border border-champagne dark:border-zinc-800 text-[10px] font-bold text-slate-700 dark:text-slate-300 bg-card-bg hover:border-gold disabled:opacity-40 disabled:hover:border-champagne transition-all"
-                      title="Last Page"
-                    >
-                      &gt;&gt;
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+                    if (pageNum === 2 && currentPage > 3) {
+                      return (
+                        <span key="leading-ellipsis" className="px-2 text-outline">
+                          ...
+                        </span>
+                      );
+                    }
 
-          {/* Right Side: Map */}
-          <div className="w-full lg:w-1/2 h-[400px] lg:h-[calc(100vh-160px)] sticky top-[160px] border-l border-champagne dark:border-zinc-800 bg-slate-100 transition-colors duration-300">
-            <Map 
-              latitude={mapCenter.lat} 
-              longitude={mapCenter.lng} 
-              markers={filteredProviders.map(p => ({
-                id: p.id,
-                business_name: p.business_name,
-                latitude: p.latitude,
-                longitude: p.longitude
-              }))}
-            />
+                    if (pageNum === totalPages - 1 && currentPage < totalPages - 2) {
+                      return (
+                        <span key="trailing-ellipsis" className="px-2 text-outline">
+                          ...
+                        </span>
+                      );
+                    }
+
+                    return null;
+                  })}
+
+                  {/* Next button > */}
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    className="w-10 h-10 rounded-full flex items-center justify-center border border-stone-200 dark:border-zinc-800 text-on-surface-variant hover:bg-surface-container transition-all disabled:opacity-30 cursor-pointer"
+                  >
+                    &gt;
+                  </button>
+                  {/* Last Page button >> */}
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(totalPages)}
+                    className="w-10 h-10 rounded-full flex items-center justify-center border border-stone-200 dark:border-zinc-800 text-on-surface-variant hover:bg-surface-container transition-all disabled:opacity-30 cursor-pointer"
+                  >
+                    &gt;&gt;
+                  </button>
+                </nav>
+              </div>
+            )}
           </div>
-        </div>
+        </main>
       </div>
 
       {/* Footer */}
@@ -553,9 +567,9 @@ function SearchContent() {
           <div className="bg-card-bg rounded-t-3xl shadow-2xl max-w-5xl w-full p-6 border-t border-champagne dark:border-zinc-800 max-h-[85vh] overflow-y-auto transform translate-y-0 transition-transform duration-300">
             <div className="flex justify-between items-center border-b border-champagne/80 dark:border-zinc-800 pb-4 mb-6 transition-colors duration-300">
               <h2 className="text-lg font-bold font-display text-espresso">Side-by-Side Comparison</h2>
-              <button 
+              <button
                 onClick={() => setShowCompareDrawer(false)}
-                className="p-1 rounded-full hover:bg-stone-100 dark:hover:bg-zinc-800 text-stone-400 hover:text-stone-605"
+                className="p-1 rounded-full hover:bg-stone-100 dark:hover:bg-zinc-800 text-stone-400 hover:text-stone-600"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -573,17 +587,17 @@ function SearchContent() {
                       <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                       <span>{p.avg_rating} ({p.review_count} reviews)</span>
                     </div>
-                    
+
                     <p className="text-[11px] text-stone-600 dark:text-stone-300 font-sans leading-relaxed mb-4 line-clamp-4 transition-colors duration-300">
                       {p.description}
                     </p>
                   </div>
 
-                  <Link 
-                    href={`/providers/${p.id}`} 
+                  <Link
+                    href={`/providers/${p.id}`}
                     className={`text-xs font-bold py-2 px-3 rounded-lg text-center transition-all mt-4 ${
-                      isDark 
-                        ? 'bg-white hover:bg-slate-200 text-slate-950' 
+                      isDark
+                        ? 'bg-white hover:bg-slate-200 text-slate-950'
                         : 'bg-primary hover:bg-slate-800 text-white'
                     }`}
                   >

@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar';
 import { useToast } from '@/components/Providers';
 import { getSupabaseClient, supabase } from '@/lib/supabase';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { useAuth, useUser } from '@clerk/nextjs';
+import { SignInButton, useAuth, useUser } from '@clerk/nextjs';
 import {
   ArrowLeft,
   ArrowRight,
@@ -15,14 +15,12 @@ import {
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 
 export default function RegisterProviderPage() {
-  const router = useRouter();
-  const { getToken } = useAuth();
+  const { getToken, isSignedIn, isLoaded } = useAuth();
   const { user } = useUser();
   const { toast } = useToast();
 
@@ -365,6 +363,39 @@ export default function RegisterProviderPage() {
       setLoading(false);
     }
   };
+  if (!isLoaded) {
+    return (
+      <div className="flex flex-col min-h-screen bg-stone-50/50">
+        <Navbar />
+        <main className="flex-grow pt-28 pb-16 flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-[#3366cc] border-t-transparent rounded-full animate-spin"></div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+    return (
+      <div className="flex flex-col min-h-screen bg-stone-50/50">
+        <Navbar />
+        <main className="flex-grow pt-28 pb-16 max-w-md mx-auto w-full px-6 flex flex-col items-center justify-center text-center">
+          <div className="bg-white border border-champagne/60 rounded-2xl p-10 shadow-md">
+            <h1 className="font-display text-2xl font-bold text-espresso mb-4 font-serif">Provider Registration</h1>
+            <p className="text-stone-500 text-sm mb-6 leading-relaxed">
+              To register as a service provider on Serch and start listing your services, please sign in or create an account.
+            </p>
+            <SignInButton mode="modal">
+              <button className="bg-[#3366cc] hover:bg-slate-800 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all shadow-sm w-full cursor-pointer">
+                Sign In / Sign Up
+              </button>
+            </SignInButton>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-stone-50/50">
