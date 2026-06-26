@@ -4,7 +4,6 @@
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 import { useToast } from '@/components/Providers';
-import { getSupabaseClient } from '@/lib/supabase';
 import { useAuth, UserButton, useUser } from '@clerk/nextjs';
 import {
   ArrowLeft,
