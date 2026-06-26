@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createClient } from '@supabase/supabase-js';
+
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -11,7 +13,7 @@ const isConfigured =
   !supabaseAnonKey.includes('placeholder');
 
 // Helper to build a chainable, thenable proxy for mock Supabase client
-const makeMockQueryBuilder = (clientName: string) => {
+const makeMockQueryBuilder = () => {
   const queryProxy: any = new Proxy({} as any, {
     get(target, prop) {
       if (prop === 'then') {
@@ -31,7 +33,7 @@ export const supabase = isConfigured
   : new Proxy({} as any, {
       get(target, prop) {
         console.warn(`Supabase client called but credentials are not configured. Property accessed: ${String(prop)}`);
-        return () => makeMockQueryBuilder('supabase');
+        return () => makeMockQueryBuilder();
       }
     });
 
@@ -41,7 +43,7 @@ export const supabaseAdmin = (isConfigured && supabaseServiceKey && !supabaseSer
   : new Proxy({} as any, {
       get(target, prop) {
         console.warn(`Supabase admin client called but credentials are not configured. Property accessed: ${String(prop)}`);
-        return () => makeMockQueryBuilder('supabaseAdmin');
+        return () => makeMockQueryBuilder();
       }
     });
 

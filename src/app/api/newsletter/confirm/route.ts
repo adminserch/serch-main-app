@@ -3,6 +3,18 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { Resend } from 'resend';
 import { verifyToken, signToken } from '@/lib/token';
 
+function escapeHtml(str: string): string {
+  return str.replace(/[&<>'"]/g, 
+    (tag) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag] || tag)
+  );
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -51,6 +63,86 @@ export async function GET(request: Request) {
               <p>The confirmation link has expired or is invalid. Please sign up again.</p>
             </div>
           </body>
+        </html>`,
+        { headers: { 'Content-Type': 'text/html' }, status: 400 }
+      );
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const escapedEmail = escapeHtml(cleanEmail);
+
+    return new NextResponse(
+      `<html>
+        <head>
+          <title>Confirm Your Subscription - Serch</title>
+          <style>
+            body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; background-color: #F8FAFC; color: #0F172A; margin: 0; }
+            .card { background: white; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); text-align: center; max-width: 450px; border: 1px solid #e2e8f0; }
+            h1 { color: #0F172A; margin-bottom: 1rem; font-size: 1.5rem; }
+            p { color: #475569; line-height: 1.5; font-size: 0.95rem; margin-bottom: 2rem; }
+            .btn-container { display: flex; flex-direction: column; gap: 0.75rem; }
+            .btn-confirm { background-color: #0D9488; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: bold; width: 100%; font-size: 0.95rem; cursor: pointer; transition: background-color 0.2s; }
+            .btn-confirm:hover { background-color: #0b7c72; }
+            .btn-cancel { display: block; border: 1px solid #cbd5e1; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 0.95rem; color: #475569; transition: background-color 0.2s, color 0.2s; }
+            .btn-cancel:hover { background-color: #f1f5f9; color: #0F172A; }
+            .brand { font-weight: bold; color: #0F172A; margin-top: 2rem; font-size: 1.1rem; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <h1>Confirm Your Subscription</h1>
+            <p>Please click below to confirm your subscription to the Serch newsletter for <strong>${escapedEmail}</strong>.</p>
+            <form action="/api/newsletter/confirm" method="POST" class="btn-container">
+              <input type="hidden" name="token" value="${escapeHtml(token)}" />
+              <button type="submit" class="btn-confirm">Yes, Confirm Subscription</button>
+              <a href="/" class="btn-cancel">No, cancel</a>
+            </form>
+            <div class="brand">Serch</div>
+          </div>
+        </body>
+      </html>`,
+      { headers: { 'Content-Type': 'text/html' }, status: 200 }
+    );
+  } catch (error) {
+    console.error('Unhandled newsletter confirm GET error:', error);
+    return new NextResponse('Internal Server Error', { status: 500 });
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    let token = '';
+
+    const contentType = request.headers.get('content-type') || '';
+    if (contentType.includes('application/x-www-form-urlencoded') || contentType.includes('multipart/form-data')) {
+      const formData = await request.formData();
+      token = (formData.get('token') as string) || '';
+    } else {
+      try {
+        const body = await request.json();
+        token = body.token || '';
+      } catch {
+        // ignore
+      }
+    }
+
+    if (!token) {
+      return new NextResponse(
+        `<html>
+          <head><title>Invalid Request</title></head>
+          <body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; background-color: #F8FAFC;"><div style="background: white; padding: 2rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;"><h1>Invalid Token</h1><p>The token is missing.</p></div></body>
+        </html>`,
+        { headers: { 'Content-Type': 'text/html' }, status: 400 }
+      );
+    }
+
+    const email = verifyToken(token, 'confirm');
+
+    if (!email) {
+      return new NextResponse(
+        `<html>
+          <head><title>Invalid or Expired Link</title></head>
+          <body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; background-color: #F8FAFC;"><div style="background: white; padding: 2rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;"><h1>Link Expired</h1><p>The confirmation link has expired or is invalid.</p></div></body>
         </html>`,
         { headers: { 'Content-Type': 'text/html' }, status: 400 }
       );
@@ -144,7 +236,7 @@ export async function GET(request: Request) {
       { headers: { 'Content-Type': 'text/html' }, status: 200 }
     );
   } catch (error) {
-    console.error('Unhandled newsletter confirm error:', error);
+    console.error('Unhandled newsletter confirm POST error:', error);
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
