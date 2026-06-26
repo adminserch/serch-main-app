@@ -342,7 +342,7 @@ export default function LandingPage() {
                   </div>
 
                   <div className="p-8 pt-0">
-                    <div className="flex items-center justify-between border-t border-champagne pt-6">
+                    <div className="flex items-center justify-between border-t border-champagne pt-6 mb-6">
                       <div className="flex items-center gap-1.5">
                         <Star className="h-5 w-5 text-amber-500 fill-amber-400 stroke-amber-400" />
                         <span className="font-bold text-foreground">{prov.avg_rating || '4.8'}</span>
@@ -350,6 +350,12 @@ export default function LandingPage() {
                       </div>
                       <span className="text-foreground font-bold">From $45/hr</span>
                     </div>
+                    <Link
+                      href={`/providers/${prov.id}`}
+                      className="block w-full bg-gradient-to-r from-primary to-[#3366cc] text-white font-label text-sm font-semibold py-3.5 rounded-2xl transition-all hover:shadow-lg hover:shadow-primary/20 text-center"
+                    >
+                      View Profile
+                    </Link>
                   </div>
                 </div>
               );

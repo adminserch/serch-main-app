@@ -214,7 +214,7 @@ function UserSync() {
           const errData = await response.json().catch(() => ({}));
           console.error('Failed to sync user via API:', errData.error || JSON.stringify(errData));
         } else {
-          const data = await response.json().catch(() => ({}));
+          await response.json().catch(() => ({}));
           
           // User role synced successfully, no automatic redirects needed to allow browsing public pages
         }
