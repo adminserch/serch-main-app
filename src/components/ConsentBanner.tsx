@@ -7,16 +7,31 @@ export default function ConsentBanner() {
 
   useEffect(() => {
     // Check if consent has already been given
-    const consent = localStorage.getItem('serch-cookie-consent');
-    if (!consent) {
-      setIsVisible(true);
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const consent = localStorage.getItem('serch-cookie-consent');
+        if (!consent) {
+          setTimeout(() => setIsVisible(true), 0);
+        }
+      } else {
+        setTimeout(() => setIsVisible(true), 0);
+      }
+    } catch {
+      // Fallback if localStorage access is restricted
+      setTimeout(() => setIsVisible(true), 0);
     }
   }, []);
 
   if (!isVisible) return null;
 
   const handleDismiss = (choice: 'all' | 'necessary') => {
-    localStorage.setItem('serch-cookie-consent', choice);
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('serch-cookie-consent', choice);
+      }
+    } catch {
+      // Ignore storage write errors in restricted browsers
+    }
     setIsVisible(false);
   };
 
@@ -38,18 +53,18 @@ export default function ConsentBanner() {
             </p>
           </div>
           {/* Right Action Block */}
-          <div className="flex flex-col xs:flex-row items-center gap-3 w-full lg:w-auto justify-center lg:justify-end">
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto justify-center lg:justify-end">
             <button 
               onClick={() => handleDismiss('all')}
               type="button"
-              className="w-full xs:w-auto px-5 py-2 bg-stone-900 hover:bg-stone-800 dark:bg-white dark:hover:bg-stone-100 text-white dark:text-stone-950 rounded font-bold text-[10px] sm:text-xs uppercase tracking-widest transition-all active:translate-y-0.5 text-center cursor-pointer"
+              className="w-full sm:w-auto px-5 py-2 bg-stone-900 hover:bg-stone-800 dark:bg-white dark:hover:bg-stone-100 text-white dark:text-stone-950 rounded font-bold text-[10px] sm:text-xs uppercase tracking-widest transition-all active:translate-y-0.5 text-center cursor-pointer"
             >
               Accept All
             </button>
             <button 
               onClick={() => handleDismiss('necessary')}
               type="button"
-              className="w-full xs:w-auto px-4 py-2 bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 rounded font-bold text-[10px] sm:text-xs uppercase tracking-widest border border-stone-200 dark:border-stone-750 transition-all active:translate-y-0.5 text-center cursor-pointer"
+              className="w-full sm:w-auto px-4 py-2 bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 rounded font-bold text-[10px] sm:text-xs uppercase tracking-widest border border-stone-200 dark:border-stone-700 transition-all active:translate-y-0.5 text-center cursor-pointer"
             >
               Only necessary
             </button>

@@ -191,6 +191,7 @@ export default function ProviderDetailsPage() {
       setProvider(pData as unknown as Provider);
 
       // Fetch signed URL for the permit/ID
+      setPermitSignedUrl(null);
       if (pData.business_permit_url) {
         try {
           const sUrlRes = await fetch(`/api/admin/permit-url?path=${encodeURIComponent(pData.business_permit_url)}`, {
