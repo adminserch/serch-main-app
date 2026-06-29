@@ -187,6 +187,9 @@ export default function LandingPage() {
               Search
             </button>
           </form>
+          <h2 className="font-serif text-5xl md:text-7xl font-bold leading-tight mt-12 text-[#1b1c1d] dark:text-slate-100">
+            Find. <span className="italic font-semibold text-purple-600">Book.</span> Trust.
+          </h2>
         </div>
       </section>
 
