@@ -16,6 +16,7 @@ import {
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
+import { permitDocumentSchema } from '@/lib/validations';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 
@@ -149,10 +150,11 @@ export default function RegisterProviderPage() {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const isAllowedType = file.type 
-        ? ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg', 'image/webp'].includes(file.type)
-        : /\.(pdf|png|jpe?g|webp)$/i.test(file.name);
-      if (!isAllowedType) {
+      const validationResult = permitDocumentSchema.safeParse({
+        filename: file.name,
+        mimeType: file.type
+      });
+      if (!validationResult.success) {
         setPermitFileError('Only PDF or image files are allowed.');
         setPermitFile(null);
         setPermitName('');
@@ -251,10 +253,17 @@ export default function RegisterProviderPage() {
       if (!permitFile) {
         throw new Error('Valid Government ID is required.');
       }
+      const validationResult = permitDocumentSchema.safeParse({
+        filename: permitFile.name,
+        mimeType: permitFile.type
+      });
+      if (!validationResult.success) {
+        throw new Error('Only PDF or image files are allowed.');
+      }
       const permitExt = permitFile.name.split('.').pop() || 'pdf';
       const permitPath = `${dbUser.id}/permit-${Date.now()}.${permitExt}`;
       const { error: permitUploadError } = await client.storage
-          .from('permits')
+          .from('documents')
           .upload(permitPath, permitFile);
 
       if (permitUploadError) {
@@ -341,7 +350,7 @@ export default function RegisterProviderPage() {
             }
           }
           if (uploadedPermitPath) {
-            const { error: removeErr } = await clientRef.storage.from('permits').remove([uploadedPermitPath]);
+            const { error: removeErr } = await clientRef.storage.from('documents').remove([uploadedPermitPath]);
             if (removeErr) {
               console.error('Failed to remove uploaded permit on registration failure:', removeErr);
             }
@@ -555,7 +564,7 @@ export default function RegisterProviderPage() {
                 type="file"
                 onChange={handleFileUpload}
                 className="absolute inset-0 opacity-0 cursor-pointer"
-                accept=".pdf,application/pdf,image/*"
+                accept=".pdf,application/pdf,.png,image/png,.jpeg,.jpg,image/jpeg,.webp,image/webp"
                 required
               />
               <Upload className="w-8 h-8 text-stone-400 mb-2" />
@@ -826,6 +835,20 @@ export default function RegisterProviderPage() {
             </div>
           </div>
 
+          <div>
+            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Category</label>
+            <select
+              value={serviceCategoryId}
+              onChange={(e) => setServiceCategoryId(e.target.value)}
+              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent bg-white"
+            >
+              {dbCategories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <div className="flex items-center gap-2">
             <input

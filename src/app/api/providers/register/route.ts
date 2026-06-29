@@ -1,6 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase';
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import { permitPathSchema } from '@/lib/validations';
 
 export async function POST(req: Request) {
   let providerIdToClean: string | null = null;
@@ -73,22 +74,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid business permit storage path prefix' }, { status: 400 });
     }
 
-    const lowercasePermitUrl = businessPermitUrl.toLowerCase();
-    const isAllowedExt = lowercasePermitUrl.endsWith('.pdf') || 
-                         lowercasePermitUrl.endsWith('.png') || 
-                         lowercasePermitUrl.endsWith('.jpg') || 
-                         lowercasePermitUrl.endsWith('.jpeg') || 
-                         lowercasePermitUrl.endsWith('.webp');
-    const isPermitPath = lowercasePermitUrl.includes('/permit-');
-    if (!isAllowedExt || !isPermitPath) {
+    const validationResult = permitPathSchema.safeParse(businessPermitUrl);
+    if (!validationResult.success) {
       return NextResponse.json({ error: 'Invalid document path or file type. Only PDF or image documents are allowed.' }, { status: 400 });
     }
 
-    // Convert storage path key to public URL
-    const { data: permitUrlData } = supabaseAdmin.storage
-      .from('permits')
-      .getPublicUrl(businessPermitUrl);
-    const resolvedPermitUrl = permitUrlData.publicUrl;
+    const resolvedPermitUrl = businessPermitUrl;
 
 
     // Create provider

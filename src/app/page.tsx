@@ -2,7 +2,6 @@
 
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
-import heroBgImg from '@/images/hero-bg.png';
 import { supabase } from '@/lib/supabase';
 import {
   useUser
@@ -158,9 +157,9 @@ export default function LandingPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-24 pb-12 md:pt-32 md:pb-12 overflow-hidden" style={{ backgroundColor: '#F9F9F9' }}>
+      <section className="relative pt-24 pb-12 md:pt-32 md:pb-12 overflow-hidden bg-slate-50 dark:bg-slate-900/50">
         <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
-          <h1 className="font-serif text-5xl md:text-7xl font-bold leading-tight mb-8 text-[#1b1c1d]">
+          <h1 className="font-serif text-5xl md:text-7xl font-bold leading-tight mb-8 text-[#1b1c1d] dark:text-slate-100">
             What <span className="italic font-semibold text-purple-600">service</span><br />do you need?
           </h1>
           {/* Search Container */}

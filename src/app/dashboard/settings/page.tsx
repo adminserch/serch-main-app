@@ -159,7 +159,7 @@ export default function ProviderSettings() {
           setStreetName(pData.street_name || '');
           setStateProvinceRegion(pData.state_province_region || '');
           setPostalZipCode(pData.postal_zip_code || '');
-          setCountry(pData.country || '');
+          setCountry(pData.country || 'Canada');
           setLogoUrl(pData.logo_url || '');
 
           // Fetch provider settings

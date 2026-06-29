@@ -37,7 +37,7 @@ export default function CookiePolicyPage() {
 
         <div className="prose prose-slate max-w-none font-body text-base leading-relaxed text-[#434653] space-y-8">
           <p className="text-lg leading-relaxed text-[#1b1c1d]">
-            This Cookie Policy explains how Serch ("we", "us", or "our") uses cookies and similar tracking technologies to recognize you when you visit our marketplace platform. It explains what these technologies are and why we use them, as well as your rights to control our use of them.
+            This Cookie Policy explains how Serch (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) uses cookies and similar tracking technologies to recognize you when you visit our marketplace platform. It explains what these technologies are and why we use them, as well as your rights to control our use of them.
           </p>
 
           <section className="space-y-4">
@@ -48,7 +48,7 @@ export default function CookiePolicyPage() {
               Cookies are small data files that are placed on your computer or mobile device when you visit a website. Cookies are widely used by website owners to make their websites work, or to work more efficiently, as well as to provide reporting information.
             </p>
             <p>
-              Cookies set by the website owner (in this case, Serch) are called "first-party cookies". Cookies set by parties other than the website owner are called "third-party cookies". Third-party cookies enable third-party features or functionality to be provided on or through the website (e.g., interactive content, analytics, and service mappings).
+              Cookies set by the website owner (in this case, Serch) are called &quot;first-party cookies&quot;. Cookies set by parties other than the website owner are called &quot;third-party cookies&quot;. Third-party cookies enable third-party features or functionality to be provided on or through the website (e.g., interactive content, analytics, and service mappings).
             </p>
           </section>
 
@@ -57,7 +57,7 @@ export default function CookiePolicyPage() {
               2. Why We Use Cookies
             </h2>
             <p>
-              We use first-party and third-party cookies for several reasons. Some cookies are required for technical reasons in order for our platform to operate, and we refer to these as "essential" or "strictly necessary" cookies. Other cookies enable us to track and target the interests of our users to enhance the experience on our online marketplace.
+              We use first-party and third-party cookies for several reasons. Some cookies are required for technical reasons in order for our platform to operate, and we refer to these as &quot;essential&quot; or &quot;strictly necessary&quot; cookies. Other cookies enable us to track and target the interests of our users to enhance the experience on our online marketplace.
             </p>
           </section>
 
