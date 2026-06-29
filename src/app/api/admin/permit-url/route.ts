@@ -32,19 +32,25 @@ export async function GET(req: Request) {
     let isExternalUrl = false;
 
     if (path.startsWith('http') || path.startsWith('https')) {
-      if (path.includes('/public/permits/')) {
-        bucket = 'permits';
-        fileKey = path.split('/public/permits/')[1];
-      } else if (path.includes('/public/documents/')) {
-        bucket = 'documents';
-        fileKey = path.split('/public/documents/')[1];
-      } else if (path.includes('/permits/')) {
-        bucket = 'permits';
-        fileKey = path.split('/permits/')[1];
-      } else if (path.includes('/documents/')) {
-        bucket = 'documents';
-        fileKey = path.split('/documents/')[1];
-      } else {
+      try {
+        const parsedUrl = new URL(path);
+        const pathname = parsedUrl.pathname;
+        if (pathname.includes('/public/permits/')) {
+          bucket = 'permits';
+          fileKey = pathname.split('/public/permits/')[1];
+        } else if (pathname.includes('/public/documents/')) {
+          bucket = 'documents';
+          fileKey = pathname.split('/public/documents/')[1];
+        } else if (pathname.includes('/permits/')) {
+          bucket = 'permits';
+          fileKey = pathname.split('/permits/')[1];
+        } else if (pathname.includes('/documents/')) {
+          bucket = 'documents';
+          fileKey = pathname.split('/documents/')[1];
+        } else {
+          isExternalUrl = true;
+        }
+      } catch {
         isExternalUrl = true;
       }
     } else if (path.startsWith('permits/')) {
@@ -53,6 +59,10 @@ export async function GET(req: Request) {
     } else if (path.startsWith('documents/')) {
       bucket = 'documents';
       fileKey = path.substring(10);
+    }
+
+    if (!isExternalUrl) {
+      fileKey = fileKey.split('?')[0].split('#')[0];
     }
 
     if (isExternalUrl) {
