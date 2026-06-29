@@ -74,10 +74,14 @@ export async function POST(req: Request) {
     }
 
     const lowercasePermitUrl = businessPermitUrl.toLowerCase();
-    const isPdf = lowercasePermitUrl.endsWith('.pdf');
+    const isAllowedExt = lowercasePermitUrl.endsWith('.pdf') || 
+                         lowercasePermitUrl.endsWith('.png') || 
+                         lowercasePermitUrl.endsWith('.jpg') || 
+                         lowercasePermitUrl.endsWith('.jpeg') || 
+                         lowercasePermitUrl.endsWith('.webp');
     const isPermitPath = lowercasePermitUrl.includes('/permit-');
-    if (!isPdf || !isPermitPath) {
-      return NextResponse.json({ error: 'Invalid business permit path or file type. Only PDF permit documents are allowed.' }, { status: 400 });
+    if (!isAllowedExt || !isPermitPath) {
+      return NextResponse.json({ error: 'Invalid document path or file type. Only PDF or image documents are allowed.' }, { status: 400 });
     }
 
     // Convert storage path key to public URL

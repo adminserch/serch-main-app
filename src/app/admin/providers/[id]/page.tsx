@@ -817,14 +817,14 @@ export default function ProviderDetailsPage() {
                   </div>
                   {provider.business_permit_url && (
                     <div>
-                      <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">Business Permit / Log File</span>
+                      <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">Valid Government ID / Verification Document</span>
                       <a 
                         href={provider.business_permit_url} 
                         target="_blank" 
                         rel="noopener noreferrer" 
                         className="flex items-center gap-1.5 text-xs text-accent font-bold hover:text-purple-700 transition-colors w-max"
                       >
-                        <FileText className="w-4 h-4" /> Download/View Vetting Permit Log
+                        <FileText className="w-4 h-4" /> Download/View Vetting Document / ID
                       </a>
                     </div>
                   )}

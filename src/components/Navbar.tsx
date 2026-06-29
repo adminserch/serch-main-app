@@ -91,25 +91,25 @@ export default function Navbar() {
             </Link>
             {/* Desktop Navigation Links */}
             <div className="hidden md:flex gap-8 items-center font-sans text-sm font-semibold">
-              <Link href="/search" className={`hover:text-[#2563eb] transition-colors ${pathname === '/search' ? 'text-[#2563eb]' : isDark ? 'text-slate-200' : 'text-[#5a5f63]'}`}>
+              <Link href="/search" className={`hover:text-purple-600 transition-colors ${pathname === '/search' ? 'text-purple-600' : isDark ? 'text-slate-200' : 'text-[#5a5f63]'}`}>
                 Browse Services
               </Link>
               {(dbRole !== 'provider' && dbRole !== 'admin') && (
-                <Link href="/register" className={`hover:text-[#2563eb] transition-colors ${pathname === '/register' ? 'text-[#2563eb]' : isDark ? 'text-slate-200' : 'text-[#5a5f63]'}`}>
+                <Link href="/register" className={`hover:text-purple-600 transition-colors ${pathname === '/register' ? 'text-purple-600' : isDark ? 'text-slate-200' : 'text-[#5a5f63]'}`}>
                   Become a Provider
                 </Link>
               )}
               {dbRole === 'provider' && (
-                <Link href="/dashboard" className={`hover:text-[#2563eb] transition-colors ${pathname.startsWith('/dashboard') ? 'text-[#2563eb]' : isDark ? 'text-slate-200' : 'text-[#5a5f63]'}`}>
+                <Link href="/dashboard" className={`hover:text-purple-600 transition-colors ${pathname.startsWith('/dashboard') ? 'text-purple-600' : isDark ? 'text-slate-200' : 'text-[#5a5f63]'}`}>
                   Provider Dashboard
                 </Link>
               )}
               {dbRole === 'admin' && (
-                <Link href="/admin" className={`hover:text-[#2563eb] transition-colors ${pathname.startsWith('/admin') ? 'text-[#2563eb]' : isDark ? 'text-slate-200' : 'text-[#5a5f63]'}`}>
+                <Link href="/admin" className={`hover:text-purple-600 transition-colors ${pathname.startsWith('/admin') ? 'text-purple-600' : isDark ? 'text-slate-200' : 'text-[#5a5f63]'}`}>
                   Admin Dashboard
                 </Link>
               )}
-              <Link href="/how-it-works" className={`hover:text-[#2563eb] transition-colors ${pathname === '/how-it-works' ? 'text-[#2563eb]' : isDark ? 'text-slate-200' : 'text-[#5a5f63]'}`}>
+              <Link href="/how-it-works" className={`hover:text-purple-600 transition-colors ${pathname === '/how-it-works' ? 'text-purple-600' : isDark ? 'text-slate-200' : 'text-[#5a5f63]'}`}>
                 How It Works
               </Link>
             </div>
@@ -128,7 +128,7 @@ export default function Navbar() {
             <button 
               aria-label="Notifications (coming soon)"
               onClick={() => alert("Notifications feature is coming soon!")}
-              className="text-[#5a5f63] hover:text-[#2563eb] transition-colors relative p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="text-[#5a5f63] hover:text-purple-600 transition-colors relative p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
             >
               <Bell className="w-5 h-5" />
             </button>
@@ -138,7 +138,7 @@ export default function Navbar() {
             {isSignedIn ? (
               <div className="flex items-center gap-4">
                 {dbRole === 'seeker' && (
-                  <Link href="/bookings" className={`hidden sm:inline-block hover:text-[#2563eb] font-semibold text-sm transition-colors ${pathname === '/bookings' ? 'text-[#2563eb]' : isDark ? 'text-slate-200' : 'text-[#5a5f63]'}`}>
+                  <Link href="/bookings" className={`hidden sm:inline-block hover:text-purple-600 font-semibold text-sm transition-colors ${pathname === '/bookings' ? 'text-purple-600' : isDark ? 'text-slate-200' : 'text-[#5a5f63]'}`}>
                     My Bookings
                   </Link>
                 )}
@@ -147,12 +147,12 @@ export default function Navbar() {
             ) : (
               <div className="flex items-center gap-2 sm:gap-4 font-sans">
                 <SignInButton mode="modal">
-                  <button className="font-semibold text-sm text-[#0b1326] dark:text-slate-200 hover:text-[#2563eb] transition-colors px-2 py-1">
+                  <button className="font-semibold text-sm text-[#0b1326] dark:text-slate-200 hover:text-purple-600 transition-colors px-2 py-1">
                     Log In
                   </button>
                 </SignInButton>
                 <SignUpButton mode="modal">
-                  <button className="bg-[#2563eb] hover:bg-blue-700 text-white font-semibold text-sm px-5 py-2.5 rounded-full transition-all hover:shadow-md active:scale-95 cursor-pointer">
+                  <button className="bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm px-5 py-2.5 rounded-full transition-all hover:shadow-md active:scale-95 cursor-pointer">
                     Get Started
                   </button>
                 </SignUpButton>
@@ -165,29 +165,29 @@ export default function Navbar() {
       {/* Mobile Sticky Bottom Navbar */}
       <div className={`fixed bottom-0 left-0 right-0 z-50 backdrop-blur-md border-t flex justify-around items-center md:hidden shadow-lg py-2.5 px-4 transition-colors duration-300 ${isDark ? 'bg-slate-950/90 border-slate-800' : 'bg-white/90 border-champagne/60'
         }`}>
-        <Link href="/" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/' ? 'text-[#2563eb]' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300'}`}>
+        <Link href="/" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/' ? 'text-purple-600' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300'}`}>
           <Home className="w-5 h-5" />
           <span className="text-[10px] font-semibold font-sans">Home</span>
         </Link>
 
-        <Link href="/search" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/search' ? 'text-[#2563eb]' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300'}`}>
+        <Link href="/search" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/search' ? 'text-purple-600' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300'}`}>
           <Search className="w-5 h-5" />
           <span className="text-[10px] font-semibold font-sans">Search</span>
         </Link>
 
         {/* Dynamic central Bookings/Dashboard tab based on role */}
         {dbRole === 'admin' ? (
-          <Link href="/admin" className={`flex flex-col items-center gap-1 transition-colors ${pathname.startsWith('/admin') ? 'text-[#2563eb]' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300'}`}>
+          <Link href="/admin" className={`flex flex-col items-center gap-1 transition-colors ${pathname.startsWith('/admin') ? 'text-purple-600' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300'}`}>
             <ShieldCheck className="w-5 h-5" />
             <span className="text-[10px] font-semibold font-sans">Admin</span>
           </Link>
         ) : dbRole === 'provider' ? (
-          <Link href="/dashboard" className={`flex flex-col items-center gap-1 transition-colors ${pathname.startsWith('/dashboard') ? 'text-[#2563eb]' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300'}`}>
+          <Link href="/dashboard" className={`flex flex-col items-center gap-1 transition-colors ${pathname.startsWith('/dashboard') ? 'text-purple-600' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300'}`}>
             <LayoutDashboard className="w-5 h-5" />
             <span className="text-[10px] font-semibold font-sans">Dashboard</span>
           </Link>
         ) : (
-          <Link href="/bookings" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/bookings' ? 'text-[#2563eb]' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300'}`}>
+          <Link href="/bookings" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/bookings' ? 'text-purple-600' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300'}`}>
             <CalendarDays className="w-5 h-5" />
             <span className="text-[10px] font-semibold font-sans">Bookings</span>
           </Link>

@@ -47,7 +47,7 @@ export default function HowItWorks() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
-              <button type="submit" className="bg-[#3366cc] hover:bg-primary text-white px-6 py-2.5 rounded-full font-label font-semibold text-sm transition-all cursor-pointer">
+              <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2.5 rounded-full font-label font-semibold text-sm transition-all cursor-pointer">
                 Search
               </button>
             </form>
@@ -230,12 +230,12 @@ export default function HowItWorks() {
                 Explore Professionals
               </Link>
               {isSignedIn ? (
-                <Link href="/register" className="bg-[#3366cc] text-white border border-white/20 px-10 py-4 rounded-full font-label font-bold text-lg hover:shadow-lg transition-all text-center">
+                <Link href="/register" className="bg-purple-600 hover:bg-purple-700 text-white border border-white/20 px-10 py-4 rounded-full font-label font-bold text-lg hover:shadow-lg transition-all text-center">
                   Apply to Join
                 </Link>
               ) : (
                 <SignUpButton mode="modal">
-                  <button className="bg-[#3366cc] text-white border border-white/20 px-10 py-4 rounded-full font-label font-bold text-lg hover:shadow-lg transition-all text-center cursor-pointer">
+                  <button className="bg-purple-600 hover:bg-purple-700 text-white border border-white/20 px-10 py-4 rounded-full font-label font-bold text-lg hover:shadow-lg transition-all text-center cursor-pointer">
                     Apply to Join
                   </button>
                 </SignUpButton>

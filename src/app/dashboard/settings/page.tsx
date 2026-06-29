@@ -57,7 +57,7 @@ export default function ProviderSettings() {
   const [stateProvinceRegion, setStateProvinceRegion] = useState('');
   const [postalZipCode, setPostalZipCode] = useState('');
   const [postalError, setPostalError] = useState('');
-  const [country, setCountry] = useState('');
+  const [country, setCountry] = useState('Canada');
 
   const isValidPostalZip = (code: string) => {
     if (!code) return true;

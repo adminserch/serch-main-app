@@ -460,7 +460,7 @@ function SearchContent() {
                         <Link
                           href={`/providers/${p.id}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="flex-grow bg-gradient-to-r from-primary to-[#3366cc] text-white font-label text-sm font-semibold py-3 rounded-xl transition-all hover:shadow-lg hover:shadow-primary/20 text-center"
+                          className="flex-grow bg-purple-600 hover:bg-purple-700 text-white font-label text-sm font-semibold py-3 rounded-xl transition-all hover:shadow-lg hover:shadow-purple-600/20 text-center"
                         >
                           View Profile
                         </Link>
