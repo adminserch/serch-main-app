@@ -439,21 +439,6 @@ export default function ServicesManager() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Category</label>
-              <select
-                required
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs bg-white focus:outline-none focus:border-accent"
-              >
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
 
             <div className="flex items-center gap-2 mt-2">
               <input

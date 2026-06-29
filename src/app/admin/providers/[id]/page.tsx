@@ -109,7 +109,7 @@ export default function ProviderDetailsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [permitSignedUrl, setPermitSignedUrl] = useState<string | null>(null);
 
   // Edit Mode states
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -169,7 +169,6 @@ export default function ProviderDetailsPage() {
         router.push('/');
         return;
       }
-      setIsAdmin(true);
 
       // 1. Fetch provider details with user joins
       const { data: pData, error: pErr } = await client
@@ -190,6 +189,25 @@ export default function ProviderDetailsPage() {
       }
 
       setProvider(pData as unknown as Provider);
+
+      // Fetch signed URL for the permit/ID
+      setPermitSignedUrl(null);
+      if (pData.business_permit_url) {
+        try {
+          const sUrlRes = await fetch(`/api/admin/permit-url?path=${encodeURIComponent(pData.business_permit_url)}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          if (sUrlRes.ok) {
+            const sUrlData = await sUrlRes.json();
+            setPermitSignedUrl(sUrlData.signedUrl);
+          }
+        } catch (err) {
+          console.error('Failed to load signed permit URL:', err);
+        }
+      }
+
       setEditForm({
         business_name: pData.business_name || '',
         description: pData.description || '',
@@ -817,14 +835,14 @@ export default function ProviderDetailsPage() {
                   </div>
                   {provider.business_permit_url && (
                     <div>
-                      <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">Business Permit / Log File</span>
+                      <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">Valid Government ID / Verification Document</span>
                       <a 
-                        href={provider.business_permit_url} 
+                        href={permitSignedUrl || '#'} 
                         target="_blank" 
                         rel="noopener noreferrer" 
                         className="flex items-center gap-1.5 text-xs text-accent font-bold hover:text-purple-700 transition-colors w-max"
                       >
-                        <FileText className="w-4 h-4" /> Download/View Vetting Permit Log
+                        <FileText className="w-4 h-4" /> Download/View Vetting Document / ID
                       </a>
                     </div>
                   )}

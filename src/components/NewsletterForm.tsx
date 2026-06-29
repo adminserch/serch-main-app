@@ -61,12 +61,12 @@ export default function NewsletterForm() {
             placeholder="Enter your email address"
             required
             disabled={status === 'loading'}
-            className="flex-1 px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0D9488]/50 focus:border-[#0D9488] transition-all disabled:opacity-50 text-sm"
+            className="flex-1 px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-600/50 focus:border-purple-600 transition-all disabled:opacity-50 text-sm"
           />
           <button
             type="submit"
             disabled={status === 'loading' || !email}
-            className="px-5 py-2.5 bg-[#0D9488] text-white font-medium rounded-lg hover:bg-[#0b7c72] active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-[#0D9488]/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm whitespace-nowrap"
+            className="px-5 py-2.5 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-purple-600/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm whitespace-nowrap"
           >
             {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
           </button>
@@ -77,7 +77,7 @@ export default function NewsletterForm() {
         <div 
           className={`mt-3 p-3 rounded-lg text-xs font-medium border transition-all duration-300 ${
             status === 'success' 
-              ? 'bg-teal-500/10 border-teal-500/20 text-teal-400' 
+              ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' 
               : 'bg-red-500/10 border-red-500/20 text-red-400'
           }`}
           role="alert"

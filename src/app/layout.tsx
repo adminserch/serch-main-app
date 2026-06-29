@@ -1,4 +1,5 @@
 import Providers from "@/components/Providers";
+import ConsentBanner from "@/components/ConsentBanner";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import "./globals.css";
@@ -15,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className="h-full antialiased">
+      <html lang="en" className="h-full antialiased" suppressHydrationWarning>
         <head>
           <link
             rel="stylesheet"
@@ -24,10 +25,12 @@ export default function RootLayout({
             crossOrigin=""
           />
         </head>
-        <body className="min-h-full flex flex-col bg-background text-foreground">
+        <body className="min-h-full flex flex-col bg-background text-foreground" suppressHydrationWarning>
           <Providers>{children}</Providers>
+          <ConsentBanner />
         </body>
       </html>
     </ClerkProvider>
   );
 }
+

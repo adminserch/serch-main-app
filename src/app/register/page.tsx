@@ -16,6 +16,7 @@ import {
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
+import { permitDocumentSchema } from '@/lib/validations';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 
@@ -46,7 +47,7 @@ export default function RegisterProviderPage() {
   const [stateProvinceRegion, setStateProvinceRegion] = useState('');
   const [postalZipCode, setPostalZipCode] = useState('');
   const [postalError, setPostalError] = useState('');
-  const [country, setCountry] = useState('');
+  const [country, setCountry] = useState('Canada');
 
   const isValidPostalZip = (code: string) => {
     if (!code) return true;
@@ -149,11 +150,12 @@ export default function RegisterProviderPage() {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const isPdf = file.type 
-        ? file.type === 'application/pdf' 
-        : file.name.toLowerCase().endsWith('.pdf');
-      if (!isPdf) {
-        setPermitFileError('Only PDF files are allowed.');
+      const validationResult = permitDocumentSchema.safeParse({
+        filename: file.name,
+        mimeType: file.type
+      });
+      if (!validationResult.success) {
+        setPermitFileError('Only PDF or image files are allowed.');
         setPermitFile(null);
         setPermitName('');
       } else {
@@ -247,18 +249,25 @@ export default function RegisterProviderPage() {
         }
       }
 
-      // 3. Upload business permit PDF (required)
+      // 3. Upload valid government ID (required)
       if (!permitFile) {
-        throw new Error('Business permit PDF is required.');
+        throw new Error('Valid Government ID is required.');
+      }
+      const validationResult = permitDocumentSchema.safeParse({
+        filename: permitFile.name,
+        mimeType: permitFile.type
+      });
+      if (!validationResult.success) {
+        throw new Error('Only PDF or image files are allowed.');
       }
       const permitExt = permitFile.name.split('.').pop() || 'pdf';
       const permitPath = `${dbUser.id}/permit-${Date.now()}.${permitExt}`;
       const { error: permitUploadError } = await client.storage
-        .from('permits')
-        .upload(permitPath, permitFile);
+          .from('documents')
+          .upload(permitPath, permitFile);
 
       if (permitUploadError) {
-        throw new Error('Failed to upload business permit: ' + permitUploadError.message);
+        throw new Error('Failed to upload government ID: ' + permitUploadError.message);
       }
 
       uploadedPermitPath = permitPath;
@@ -341,7 +350,7 @@ export default function RegisterProviderPage() {
             }
           }
           if (uploadedPermitPath) {
-            const { error: removeErr } = await clientRef.storage.from('permits').remove([uploadedPermitPath]);
+            const { error: removeErr } = await clientRef.storage.from('documents').remove([uploadedPermitPath]);
             if (removeErr) {
               console.error('Failed to remove uploaded permit on registration failure:', removeErr);
             }
@@ -548,21 +557,21 @@ export default function RegisterProviderPage() {
 
           <div>
             <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
-              Business Permit PDF <span className="text-red-500">*</span>
+              Valid Government ID (pdf or image) <span className="text-red-500">*</span>
             </label>
             <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
               <input
                 type="file"
                 onChange={handleFileUpload}
                 className="absolute inset-0 opacity-0 cursor-pointer"
-                accept=".pdf,application/pdf"
+                accept=".pdf,application/pdf,.png,image/png,.jpeg,.jpg,image/jpeg,.webp,image/webp"
                 required
               />
               <Upload className="w-8 h-8 text-stone-400 mb-2" />
               <span className="text-xs font-bold text-slate-700 font-sans">
-                {permitName || 'Click to upload business permit PDF'}
+                {permitName || 'Click to upload Valid Government ID (pdf or image)'}
               </span>
-              <span className="text-[10px] text-stone-400 mt-1 font-sans">PDF format only</span>
+              <span className="text-[10px] text-stone-400 mt-1 font-sans">PDF or image formats</span>
             </div>
             {permitFileError && (
               <p className="text-xs text-red-500 mt-1">{permitFileError}</p>
@@ -585,7 +594,7 @@ export default function RegisterProviderPage() {
               setWebsiteError('');
               setStep(2);
             }}
-            className="bg-primary hover:bg-slate-800 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 mt-4 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
+            className="bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 mt-4 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
           >
             Next Step <ArrowRight className="w-4 h-4" />
           </button>
@@ -756,7 +765,7 @@ export default function RegisterProviderPage() {
                 setBusinessNameError('');
                 setStep(3);
               }}
-              className="w-1/2 bg-primary hover:bg-slate-800 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
+              className="w-1/2 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
             >
               Next Step <ArrowRight className="w-4 h-4" />
             </button>
@@ -827,11 +836,11 @@ export default function RegisterProviderPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Category</label>
+            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Category</label>
             <select
               value={serviceCategoryId}
               onChange={(e) => setServiceCategoryId(e.target.value)}
-              className="w-full border border-champagne rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-accent bg-white"
+              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent bg-white"
             >
               {dbCategories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
@@ -902,7 +911,7 @@ export default function RegisterProviderPage() {
               type="button"
               disabled={!serviceName || !servicePrice || loading}
               onClick={handleSubmit}
-              className="w-1/2 bg-primary hover:bg-slate-800 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
+              className="w-1/2 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>

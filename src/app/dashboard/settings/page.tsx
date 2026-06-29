@@ -57,7 +57,7 @@ export default function ProviderSettings() {
   const [stateProvinceRegion, setStateProvinceRegion] = useState('');
   const [postalZipCode, setPostalZipCode] = useState('');
   const [postalError, setPostalError] = useState('');
-  const [country, setCountry] = useState('');
+  const [country, setCountry] = useState('Canada');
 
   const isValidPostalZip = (code: string) => {
     if (!code) return true;
@@ -159,7 +159,7 @@ export default function ProviderSettings() {
           setStreetName(pData.street_name || '');
           setStateProvinceRegion(pData.state_province_region || '');
           setPostalZipCode(pData.postal_zip_code || '');
-          setCountry(pData.country || '');
+          setCountry(pData.country || 'Canada');
           setLogoUrl(pData.logo_url || '');
 
           // Fetch provider settings
