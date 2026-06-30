@@ -240,7 +240,8 @@ export default function ServicesManager() {
           const { data } = supabase.storage.from('permits').getPublicUrl(filePath);
           updatedImages = [data.publicUrl];
         } else {
-          console.error('Failed to upload service image, using fallback:', uploadError);
+          console.error('Failed to upload service image:', uploadError);
+          throw new Error('Failed to upload service image: ' + (uploadError.message || 'Unknown error'));
         }
       }
 
