@@ -12,6 +12,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { isSignedIn, userId, getToken } = useAuth();
   const [dbRole, setDbRole] = useState<string | null>(null);
+  const [providerStatus, setProviderStatus] = useState<string | null>(null);
 
   const [isDark, setIsDark] = useState(false);
 
@@ -53,18 +54,22 @@ export default function Navbar() {
           });
           if (response.ok) {
             const resData = await response.json();
-            if (resData.success && resData.user && resData.user.role) {
-              setDbRole(resData.user.role);
+            if (resData.success && resData.user) {
+              setDbRole(resData.user.role || null);
+              setProviderStatus(resData.user.providerStatus || null);
               return;
             }
           }
           setDbRole(null);
+          setProviderStatus(null);
         } catch (err) {
           console.error('Error fetching role in Navbar:', err);
           setDbRole(null);
+          setProviderStatus(null);
         }
       } else {
         setDbRole(null);
+        setProviderStatus(null);
       }
     }
     loadRole();
@@ -94,7 +99,7 @@ export default function Navbar() {
               <Link href="/search" className={`hover:text-purple-600 transition-colors ${pathname === '/search' ? 'text-purple-600' : isDark ? 'text-slate-200' : 'text-[#5a5f63]'}`}>
                 Browse Services
               </Link>
-              {(dbRole !== 'provider' && dbRole !== 'admin') && (
+              {(dbRole !== 'provider' && dbRole !== 'admin' && providerStatus !== 'pending') && (
                 <Link href="/register" className={`hover:text-purple-600 transition-colors ${pathname === '/register' ? 'text-purple-600' : isDark ? 'text-slate-200' : 'text-[#5a5f63]'}`}>
                   Become a Provider
                 </Link>

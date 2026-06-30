@@ -509,7 +509,11 @@ export default function ProviderProfilePage() {
                 <span>•</span>
                 <div className="flex items-center gap-1">
                   <MapPin className="w-4 h-4" />
-                  <span>{provider.service_district}, {provider.service_city}</span>
+                  <span>
+                    {provider.service_district 
+                      ? `${provider.service_district}, ${provider.service_city}` 
+                      : provider.service_city}
+                  </span>
                 </div>
               </div>
 

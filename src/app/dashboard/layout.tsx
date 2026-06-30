@@ -10,7 +10,10 @@ import {
   CalendarDays,
   LayoutDashboard,
   Settings2,
-  Sparkles
+  Sparkles,
+  Clock,
+  Ban,
+  AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -28,6 +31,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { user } = useUser();
   const { isLoaded, isSignedIn, getToken } = useAuth();
   const [authorized, setAuthorized] = useState(false);
+  const [providerStatus, setProviderStatus] = useState<string | null>(null);
   const [isDark, setIsDark] = useState(false);
 
   // Sync theme with HTML class and global events
@@ -65,8 +69,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
         
         const resData = await response.json();
-        if (resData.success && resData.user && (resData.user.role === 'provider' || resData.user.role === 'admin')) {
-          setAuthorized(true);
+        if (resData.success && resData.user) {
+          if (resData.user.role === 'admin') {
+            setProviderStatus('approved');
+            setAuthorized(true);
+          } else if (resData.user.role === 'provider') {
+            setProviderStatus(resData.user.providerStatus);
+            setAuthorized(true);
+          } else {
+            router.push('/');
+          }
         } else {
           router.push('/');
         }
@@ -129,6 +141,62 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="flex-grow flex items-center justify-center p-8 pt-36">
           <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
         </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (providerStatus && providerStatus !== 'approved') {
+    return (
+      <div className="flex flex-col min-h-screen bg-stone-50/50 text-espresso">
+        <Navbar />
+        <main className="flex-grow pt-28 pb-16 flex items-center justify-center px-6">
+          <div className="max-w-md w-full bg-white border border-champagne/80 shadow-md rounded-2xl p-8 flex flex-col items-center text-center">
+            {providerStatus === 'pending' ? (
+              <>
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-6 border bg-amber-50 text-amber-600 border-amber-200">
+                  <Clock className="w-8 h-8 animate-pulse" />
+                </div>
+                <h1 className="font-display text-2xl font-bold mb-3 text-espresso">
+                  Application Under Review
+                </h1>
+                <p className="font-sans text-sm text-stone-500 mb-8 leading-relaxed">
+                  Your provider application is currently being reviewed by our admin team. Seekers will be able to search and book your services once your profile is approved.
+                </p>
+              </>
+            ) : providerStatus === 'rejected' ? (
+              <>
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-6 border bg-red-50 text-red-650 border-red-200">
+                  <Ban className="w-8 h-8" />
+                </div>
+                <h1 className="font-display text-2xl font-bold mb-3 text-espresso">
+                  Application Rejected
+                </h1>
+                <p className="font-sans text-sm text-stone-500 mb-8 leading-relaxed">
+                  Your provider application was not approved. Please reach out to support for more details regarding this decision.
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-6 border bg-red-50 text-red-650 border-red-200">
+                  <AlertCircle className="w-8 h-8" />
+                </div>
+                <h1 className="font-display text-2xl font-bold mb-3 text-espresso">
+                  Account Suspended
+                </h1>
+                <p className="font-sans text-sm text-stone-500 mb-8 leading-relaxed">
+                  Your provider account is currently suspended. Access to the provider dashboard has been restricted.
+                </p>
+              </>
+            )}
+            <Link
+              href="/"
+              className="w-full bg-primary hover:bg-slate-800 text-white font-semibold text-sm py-3 px-4 rounded-xl transition-all shadow-sm"
+            >
+              Back to Home
+            </Link>
+          </div>
+        </main>
         <Footer />
       </div>
     );

@@ -71,7 +71,25 @@ export async function POST() {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, user: data });
+    let providerStatus = null;
+    if (data && data.role === 'provider') {
+      const { data: providerData } = await supabaseAdmin
+        .from('providers')
+        .select('status')
+        .eq('user_id', data.id)
+        .maybeSingle();
+      if (providerData) {
+        providerStatus = providerData.status;
+      }
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      user: { 
+        ...data, 
+        providerStatus 
+      } 
+    });
   } catch (err: any) {
     console.error('User sync API error:', err);
     return NextResponse.json({ error: err.message }, { status: 500 });

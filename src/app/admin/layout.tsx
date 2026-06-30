@@ -201,7 +201,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 ? (providers as AdminProvider[]).filter(p => p.status === 'pending').length
                 : 0;
               if (pendingCount > 0) {
-                toast(`Attention: There are ${pendingCount} provider registration requests awaiting approval.`, 'warning', 300000);
+                const win = window as any;
+                if (!win.__pendingToastShown) {
+                  toast(`Attention: There are ${pendingCount} provider registration requests awaiting approval.`, 'warning', 300000);
+                  win.__pendingToastShown = true;
+                }
               }
             }
           } catch (countErr) {

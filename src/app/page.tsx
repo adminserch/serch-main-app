@@ -87,6 +87,30 @@ export default function LandingPage() {
   useEffect(() => {
     async function loadData() {
       try {
+        let currentProviderId: string | null = null;
+        
+        // Fetch user role and provider ID if authenticated
+        if (user) {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('id, role')
+            .eq('clerk_user_id', user.id)
+            .single();
+          if (userData) {
+            setDbRole(userData.role);
+            if (userData.role === 'provider') {
+              const { data: provData } = await supabase
+                .from('providers')
+                .select('id')
+                .eq('user_id', userData.id)
+                .single();
+              if (provData) {
+                currentProviderId = provData.id;
+              }
+            }
+          }
+        }
+
         // Fetch providers
         const { data: providersData, error: pError } = await supabase
           .from('providers')
@@ -99,13 +123,19 @@ export default function LandingPage() {
             service_district,
             is_verified
           `)
-          .eq('status', 'approved')
-          .limit(3);
+          .eq('status', 'approved');
 
         if (!pError && providersData && providersData.length > 0) {
+          // Filter out the logged-in provider
+          const filteredProviders = currentProviderId
+            ? providersData.filter((p: any) => p.id !== currentProviderId)
+            : providersData;
+
+          const slicedProviders = filteredProviders.slice(0, 3);
+
           // Fetch average ratings for these providers
           const providersWithRatings = await Promise.all(
-            providersData.map(async (prov: any) => {
+            slicedProviders.map(async (prov: any) => {
               const { data: revData } = await supabase
                 .from('reviews')
                 .select('rating')
@@ -124,18 +154,6 @@ export default function LandingPage() {
             })
           );
           setLiveProviders(providersWithRatings);
-        }
-
-        // Fetch user role if authenticated
-        if (user) {
-          const { data: userData } = await supabase
-            .from('users')
-            .select('role')
-            .eq('clerk_user_id', user.id)
-            .single();
-          if (userData) {
-            setDbRole(userData.role);
-          }
         }
       } catch (err) {
         console.error('Error fetching landing details:', err);
@@ -187,14 +205,14 @@ export default function LandingPage() {
               Search
             </button>
           </form>
-          <h2 className="font-serif text-5xl md:text-7xl font-bold leading-tight mt-12 text-[#1b1c1d] dark:text-slate-100">
+          <h2 className="font-serif text-4xl md:text-6xl font-bold leading-tight mt-12 text-[#1b1c1d] dark:text-slate-100">
             Find. <span className="italic font-semibold text-purple-600">Book.</span> Trust.
           </h2>
         </div>
       </section>
 
       {/* Popular Categories Section */}
-      <section className="py-8 bg-background transition-colors duration-300" data-purpose="popular-categories">
+      <section className="pb-8 pt-0 bg-background transition-colors duration-300" data-purpose="popular-categories">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-end justify-between mb-12">
             <div>
@@ -329,7 +347,7 @@ export default function LandingPage() {
                           {tagLabel}
                         </span>
                       </div>
-                      <h3 className="text-xl font-bold text-foreground mb-1 group-hover:text-[#3366cc] transition-colors font-serif">
+                      <h3 className="text-xl font-bold text-foreground mb-1 group-hover:text-purple-600 transition-colors font-serif">
                         {prov.business_name}
                       </h3>
                       <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">

@@ -106,6 +106,7 @@ function SearchContent() {
   const { isSignedIn } = useAuth();
   const { user } = useUser();
   const [dbRole, setDbRole] = useState<string | null>(null);
+  const [currentProviderId, setCurrentProviderId] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
@@ -138,11 +139,21 @@ function SearchContent() {
         try {
           const { data: userData } = await supabase
             .from('users')
-            .select('role')
+            .select('id, role')
             .eq('clerk_user_id', user.id)
             .single();
           if (userData) {
             setDbRole(userData.role);
+            if (userData.role === 'provider') {
+              const { data: provData } = await supabase
+                .from('providers')
+                .select('id')
+                .eq('user_id', userData.id)
+                .single();
+              if (provData) {
+                setCurrentProviderId(provData.id);
+              }
+            }
           }
         } catch (err) {
           console.error('Error fetching search user details:', err);
@@ -179,8 +190,13 @@ function SearchContent() {
           .eq('status', 'approved');
 
         if (!error && dbProviders && dbProviders.length > 0) {
+          // Filter out the logged-in provider
+          const filteredDbProviders = currentProviderId
+            ? dbProviders.filter((p: any) => p.id !== currentProviderId)
+            : dbProviders;
+
           const formatted = await Promise.all(
-            dbProviders.map(async (p: any) => {
+            filteredDbProviders.map(async (p: any) => {
               const { data: revData } = await supabase
                 .from('reviews')
                 .select('rating')
@@ -224,7 +240,7 @@ function SearchContent() {
       }
     }
     loadProviders();
-  }, []);
+  }, [currentProviderId]);
 
   // Filter logic
   const filteredProviders = providers.filter((p) => {

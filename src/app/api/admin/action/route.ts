@@ -31,6 +31,21 @@ export async function POST(req: Request) {
 
       if (error) throw error;
 
+      // Sync user role based on provider status
+      const { data: providerData } = await supabaseAdmin
+        .from('providers')
+        .select('user_id')
+        .eq('id', providerId)
+        .single();
+        
+      if (providerData) {
+        const targetRole = status === 'approved' ? 'provider' : 'seeker';
+        await supabaseAdmin
+          .from('users')
+          .update({ role: targetRole })
+          .eq('id', providerData.user_id);
+      }
+
       // Sync trigger for notification email mock
       await fetch(`${new URL(req.url).origin}/api/notifications/send`, {
         method: 'POST',
@@ -226,7 +241,12 @@ export async function POST(req: Request) {
         logo_url,
         is_verified,
         status,
-        service_categories
+        service_categories,
+        house_building_number,
+        street_name,
+        state_province_region,
+        postal_zip_code,
+        country
       } = payload;
 
       if (!providerId) {
@@ -246,7 +266,12 @@ export async function POST(req: Request) {
           logo_url,
           is_verified,
           status,
-          service_categories
+          service_categories,
+          house_building_number,
+          street_name,
+          state_province_region,
+          postal_zip_code,
+          country
         })
         .eq('id', providerId);
 
