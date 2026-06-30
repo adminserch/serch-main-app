@@ -23,6 +23,24 @@ interface Category {
   name: string;
 }
 
+function usePreviewUrl(file: File | null) {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!file) {
+      setPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [file]);
+
+  return previewUrl;
+}
+
 export default function ServicesManager() {
   const { getToken } = useAuth();
   const { user } = useUser();
@@ -60,19 +78,7 @@ export default function ServicesManager() {
   const [images, setImages] = useState<string[]>([]);
   const [serviceImageFile, setServiceImageFile] = useState<File | null>(null);
   const [serviceImageName, setServiceImageName] = useState('');
-  const [serviceImagePreviewUrl, setServiceImagePreviewUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!serviceImageFile) {
-      setServiceImagePreviewUrl(null);
-      return;
-    }
-    const objectUrl = URL.createObjectURL(serviceImageFile);
-    setServiceImagePreviewUrl(objectUrl);
-    return () => {
-      URL.revokeObjectURL(objectUrl);
-    };
-  }, [serviceImageFile]);
+  const serviceImagePreviewUrl = usePreviewUrl(serviceImageFile);
 
   const [editorLoading, setEditorLoading] = useState(false);
   const [useAdminBypass, setUseAdminBypass] = useState(false);

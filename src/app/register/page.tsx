@@ -304,7 +304,7 @@ export default function RegisterProviderPage() {
 
         uploadedPermitPath = permitPath;
         uploadedPermitBucket = 'documents';
-        businessPermitUrl = permitPath;
+        businessPermitUrl = `documents/${permitPath}`;
       } else {
         uploadedPermitPath = permitPath;
         uploadedPermitBucket = 'permits';
