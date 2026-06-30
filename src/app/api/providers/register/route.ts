@@ -123,6 +123,75 @@ export async function POST(req: Request) {
 
     // Create service
     let finalCategoryId = serviceCategoryId;
+    
+    // Check if the serviceCategoryId is a valid categories ID. If not, map from provider_services to categories.
+    if (finalCategoryId) {
+      const { data: catCheck } = await supabaseAdmin
+        .from('categories')
+        .select('id')
+        .eq('id', finalCategoryId)
+        .maybeSingle();
+        
+      if (!catCheck) {
+        // Not a direct category ID, let's see if it's a provider_services ID
+        const { data: provService } = await supabaseAdmin
+          .from('provider_services')
+          .select('name')
+          .eq('id', finalCategoryId)
+          .maybeSingle();
+          
+        if (provService) {
+          // Map provider service name to a category name
+          const psName = provService.name.toLowerCase();
+          let targetCategoryName = '';
+          if (psName.includes('cleaning')) targetCategoryName = 'Cleaning Services';
+          else if (psName.includes('aircon') || psName.includes('roof') || psName.includes('paint') || psName.includes('pest') || psName.includes('carpentry') || psName.includes('repair') || psName.includes('maintenance')) targetCategoryName = 'Home Repair & Maintenance';
+          else if (psName.includes('plumb')) targetCategoryName = 'Plumbing Services';
+          else if (psName.includes('electr')) targetCategoryName = 'Electrical Services';
+          else if (psName.includes('garden') || psName.includes('landscap') || psName.includes('lawn')) targetCategoryName = 'Lawn Care & Landscaping';
+          else if (psName.includes('mov') || psName.includes('haul') || psName.includes('deliver')) targetCategoryName = 'Moving & Delivery Services';
+          else if (psName.includes('photograph') || psName.includes('video')) targetCategoryName = 'Photography & Videography';
+          else if (psName.includes('beauty') || psName.includes('hair') || psName.includes('nail')) targetCategoryName = 'Beauty & Personal Care';
+          else if (psName.includes('well') || psName.includes('massag') || psName.includes('spa')) targetCategoryName = 'Wellness Services';
+          else if (psName.includes('pet') || psName.includes('dog') || psName.includes('cat')) targetCategoryName = 'Pet Services';
+          else if (psName.includes('lesson') || psName.includes('coach') || psName.includes('tutor')) targetCategoryName = 'Tutorial & Coaching';
+          else if (psName.includes('tech') || psName.includes('comput') || psName.includes('instal')) targetCategoryName = 'Technology Services';
+          else if (psName.includes('event') || psName.includes('wedding') || psName.includes('part')) targetCategoryName = 'Event Services';
+          else if (psName.includes('business') || psName.includes('bookkeep') || psName.includes('consult')) targetCategoryName = 'Business Services';
+
+          if (targetCategoryName) {
+            const { data: matchedCat } = await supabaseAdmin
+              .from('categories')
+              .select('id')
+              .eq('name', targetCategoryName)
+              .eq('is_active', true)
+              .maybeSingle();
+              
+            if (matchedCat) {
+              finalCategoryId = matchedCat.id;
+            } else {
+              // Try partial match
+              const { data: partialMatchedCat } = await supabaseAdmin
+                .from('categories')
+                .select('id')
+                .ilike('name', `%${targetCategoryName}%`)
+                .eq('is_active', true)
+                .limit(1);
+              if (partialMatchedCat && partialMatchedCat.length > 0) {
+                finalCategoryId = partialMatchedCat[0].id;
+              } else {
+                finalCategoryId = null;
+              }
+            }
+          } else {
+            finalCategoryId = null;
+          }
+        } else {
+          finalCategoryId = null;
+        }
+      }
+    }
+
     const isFallbackId = finalCategoryId && /^([1-7])\1{7}/.test(finalCategoryId);
     if (!finalCategoryId || isFallbackId) {
       const { data: catData } = await supabaseAdmin

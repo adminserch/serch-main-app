@@ -140,6 +140,16 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ success: true });
   } catch (err: any) {
     console.error('Delete category error:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    
+    let errorMessage = err.message || 'An unexpected error occurred.';
+    if (err.code === '23503' || (err.message && err.message.toLowerCase().includes('foreign key constraint'))) {
+      if (err.message.includes('services_category_id_fkey') || err.message.includes('categories')) {
+        errorMessage = 'This category cannot be deleted because it is currently linked to one or more active services. Please delete or reassign those services first, or mark this category as inactive.';
+      } else {
+        errorMessage = 'This item cannot be deleted or updated because it is currently referenced by other records in the database.';
+      }
+    }
+    
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

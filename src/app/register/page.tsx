@@ -114,6 +114,7 @@ export default function RegisterProviderPage() {
   const [serviceImageName, setServiceImageName] = useState('');
   const [serviceImagePreviewUrl, setServiceImagePreviewUrl] = useState<string | null>(null);
   const [dbCategories, setDbCategories] = useState<{ id: string; name: string }[]>([]);
+  const [providerServices, setProviderServices] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
     if (!serviceImageFile) {
@@ -125,6 +126,7 @@ export default function RegisterProviderPage() {
     return () => URL.revokeObjectURL(objectUrl);
   }, [serviceImageFile]);
 
+  // Load business categories for Step 1
   useEffect(() => {
     async function loadDbCategories() {
       try {
@@ -136,19 +138,6 @@ export default function RegisterProviderPage() {
 
         if (!error && data && data.length > 0) {
           setDbCategories(data);
-          setServiceCategoryId(data[0].id);
-        } else {
-          const fallbackCats = [
-            { id: '11111111-1111-1111-1111-111111111111', name: 'Home Cleaning' },
-            { id: '22222222-2222-2222-2222-222222222222', name: 'Aircon Repair' },
-            { id: '33333333-3333-3333-3333-333333333333', name: 'Roof Repair' },
-            { id: '44444444-4444-4444-4444-444444444444', name: 'Plumbing' },
-            { id: '55555555-5555-5555-5555-555555555555', name: 'Electrical' },
-            { id: '66666666-6666-6666-6666-666666666666', name: 'Painting' },
-            { id: '77777777-7777-7777-7777-777777777777', name: 'Gardening & Landscaping' }
-          ];
-          setDbCategories(fallbackCats);
-          setServiceCategoryId(fallbackCats[0].id);
         }
       } catch (err) {
         console.error('Error loading db categories:', err);
@@ -156,6 +145,47 @@ export default function RegisterProviderPage() {
     }
     loadDbCategories();
   }, []);
+
+  // Load provider services for Step 3
+  useEffect(() => {
+    async function loadProviderServices() {
+      try {
+        const token = await getToken();
+        if (!token) return;
+
+        const res = await fetch('/api/provider-services', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (res.ok) {
+          const result = await res.json();
+          if (result.success && result.services && result.services.length > 0) {
+            setProviderServices(result.services);
+            setServiceCategoryId(result.services[0].id);
+            return;
+          }
+        }
+
+        // Fallback if API fails or returns empty
+        const fallbackCats = [
+          { id: '11111111-1111-1111-1111-111111111111', name: 'Home Cleaning' },
+          { id: '22222222-2222-2222-2222-222222222222', name: 'Aircon Repair' },
+          { id: '33333333-3333-3333-3333-333333333333', name: 'Roof Repair' },
+          { id: '44444444-4444-4444-4444-444444444444', name: 'Plumbing' },
+          { id: '55555555-5555-5555-5555-555555555555', name: 'Electrical' },
+          { id: '66666666-6666-6666-6666-666666666666', name: 'Painting' },
+          { id: '77777777-7777-7777-7777-777777777777', name: 'Gardening & Landscaping' }
+        ];
+        setProviderServices(fallbackCats);
+        setServiceCategoryId(fallbackCats[0].id);
+      } catch (err) {
+        console.error('Error loading provider services:', err);
+      }
+    }
+    loadProviderServices();
+  }, [getToken]);
 
 
   const handleLocationChange = (lat: number, lng: number) => {
@@ -554,28 +584,30 @@ export default function RegisterProviderPage() {
               )}
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Company Logo</label>
-              <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
-                <input
-                  ref={logoInputRef}
-                  type="file"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      setLogoFile(e.target.files[0]);
-                      setLogoName(e.target.files[0].name);
-                    }
-                  }}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                  accept="image/*"
-                />
-                <Upload className="w-8 h-8 text-stone-400 mb-2" />
-                <span className="text-xs font-bold text-slate-700 font-sans">
-                  {logoName || 'Click to upload company logo'}
-                </span>
-                <span className="text-[10px] text-stone-400 mt-1 font-sans">JPEG, PNG formats</span>
+            {!logoPreviewUrl && (
+              <div>
+                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Company Logo</label>
+                <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
+                  <input
+                    ref={logoInputRef}
+                    type="file"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setLogoFile(e.target.files[0]);
+                        setLogoName(e.target.files[0].name);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    accept="image/*"
+                  />
+                  <Upload className="w-8 h-8 text-stone-400 mb-2" />
+                  <span className="text-xs font-bold text-slate-700 font-sans">
+                    {logoName || 'Click to upload company logo'}
+                  </span>
+                  <span className="text-[10px] text-stone-400 mt-1 font-sans">JPEG, PNG formats</span>
+                </div>
               </div>
-            </div>
+            )}
 
             {logoPreviewUrl && (
               <div className="w-full">
@@ -607,24 +639,28 @@ export default function RegisterProviderPage() {
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
-                Valid Government ID (pdf or image) <span className="text-red-500">*</span>
-              </label>
-              <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
-                <input
-                  ref={permitInputRef}
-                  type="file"
-                  onChange={handleFileUpload}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                  accept=".pdf,application/pdf,.png,image/png,.jpeg,.jpg,image/jpeg,.webp,image/webp"
-                  required
-                />
-                <Upload className="w-8 h-8 text-stone-400 mb-2" />
-                <span className="text-xs font-bold text-slate-700 font-sans">
-                  {permitName || 'Click to upload Valid Government ID (pdf or image)'}
-                </span>
-                <span className="text-[10px] text-stone-400 mt-1 font-sans">PDF or image formats</span>
-              </div>
+              {!permitPreviewUrl && (
+                <div>
+                  <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
+                    Valid Government ID (pdf or image) <span className="text-red-500">*</span>
+                  </label>
+                  <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
+                    <input
+                      ref={permitInputRef}
+                      type="file"
+                      onChange={handleFileUpload}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      accept=".pdf,application/pdf,.png,image/png,.jpeg,.jpg,image/jpeg,.webp,image/webp"
+                      required
+                    />
+                    <Upload className="w-8 h-8 text-stone-400 mb-2" />
+                    <span className="text-xs font-bold text-slate-700 font-sans">
+                      {permitName || 'Click to upload Valid Government ID (pdf or image)'}
+                    </span>
+                    <span className="text-[10px] text-stone-400 mt-1 font-sans">PDF or image formats</span>
+                  </div>
+                </div>
+              )}
               {permitFileError && (
                 <p className="text-xs text-red-500 mt-1">{permitFileError}</p>
               )}
@@ -942,7 +978,7 @@ export default function RegisterProviderPage() {
                 onChange={(e) => setServiceCategoryId(e.target.value)}
                 className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent bg-white"
               >
-                {dbCategories.map((cat) => (
+                {providerServices.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.name}
                   </option>
@@ -963,28 +999,30 @@ export default function RegisterProviderPage() {
               </label>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Image</label>
-              <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
-                <input
-                  ref={serviceImageInputRef}
-                  type="file"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      setServiceImageFile(e.target.files[0]);
-                      setServiceImageName(e.target.files[0].name);
-                    }
-                  }}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                  accept="image/*"
-                />
-                <Upload className="w-8 h-8 text-stone-400 mb-2" />
-                <span className="text-xs font-bold text-slate-700 font-sans">
-                  {serviceImageName || 'Upload service image'}
-                </span>
-                <span className="text-[10px] text-stone-400 mt-1 font-sans">JPEG, PNG formats</span>
+            {!serviceImagePreviewUrl && (
+              <div>
+                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Image</label>
+                <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
+                  <input
+                    ref={serviceImageInputRef}
+                    type="file"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setServiceImageFile(e.target.files[0]);
+                        setServiceImageName(e.target.files[0].name);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    accept="image/*"
+                  />
+                  <Upload className="w-8 h-8 text-stone-400 mb-2" />
+                  <span className="text-xs font-bold text-slate-700 font-sans">
+                    {serviceImageName || 'Upload service image'}
+                  </span>
+                  <span className="text-[10px] text-stone-400 mt-1 font-sans">JPEG, PNG formats</span>
+                </div>
               </div>
-            </div>
+            )}
 
             {serviceImagePreviewUrl && (
               <div className="w-full">
