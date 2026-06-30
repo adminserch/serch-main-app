@@ -80,15 +80,15 @@ export default function RegisterProviderPage() {
   const [permitFileError, setPermitFileError] = useState('');
   const [permitPreviewUrl, setPermitPreviewUrl] = useState<string | null>(null);
 
+  // Cleanup permit preview URL on unmount
   useEffect(() => {
-    if (!permitFile) {
-      setPermitPreviewUrl(null);
-      return;
-    }
-    const objectUrl = URL.createObjectURL(permitFile);
-    setPermitPreviewUrl(objectUrl);
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [permitFile]);
+    return () => {
+      setPermitPreviewUrl(prev => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
+    };
+  }, []);
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoName, setLogoName] = useState('');
@@ -174,10 +174,18 @@ export default function RegisterProviderPage() {
         setPermitFileError('Only PDF or image files are allowed.');
         setPermitFile(null);
         setPermitName('');
+        setPermitPreviewUrl(prev => {
+          if (prev) URL.revokeObjectURL(prev);
+          return null;
+        });
       } else {
         setPermitFileError('');
         setPermitFile(file);
         setPermitName(file.name);
+        setPermitPreviewUrl(prev => {
+          if (prev) URL.revokeObjectURL(prev);
+          return URL.createObjectURL(file);
+        });
       }
     }
   };
@@ -630,6 +638,10 @@ export default function RegisterProviderPage() {
                       onClick={() => {
                         setPermitFile(null);
                         setPermitName('');
+                        setPermitPreviewUrl(prev => {
+                          if (prev) URL.revokeObjectURL(prev);
+                          return null;
+                        });
                         if (permitInputRef.current) {
                           permitInputRef.current.value = '';
                         }
@@ -652,6 +664,7 @@ export default function RegisterProviderPage() {
                         src={permitPreviewUrl}
                         title="Government ID Preview"
                         className="w-full h-96 rounded-lg border border-champagne/60 bg-white"
+                        sandbox="allow-scripts allow-same-origin"
                       />
                     ) : (
                       <div className="text-center p-4">

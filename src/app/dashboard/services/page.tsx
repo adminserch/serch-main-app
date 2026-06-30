@@ -60,6 +60,20 @@ export default function ServicesManager() {
   const [images, setImages] = useState<string[]>([]);
   const [serviceImageFile, setServiceImageFile] = useState<File | null>(null);
   const [serviceImageName, setServiceImageName] = useState('');
+  const [serviceImagePreviewUrl, setServiceImagePreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!serviceImageFile) {
+      setServiceImagePreviewUrl(null);
+      return;
+    }
+    const objectUrl = URL.createObjectURL(serviceImageFile);
+    setServiceImagePreviewUrl(objectUrl);
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [serviceImageFile]);
+
   const [editorLoading, setEditorLoading] = useState(false);
   const [useAdminBypass, setUseAdminBypass] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
@@ -479,13 +493,13 @@ export default function ServicesManager() {
               </div>
 
               {/* Image Previews (Rendered below) */}
-              {serviceImageFile ? (
+              {serviceImageFile && serviceImagePreviewUrl ? (
                 <div className="mt-3 flex items-center justify-between gap-3 bg-stone-50 border border-champagne/45 p-2 rounded-xl">
                   <div className="flex items-center gap-3">
                     <img 
-                      src={URL.createObjectURL(serviceImageFile)} 
+                      src={serviceImagePreviewUrl} 
                       alt="New upload preview" 
-                      onClick={() => setPreviewImageUrl(URL.createObjectURL(serviceImageFile))}
+                      onClick={() => setPreviewImageUrl(serviceImagePreviewUrl)}
                       className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity" 
                     />
                     <div className="flex flex-col">
