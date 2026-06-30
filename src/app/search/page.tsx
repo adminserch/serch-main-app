@@ -135,29 +135,41 @@ function SearchContent() {
 
   useEffect(() => {
     async function loadUserRole() {
-      if (user) {
-        try {
-          const { data: userData } = await supabase
-            .from('users')
-            .select('id, role')
-            .eq('clerk_user_id', user.id)
-            .single();
-          if (userData) {
-            setDbRole(userData.role);
-            if (userData.role === 'provider') {
-              const { data: provData } = await supabase
-                .from('providers')
-                .select('id')
-                .eq('user_id', userData.id)
-                .single();
-              if (provData) {
-                setCurrentProviderId(provData.id);
-              }
+      if (!user) {
+        setDbRole(null);
+        setCurrentProviderId(null);
+        return;
+      }
+      try {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('id, role')
+          .eq('clerk_user_id', user.id)
+          .single();
+        if (userData) {
+          setDbRole(userData.role);
+          if (userData.role === 'provider') {
+            const { data: provData } = await supabase
+              .from('providers')
+              .select('id')
+              .eq('user_id', userData.id)
+              .single();
+            if (provData) {
+              setCurrentProviderId(provData.id);
+            } else {
+              setCurrentProviderId(null);
             }
+          } else {
+            setCurrentProviderId(null);
           }
-        } catch (err) {
-          console.error('Error fetching search user details:', err);
+        } else {
+          setDbRole(null);
+          setCurrentProviderId(null);
         }
+      } catch (err) {
+        console.error('Error fetching search user details:', err);
+        setDbRole(null);
+        setCurrentProviderId(null);
       }
     }
     loadUserRole();
@@ -189,14 +201,33 @@ function SearchContent() {
           `)
           .eq('status', 'approved');
 
+        interface DbProvider {
+          id: string;
+          business_name: string;
+          description: string | null;
+          logo_url: string | null;
+          service_city: string;
+          service_district: string | null;
+          is_verified: boolean;
+          latitude: number | null;
+          longitude: number | null;
+          status: string;
+          service_categories: string[] | null;
+        }
+
+        interface ReviewRow {
+          rating: number;
+        }
+
         if (!error && dbProviders && dbProviders.length > 0) {
+          const typedDbProviders = dbProviders as DbProvider[];
           // Filter out the logged-in provider
           const filteredDbProviders = currentProviderId
-            ? dbProviders.filter((p: any) => p.id !== currentProviderId)
-            : dbProviders;
+            ? typedDbProviders.filter((p: DbProvider) => p.id !== currentProviderId)
+            : typedDbProviders;
 
           const formatted = await Promise.all(
-            filteredDbProviders.map(async (p: any) => {
+            filteredDbProviders.map(async (p: DbProvider) => {
               const { data: revData } = await supabase
                 .from('reviews')
                 .select('rating')
@@ -204,7 +235,7 @@ function SearchContent() {
 
               const count = revData?.length || 0;
               const avg = count > 0 
-                ? Number((revData!.reduce((acc: number, curr: any) => acc + curr.rating, 0) / count).toFixed(2)) 
+                ? Number(((revData as ReviewRow[]).reduce((acc: number, curr: ReviewRow) => acc + curr.rating, 0) / count).toFixed(2)) 
                 : 5.0;
 
               return {
@@ -213,7 +244,7 @@ function SearchContent() {
                 description: p.description || '',
                 logo_url: p.logo_url,
                 service_city: p.service_city,
-                service_district: p.service_district,
+                service_district: p.service_district || '',
                 is_verified: p.is_verified,
                 latitude: p.latitude,
                 longitude: p.longitude,

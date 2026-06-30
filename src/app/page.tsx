@@ -111,8 +111,22 @@ export default function LandingPage() {
           }
         }
 
+        interface ProviderRow {
+          id: string;
+          business_name: string;
+          description: string | null;
+          logo_url: string | null;
+          service_city: string;
+          service_district: string | null;
+          is_verified: boolean;
+        }
+
+        interface ReviewRow {
+          rating: number;
+        }
+
         // Fetch providers
-        const { data: providersData, error: pError } = await supabase
+        let pQuery = supabase
           .from('providers')
           .select(`
             id,
@@ -125,17 +139,16 @@ export default function LandingPage() {
           `)
           .eq('status', 'approved');
 
+        if (currentProviderId) {
+          pQuery = pQuery.neq('id', currentProviderId);
+        }
+
+        const { data: providersData, error: pError } = await pQuery.limit(3);
+
         if (!pError && providersData && providersData.length > 0) {
-          // Filter out the logged-in provider
-          const filteredProviders = currentProviderId
-            ? providersData.filter((p: any) => p.id !== currentProviderId)
-            : providersData;
-
-          const slicedProviders = filteredProviders.slice(0, 3);
-
           // Fetch average ratings for these providers
           const providersWithRatings = await Promise.all(
-            slicedProviders.map(async (prov: any) => {
+            (providersData as ProviderRow[]).map(async (prov: ProviderRow) => {
               const { data: revData } = await supabase
                 .from('reviews')
                 .select('rating')
@@ -143,11 +156,17 @@ export default function LandingPage() {
 
               const count = revData?.length || 0;
               const avg = count > 0
-                ? Number((revData!.reduce((acc: number, curr: any) => acc + curr.rating, 0) / count).toFixed(2))
+                ? Number(((revData as ReviewRow[]).reduce((acc: number, curr: ReviewRow) => acc + curr.rating, 0) / count).toFixed(2))
                 : 5.0;
 
               return {
-                ...prov,
+                id: prov.id,
+                business_name: prov.business_name,
+                description: prov.description || '',
+                logo_url: prov.logo_url,
+                service_city: prov.service_city,
+                service_district: prov.service_district || '',
+                is_verified: prov.is_verified,
                 avg_rating: avg,
                 review_count: count,
               };

@@ -153,27 +153,22 @@ export default function ProviderDetailsPage() {
     is_active: true
   });
 
-  // Sync full address search term for geocoding when individual fields change
-  useEffect(() => {
-    const parts = [
-      editForm.house_building_number,
-      editForm.street_name,
-      editForm.service_district,
-      editForm.service_city,
-      editForm.state_province_region,
-      editForm.postal_zip_code,
-      editForm.country
-    ].filter(Boolean);
-    setEditForm(prev => ({ ...prev, full_address: parts.join(', ') }));
-  }, [
-    editForm.house_building_number,
-    editForm.street_name,
-    editForm.service_district,
-    editForm.service_city,
-    editForm.state_province_region,
-    editForm.postal_zip_code,
-    editForm.country
-  ]);
+  const handleAddressFieldChange = (field: keyof typeof editForm, value: string) => {
+    setEditForm(prev => {
+      const nextForm = { ...prev, [field]: value };
+      const parts = [
+        nextForm.house_building_number,
+        nextForm.street_name,
+        nextForm.service_district,
+        nextForm.service_city,
+        nextForm.state_province_region,
+        nextForm.postal_zip_code,
+        nextForm.country
+      ].filter(Boolean);
+      nextForm.full_address = parts.join(', ');
+      return nextForm;
+    });
+  };
 
   useEffect(() => {
     checkAdminAndLoadData();
@@ -484,9 +479,13 @@ export default function ProviderDetailsPage() {
           .from('permits')
           .upload(filePath, editPermitFile);
 
-        if (!permitUploadError) {
-          finalPermitUrl = filePath;
+        if (permitUploadError) {
+          toast(permitUploadError.message || 'Failed to upload business permit', 'error');
+          setUploadingFiles(false);
+          return;
         }
+
+        finalPermitUrl = `permits/${filePath}`;
       }
 
       const { error } = await client
@@ -881,7 +880,7 @@ export default function ProviderDetailsPage() {
                       <input 
                         type="text" 
                         value={editForm.house_building_number}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, house_building_number: e.target.value }))}
+                        onChange={(e) => handleAddressFieldChange('house_building_number', e.target.value)}
                         className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-white"
                         placeholder="e.g. 123"
                       />
@@ -891,7 +890,7 @@ export default function ProviderDetailsPage() {
                       <input 
                         type="text" 
                         value={editForm.street_name}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, street_name: e.target.value }))}
+                        onChange={(e) => handleAddressFieldChange('street_name', e.target.value)}
                         className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-white"
                         placeholder="e.g. Main Street"
                       />
@@ -901,7 +900,7 @@ export default function ProviderDetailsPage() {
                       <input 
                         type="text" 
                         value={editForm.service_district}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, service_district: e.target.value }))}
+                        onChange={(e) => handleAddressFieldChange('service_district', e.target.value)}
                         className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-white"
                         placeholder="e.g. Makati"
                       />
@@ -912,7 +911,7 @@ export default function ProviderDetailsPage() {
                         type="text" 
                         required
                         value={editForm.service_city}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, service_city: e.target.value }))}
+                        onChange={(e) => handleAddressFieldChange('service_city', e.target.value)}
                         className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-white"
                         placeholder="e.g. Manila"
                       />
@@ -922,7 +921,7 @@ export default function ProviderDetailsPage() {
                       <input 
                         type="text" 
                         value={editForm.state_province_region}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, state_province_region: e.target.value }))}
+                        onChange={(e) => handleAddressFieldChange('state_province_region', e.target.value)}
                         className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-white"
                         placeholder="e.g. Metro Manila"
                       />
@@ -932,7 +931,7 @@ export default function ProviderDetailsPage() {
                       <input 
                         type="text" 
                         value={editForm.postal_zip_code}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, postal_zip_code: e.target.value }))}
+                        onChange={(e) => handleAddressFieldChange('postal_zip_code', e.target.value)}
                         className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-white"
                         placeholder="e.g. 1200"
                       />
@@ -942,7 +941,7 @@ export default function ProviderDetailsPage() {
                       <input 
                         type="text" 
                         value={editForm.country}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, country: e.target.value }))}
+                        onChange={(e) => handleAddressFieldChange('country', e.target.value)}
                         className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-white"
                         placeholder="e.g. Canada"
                       />

@@ -32,18 +32,22 @@ export async function POST(req: Request) {
       if (error) throw error;
 
       // Sync user role based on provider status
-      const { data: providerData } = await supabaseAdmin
+      const { data: providerData, error: providerFetchError } = await supabaseAdmin
         .from('providers')
         .select('user_id')
         .eq('id', providerId)
         .single();
         
+      if (providerFetchError) throw providerFetchError;
+        
       if (providerData) {
         const targetRole = status === 'approved' ? 'provider' : 'seeker';
-        await supabaseAdmin
+        const { error: userUpdateError } = await supabaseAdmin
           .from('users')
           .update({ role: targetRole })
           .eq('id', providerData.user_id);
+          
+        if (userUpdateError) throw userUpdateError;
       }
 
       // Sync trigger for notification email mock

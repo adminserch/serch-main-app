@@ -76,6 +76,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           } else if (resData.user.role === 'provider') {
             setProviderStatus(resData.user.providerStatus);
             setAuthorized(true);
+          } else if (resData.user.providerStatus) {
+            setProviderStatus(resData.user.providerStatus);
+            setAuthorized(true);
           } else {
             router.push('/');
           }

@@ -72,7 +72,7 @@ export async function POST() {
     }
 
     let providerStatus = null;
-    if (data && data.role === 'provider') {
+    if (data) {
       const { data: providerData } = await supabaseAdmin
         .from('providers')
         .select('status')
