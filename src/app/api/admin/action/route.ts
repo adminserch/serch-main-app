@@ -344,12 +344,12 @@ export async function POST(req: Request) {
   } catch (err: unknown) {
     console.error('Admin action execution error:', err);
     
-    const errorObj = err as any;
-    let errorMessage = (errorObj && typeof errorObj === 'object' && 'message' in errorObj && typeof errorObj.message === 'string') 
+    const errorObj = err && typeof err === 'object' ? (err as { message?: unknown; code?: unknown }) : null;
+    let errorMessage = (errorObj && 'message' in errorObj && typeof errorObj.message === 'string') 
       ? errorObj.message 
       : 'An unexpected error occurred.';
       
-    const errCode = (errorObj && typeof errorObj === 'object' && 'code' in errorObj) ? String(errorObj.code) : '';
+    const errCode = (errorObj && 'code' in errorObj) ? String(errorObj.code) : '';
 
     if (errCode === '23503' || errorMessage.toLowerCase().includes('foreign key constraint')) {
       if (errorMessage.includes('services_category_id_fkey') || errorMessage.includes('categories')) {
