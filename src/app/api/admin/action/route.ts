@@ -24,30 +24,57 @@ export async function POST(req: Request) {
 
     if (action === 'update_status') {
       const { providerId, status } = payload;
-      const { error } = await supabaseAdmin
-        .from('providers')
-        .update({ status })
-        .eq('id', providerId);
 
-      if (error) throw error;
-
-      // Sync user role based on provider status
+      // 1. Fetch provider user_id and current status
       const { data: providerData, error: providerFetchError } = await supabaseAdmin
         .from('providers')
-        .select('user_id')
+        .select('user_id, status')
         .eq('id', providerId)
         .single();
         
       if (providerFetchError) throw providerFetchError;
+      if (!providerData) {
+        return NextResponse.json({ error: 'Provider not found' }, { status: 404 });
+      }
+
+      // 2. Fetch the user's current role
+      const { data: userData, error: userFetchError } = await supabaseAdmin
+        .from('users')
+        .select('role')
+        .eq('id', providerData.user_id)
+        .single();
+
+      if (userFetchError) throw userFetchError;
+      if (!userData) {
+        return NextResponse.json({ error: 'User not found for this provider' }, { status: 404 });
+      }
+
+      const originalRole = userData.role;
+
+      // 3. Update user role based on provider status
+      const targetRole = status === 'approved' ? 'provider' : 'seeker';
+      const { error: userUpdateError } = await supabaseAdmin
+        .from('users')
+        .update({ role: targetRole })
+        .eq('id', providerData.user_id);
         
-      if (providerData) {
-        const targetRole = status === 'approved' ? 'provider' : 'seeker';
-        const { error: userUpdateError } = await supabaseAdmin
+      if (userUpdateError) throw userUpdateError;
+
+      // 4. Update provider status
+      const { error: providerUpdateError } = await supabaseAdmin
+        .from('providers')
+        .update({ status })
+        .eq('id', providerId);
+
+      if (providerUpdateError) {
+        // Rollback user role update since provider status update failed
+        await supabaseAdmin
           .from('users')
-          .update({ role: targetRole })
-          .eq('id', providerData.user_id);
-          
-        if (userUpdateError) throw userUpdateError;
+          .update({ role: originalRole })
+          .eq('id', providerData.user_id)
+          .catch((err: any) => console.error('Rollback user role error:', err));
+
+        throw providerUpdateError;
       }
 
       // Sync trigger for notification email mock
