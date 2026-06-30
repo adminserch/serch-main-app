@@ -70,7 +70,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing or invalid required business, service fields, or business permit URL' }, { status: 400 });
     }
 
-    if (!businessPermitUrl.startsWith(`${dbUser.id}/`)) {
+    const userPrefix = `${dbUser.id}/`;
+    const cleanPath = businessPermitUrl.startsWith('permits/')
+      ? businessPermitUrl.substring(8)
+      : businessPermitUrl.startsWith('documents/')
+        ? businessPermitUrl.substring(10)
+        : businessPermitUrl;
+
+    if (!cleanPath.startsWith(userPrefix)) {
       return NextResponse.json({ error: 'Invalid business permit storage path prefix' }, { status: 400 });
     }
 

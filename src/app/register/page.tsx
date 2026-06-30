@@ -11,11 +11,12 @@ import {
   ArrowLeft,
   ArrowRight,
   CheckCircle,
-  Upload
+  Upload,
+  Trash2
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { permitDocumentSchema } from '@/lib/validations';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
@@ -24,6 +25,10 @@ export default function RegisterProviderPage() {
   const { getToken, isSignedIn, isLoaded } = useAuth();
   const { user } = useUser();
   const { toast } = useToast();
+
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const permitInputRef = useRef<HTMLInputElement>(null);
+  const serviceImageInputRef = useRef<HTMLInputElement>(null);
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -35,7 +40,7 @@ export default function RegisterProviderPage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [website, setWebsite] = useState('');
   const [websiteError, setWebsiteError] = useState('');
-  
+
   const [city, setCity] = useState('');
   const [district, setDistrict] = useState('');
   const [address, setAddress] = useState('');
@@ -73,6 +78,17 @@ export default function RegisterProviderPage() {
   const [permitFile, setPermitFile] = useState<File | null>(null);
   const [permitName, setPermitName] = useState('');
   const [permitFileError, setPermitFileError] = useState('');
+  const [permitPreviewUrl, setPermitPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!permitFile) {
+      setPermitPreviewUrl(null);
+      return;
+    }
+    const objectUrl = URL.createObjectURL(permitFile);
+    setPermitPreviewUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [permitFile]);
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoName, setLogoName] = useState('');
@@ -117,7 +133,7 @@ export default function RegisterProviderPage() {
           .select('id, name')
           .eq('is_active', true)
           .order('name', { ascending: true });
-        
+
         if (!error && data && data.length > 0) {
           setDbCategories(data);
           setServiceCategoryId(data[0].id);
@@ -171,6 +187,7 @@ export default function RegisterProviderPage() {
     let uploadedLogoBucket: string | null = null;
     let uploadedLogoPath: string | null = null;
     let uploadedPermitPath: string | null = null;
+    let uploadedPermitBucket: string | null = null;
     let uploadedServiceImagePath: string | null = null;
     let clientRef: SupabaseClient | null = null;
     let shouldCleanup = true;
@@ -262,16 +279,29 @@ export default function RegisterProviderPage() {
       }
       const permitExt = permitFile.name.split('.').pop() || 'pdf';
       const permitPath = `${dbUser.id}/permit-${Date.now()}.${permitExt}`;
+      let businessPermitUrl = '';
+
       const { error: permitUploadError } = await client.storage
+        .from('permits')
+        .upload(permitPath, permitFile);
+
+      if (permitUploadError) {
+        const { error: fallbackError } = await client.storage
           .from('documents')
           .upload(permitPath, permitFile);
 
-      if (permitUploadError) {
-        throw new Error('Failed to upload government ID: ' + permitUploadError.message);
-      }
+        if (fallbackError) {
+          throw new Error('Failed to upload government ID: ' + fallbackError.message);
+        }
 
-      uploadedPermitPath = permitPath;
-      const businessPermitUrl = permitPath;
+        uploadedPermitPath = permitPath;
+        uploadedPermitBucket = 'documents';
+        businessPermitUrl = permitPath;
+      } else {
+        uploadedPermitPath = permitPath;
+        uploadedPermitBucket = 'permits';
+        businessPermitUrl = `permits/${permitPath}`;
+      }
 
       // 4. Upload service image if provided
       let serviceImageUrl = null;
@@ -339,7 +369,7 @@ export default function RegisterProviderPage() {
       setStep(4);
     } catch (err: unknown) {
       console.error(err);
-      
+
       // Clean up successfully uploaded storage files
       if (shouldCleanup && clientRef) {
         try {
@@ -350,7 +380,7 @@ export default function RegisterProviderPage() {
             }
           }
           if (uploadedPermitPath) {
-            const { error: removeErr } = await clientRef.storage.from('documents').remove([uploadedPermitPath]);
+            const { error: removeErr } = await clientRef.storage.from(uploadedPermitBucket || 'documents').remove([uploadedPermitPath]);
             if (removeErr) {
               console.error('Failed to remove uploaded permit on registration failure:', removeErr);
             }
@@ -411,535 +441,608 @@ export default function RegisterProviderPage() {
       <Navbar />
       <main className="flex-grow pt-28 pb-16 max-w-2xl mx-auto w-full px-6">
         {/* Step Progress Bar */}
-      {step < 4 && (
-        <div className="flex items-center justify-between mb-12">
-          {[1, 2, 3].map((s) => (
-            <div key={s} className="flex items-center gap-2">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
-                  step >= s ? 'bg-accent text-white' : 'bg-stone-200 text-stone-500'
-                }`}
-              >
-                {s}
+        {step < 4 && (
+          <div className="flex items-center justify-between mb-12">
+            {[1, 2, 3].map((s) => (
+              <div key={s} className="flex items-center gap-2">
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${step >= s ? 'bg-accent text-white' : 'bg-stone-200 text-stone-500'
+                    }`}
+                >
+                  {s}
+                </div>
+                <span className={`text-xs font-semibold ${step >= s ? 'text-slate-800' : 'text-stone-400'}`}>
+                  {s === 1 ? 'Business Info' : s === 2 ? 'Location' : 'Add Service'}
+                </span>
+                {s < 3 && <div className="h-0.5 w-12 bg-stone-200"></div>}
               </div>
-              <span className={`text-xs font-semibold ${step >= s ? 'text-slate-800' : 'text-stone-400'}`}>
-                {s === 1 ? 'Business Info' : s === 2 ? 'Location' : 'Add Service'}
-              </span>
-              {s < 3 && <div className="h-0.5 w-12 bg-stone-200"></div>}
+            ))}
+          </div>
+        )}
+
+        {/* Step 1: Business Details */}
+        {step === 1 && (
+          <div className="bg-white border border-champagne/60 rounded-2xl p-8 shadow-sm flex flex-col gap-6">
+            <div>
+              <h1 className="font-display text-2xl font-bold text-espresso mb-2">Register as a Professional</h1>
+              <p className="text-stone-500 text-sm">Let seekers know what you specialize in and how to reach you.</p>
             </div>
-          ))}
-        </div>
-      )}
 
-      {/* Step 1: Business Details */}
-      {step === 1 && (
-        <div className="bg-white border border-champagne/60 rounded-2xl p-8 shadow-sm flex flex-col gap-6">
-          <div>
-            <h1 className="font-display text-2xl font-bold text-espresso mb-2">Register as a Professional</h1>
-            <p className="text-stone-500 text-sm">Let seekers know what you specialize in and how to reach you.</p>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
-              Business Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={businessName}
-              onChange={(e) => {
-                setBusinessName(e.target.value);
-                if (e.target.value.trim()) {
-                  setBusinessNameError('');
-                }
-              }}
-              placeholder="e.g. Elite Cleaning Service"
-              className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent ${
-                businessNameError ? 'border-red-500 bg-red-50/10' : 'border-champagne'
-              }`}
-            />
-            {businessNameError && (
-              <p className="text-xs text-red-500 mt-1">{businessNameError}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Business Description</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe your services, skills, and background..."
-              rows={4}
-              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Category</label>
-            <select
-              value={categories[0] || ''}
-              onChange={(e) => {
-                const val = e.target.value;
-                setCategories(val ? [val] : []);
-              }}
-              required
-              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent bg-white"
-            >
-              <option value="" disabled>Select a category...</option>
-              {dbCategories.map((cat) => (
-                <option key={cat.id} value={cat.name}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Website (Optional)</label>
-            <input
-              type="text"
-              value={website}
-              onChange={(e) => {
-                const val = e.target.value;
-                setWebsite(val);
-                if (!val) {
-                  setWebsiteError('');
-                } else if (/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/.test(val)) {
-                  setWebsiteError('');
-                } else {
-                  setWebsiteError('Please enter a valid website URL (e.g. www.domain.com)');
-                }
-              }}
-              placeholder="e.g. www.eliteclean.com"
-              className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent ${
-                websiteError ? 'border-red-500 bg-red-50/10' : 'border-champagne'
-              }`}
-            />
-            {websiteError && (
-              <p className="text-xs text-red-500 mt-1">{websiteError}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Company Logo</label>
-            <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
+                Business Name <span className="text-red-500">*</span>
+              </label>
               <input
-                type="file"
+                type="text"
+                value={businessName}
                 onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    setLogoFile(e.target.files[0]);
-                    setLogoName(e.target.files[0].name);
+                  setBusinessName(e.target.value);
+                  if (e.target.value.trim()) {
+                    setBusinessNameError('');
                   }
                 }}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-                accept="image/*"
+                placeholder="e.g. Elite Cleaning Service"
+                className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent ${businessNameError ? 'border-red-500 bg-red-50/10' : 'border-champagne'
+                  }`}
               />
-              <Upload className="w-8 h-8 text-stone-400 mb-2" />
-              <span className="text-xs font-bold text-slate-700 font-sans">
-                {logoName || 'Click to upload company logo'}
-              </span>
-              <span className="text-[10px] text-stone-400 mt-1 font-sans">JPEG, PNG formats</span>
-            </div>
-          </div>
-
-          {logoPreviewUrl && (
-            <div className="w-full">
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Logo Preview</label>
-              <div className="border border-champagne/80 rounded-2xl p-6 bg-stone-50/50 flex items-center justify-center relative overflow-hidden min-h-[160px]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={logoPreviewUrl}
-                  alt="Company Logo Preview"
-                  className="max-h-40 object-contain rounded-lg"
-                />
-              </div>
-            </div>
-          )}
-
-          <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
-              Valid Government ID (pdf or image) <span className="text-red-500">*</span>
-            </label>
-            <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
-              <input
-                type="file"
-                onChange={handleFileUpload}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-                accept=".pdf,application/pdf,.png,image/png,.jpeg,.jpg,image/jpeg,.webp,image/webp"
-                required
-              />
-              <Upload className="w-8 h-8 text-stone-400 mb-2" />
-              <span className="text-xs font-bold text-slate-700 font-sans">
-                {permitName || 'Click to upload Valid Government ID (pdf or image)'}
-              </span>
-              <span className="text-[10px] text-stone-400 mt-1 font-sans">PDF or image formats</span>
-            </div>
-            {permitFileError && (
-              <p className="text-xs text-red-500 mt-1">{permitFileError}</p>
-            )}
-          </div>
-
-          <button
-            type="button"
-            disabled={categories.length === 0 || !permitFile || !!permitFileError}
-            onClick={() => {
-              if (!businessName.trim()) {
-                setBusinessNameError('Business Name is required');
-                return;
-              }
-              if (website.trim() && !/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/.test(website)) {
-                setWebsiteError('Please enter a valid website URL (e.g. www.domain.com)');
-                return;
-              }
-              setBusinessNameError('');
-              setWebsiteError('');
-              setStep(2);
-            }}
-            className="bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 mt-4 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
-          >
-            Next Step <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-      )}
-
-      {/* Step 2: Location Map */}
-      {step === 2 && (
-        <div className="bg-white border border-champagne/60 rounded-2xl p-8 shadow-sm flex flex-col gap-6">
-          <div>
-            <h1 className="font-display text-2xl font-bold text-espresso mb-2">Service Location</h1>
-            <p className="text-stone-500 text-sm">Provide your business address. The map will locate you automatically.</p>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
-              Place/Business Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              required
-              value={businessName}
-              onChange={(e) => {
-                setBusinessName(e.target.value);
-                if (e.target.value.trim()) {
-                  setBusinessNameError('');
-                }
-              }}
-              placeholder="Enter place or business name for the map pin header..."
-              className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent ${
-                businessNameError ? 'border-red-500 bg-red-50/10' : 'border-champagne'
-              }`}
-            />
-            {businessNameError && (
-              <p className="text-xs text-red-500 mt-1">{businessNameError}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">House/Building Number</label>
-              <input
-                type="text"
-                value={houseBuildingNumber}
-                onChange={(e) => setHouseBuildingNumber(e.target.value)}
-                placeholder="e.g. 123"
-                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Street Name</label>
-              <input
-                type="text"
-                value={streetName}
-                onChange={(e) => setStreetName(e.target.value)}
-                placeholder="e.g. Stephen Avenue"
-                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">City/Locality</label>
-              <input
-                type="text"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="e.g. Calgary"
-                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">District / Neighborhood</label>
-              <input
-                type="text"
-                value={district}
-                onChange={(e) => setDistrict(e.target.value)}
-                placeholder="e.g. Downtown"
-                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">State/Province/Region</label>
-              <input
-                type="text"
-                value={stateProvinceRegion}
-                onChange={(e) => setStateProvinceRegion(e.target.value)}
-                placeholder="e.g. Alberta"
-                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Postal/ZIP Code</label>
-              <input
-                type="text"
-                value={postalZipCode}
-                onChange={(e) => {
-                  setPostalZipCode(e.target.value.toUpperCase());
-                  setPostalError('');
-                }}
-                placeholder="e.g. T2P 2M5"
-                className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent ${postalError ? 'border-red-500' : 'border-champagne'}`}
-              />
-              {postalError && (
-                <p className="mt-1 text-xs text-red-500 font-medium">{postalError}</p>
+              {businessNameError && (
+                <p className="text-xs text-red-500 mt-1">{businessNameError}</p>
               )}
             </div>
-          </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Country</label>
-            <input
-              type="text"
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              placeholder="e.g. Canada"
-              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
-            />
-          </div>
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Business Description</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe your services, skills, and background..."
+                rows={4}
+                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+              />
+            </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Full Address (Geocoding Address Lookups)</label>
-            <input
-              type="text"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="e.g. 123 Stephen Avenue, Calgary, Alberta"
-              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
-            />
-          </div>
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Category</label>
+              <select
+                value={categories[0] || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setCategories(val ? [val] : []);
+                }}
+                required
+                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent bg-white"
+              >
+                <option value="" disabled>Select a category...</option>
+                {dbCategories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Map Pin</label>
-            <Map
-              latitude={latitude}
-              longitude={longitude}
-              address={address}
-              onLocationChange={handleLocationChange}
-              businessName={businessName}
-            />
-          </div>
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Website (Optional)</label>
+              <input
+                type="text"
+                value={website}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setWebsite(val);
+                  if (!val) {
+                    setWebsiteError('');
+                  } else if (/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/.test(val)) {
+                    setWebsiteError('');
+                  } else {
+                    setWebsiteError('Please enter a valid website URL (e.g. www.domain.com)');
+                  }
+                }}
+                placeholder="e.g. www.eliteclean.com"
+                className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent ${websiteError ? 'border-red-500 bg-red-50/10' : 'border-champagne'
+                  }`}
+              />
+              {websiteError && (
+                <p className="text-xs text-red-500 mt-1">{websiteError}</p>
+              )}
+            </div>
 
-          <div className="flex gap-4 mt-4">
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Company Logo</label>
+              <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
+                <input
+                  ref={logoInputRef}
+                  type="file"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setLogoFile(e.target.files[0]);
+                      setLogoName(e.target.files[0].name);
+                    }
+                  }}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  accept="image/*"
+                />
+                <Upload className="w-8 h-8 text-stone-400 mb-2" />
+                <span className="text-xs font-bold text-slate-700 font-sans">
+                  {logoName || 'Click to upload company logo'}
+                </span>
+                <span className="text-[10px] text-stone-400 mt-1 font-sans">JPEG, PNG formats</span>
+              </div>
+            </div>
+
+            {logoPreviewUrl && (
+              <div className="w-full">
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider">Logo Preview</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLogoFile(null);
+                      setLogoName('');
+                      if (logoInputRef.current) {
+                        logoInputRef.current.value = '';
+                      }
+                    }}
+                    className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-700 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Remove
+                  </button>
+                </div>
+                <div className="border border-champagne/80 rounded-2xl p-6 bg-stone-50/50 flex items-center justify-center relative overflow-hidden min-h-[160px]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={logoPreviewUrl}
+                    alt="Company Logo Preview"
+                    className="max-h-40 object-contain rounded-lg"
+                  />
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
+                Valid Government ID (pdf or image) <span className="text-red-500">*</span>
+              </label>
+              <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
+                <input
+                  ref={permitInputRef}
+                  type="file"
+                  onChange={handleFileUpload}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  accept=".pdf,application/pdf,.png,image/png,.jpeg,.jpg,image/jpeg,.webp,image/webp"
+                  required
+                />
+                <Upload className="w-8 h-8 text-stone-400 mb-2" />
+                <span className="text-xs font-bold text-slate-700 font-sans">
+                  {permitName || 'Click to upload Valid Government ID (pdf or image)'}
+                </span>
+                <span className="text-[10px] text-stone-400 mt-1 font-sans">PDF or image formats</span>
+              </div>
+              {permitFileError && (
+                <p className="text-xs text-red-500 mt-1">{permitFileError}</p>
+              )}
+
+              {permitPreviewUrl && permitFile && (
+                <div className="w-full mt-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider">Government ID Preview</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPermitFile(null);
+                        setPermitName('');
+                        if (permitInputRef.current) {
+                          permitInputRef.current.value = '';
+                        }
+                      }}
+                      className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-700 transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Remove
+                    </button>
+                  </div>
+                  <div className="border border-champagne/80 rounded-2xl p-6 bg-stone-50/50 flex flex-col items-center justify-center relative overflow-hidden min-h-[180px]">
+                    {permitFile.type.startsWith('image/') ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={permitPreviewUrl}
+                        alt="Government ID Preview"
+                        className="max-h-60 object-contain rounded-lg"
+                      />
+                    ) : permitFile.type === 'application/pdf' ? (
+                      <iframe
+                        src={permitPreviewUrl}
+                        title="Government ID Preview"
+                        className="w-full h-96 rounded-lg border border-champagne/60 bg-white"
+                      />
+                    ) : (
+                      <div className="text-center p-4">
+                        <p className="text-sm font-medium text-stone-600 font-sans">Preview not available for this format</p>
+                        <p className="text-xs text-stone-400 mt-1 font-sans">{permitFile.name}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <button
               type="button"
-              onClick={() => setStep(1)}
-              className="w-1/2 border border-champagne hover:bg-stone-50 text-slate-700 font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1"
-            >
-              <ArrowLeft className="w-4 h-4" /> Back
-            </button>
-            <button
-              type="button"
-              disabled={
-                !businessName.trim() ||
-                !city.trim() ||
-                !address.trim()
-              }
+              disabled={categories.length === 0 || !permitFile || !!permitFileError}
               onClick={() => {
-                if (!isValidPostalZip(postalZipCode)) {
-                  setPostalError('Please enter a valid Canadian Postal Code (e.g. T2P 2M5) or US ZIP Code (e.g. 90210).');
+                if (!businessName.trim()) {
+                  setBusinessNameError('Business Name is required');
                   return;
                 }
-                setPostalError('');
+                if (website.trim() && !/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/.test(website)) {
+                  setWebsiteError('Please enter a valid website URL (e.g. www.domain.com)');
+                  return;
+                }
                 setBusinessNameError('');
-                setStep(3);
+                setWebsiteError('');
+                setStep(2);
               }}
-              className="w-1/2 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
+              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 mt-4 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
             >
               Next Step <ArrowRight className="w-4 h-4" />
             </button>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Step 3: Add New Service */}
-      {step === 3 && (
-        <div className="bg-white border border-champagne/60 rounded-2xl p-8 shadow-sm flex flex-col gap-6">
-          <div className="flex justify-between items-center pb-2">
-            <h1 className="font-display text-2xl font-bold text-espresso">Add New Service</h1>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Name</label>
-            <input
-              type="text"
-              required
-              value={serviceName}
-              onChange={(e) => setServiceName(e.target.value)}
-              placeholder="e.g. Master Bedroom Cleaning"
-              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Description</label>
-            <textarea
-              required
-              value={serviceDescription}
-              onChange={(e) => setServiceDescription(e.target.value)}
-              placeholder="Detail what is included in this service..."
-              rows={4}
-              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent resize-none"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+        {/* Step 2: Location Map */}
+        {step === 2 && (
+          <div className="bg-white border border-champagne/60 rounded-2xl p-8 shadow-sm flex flex-col gap-6">
             <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Price (CAD)</label>
+              <h1 className="font-display text-2xl font-bold text-espresso mb-2">Service Location</h1>
+              <p className="text-stone-500 text-sm">Provide your business address. The map will locate you automatically.</p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
+                Place/Business Name <span className="text-red-500">*</span>
+              </label>
               <input
-                type="number"
+                type="text"
                 required
-                value={servicePrice}
-                onChange={(e) => setServicePrice(e.target.value)}
-                placeholder="100"
-                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Duration (Minutes)</label>
-              <select
-                value={serviceDuration}
-                onChange={(e) => setServiceDuration(e.target.value)}
-                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent bg-white"
-              >
-                <option value="15">15 minutes</option>
-                <option value="30">30 minutes</option>
-                <option value="45">45 minutes</option>
-                <option value="60">1 hour</option>
-                <option value="90">1.5 hours</option>
-                <option value="120">2 hours</option>
-                <option value="180">3 hours</option>
-                <option value="240">4 hours</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Category</label>
-            <select
-              value={serviceCategoryId}
-              onChange={(e) => setServiceCategoryId(e.target.value)}
-              className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent bg-white"
-            >
-              {dbCategories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="serviceIsActive"
-              checked={serviceIsActive}
-              onChange={(e) => setServiceIsActive(e.target.checked)}
-              className="w-4 h-4 rounded text-accent focus:ring-accent border-champagne"
-            />
-            <label htmlFor="serviceIsActive" className="text-sm font-semibold text-slate-700 select-none">
-              Active (Visible on search and profiles)
-            </label>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Image</label>
-            <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
-              <input
-                type="file"
+                value={businessName}
                 onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    setServiceImageFile(e.target.files[0]);
-                    setServiceImageName(e.target.files[0].name);
+                  setBusinessName(e.target.value);
+                  if (e.target.value.trim()) {
+                    setBusinessNameError('');
                   }
                 }}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-                accept="image/*"
+                placeholder="Enter place or business name for the map pin header..."
+                className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent ${businessNameError ? 'border-red-500 bg-red-50/10' : 'border-champagne'
+                  }`}
               />
-              <Upload className="w-8 h-8 text-stone-400 mb-2" />
-              <span className="text-xs font-bold text-slate-700 font-sans">
-                {serviceImageName || 'Upload service image'}
-              </span>
-              <span className="text-[10px] text-stone-400 mt-1 font-sans">JPEG, PNG formats</span>
+              {businessNameError && (
+                <p className="text-xs text-red-500 mt-1">{businessNameError}</p>
+              )}
             </div>
-          </div>
 
-          {serviceImagePreviewUrl && (
-            <div className="w-full">
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Image Preview</label>
-              <div className="border border-champagne/80 rounded-2xl p-6 bg-stone-50/50 flex items-center justify-center relative overflow-hidden min-h-[160px]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={serviceImagePreviewUrl}
-                  alt="Service Image Preview"
-                  className="max-h-40 object-contain rounded-lg"
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">House/Building Number</label>
+                <input
+                  type="text"
+                  value={houseBuildingNumber}
+                  onChange={(e) => setHouseBuildingNumber(e.target.value)}
+                  placeholder="e.g. 123"
+                  className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Street Name</label>
+                <input
+                  type="text"
+                  value={streetName}
+                  onChange={(e) => setStreetName(e.target.value)}
+                  placeholder="e.g. Stephen Avenue"
+                  className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
                 />
               </div>
             </div>
-          )}
 
-          <div className="flex gap-4 mt-4">
-            <button
-              type="button"
-              onClick={() => setStep(2)}
-              className="w-1/2 border border-champagne hover:bg-stone-50 text-slate-700 font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1"
-            >
-              <ArrowLeft className="w-4 h-4" /> Back
-            </button>
-            <button
-              type="button"
-              disabled={!serviceName || !servicePrice || loading}
-              onClick={handleSubmit}
-              className="w-1/2 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-              ) : null}
-              Submit Application
-            </button>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">City/Locality</label>
+                <input
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="e.g. Calgary"
+                  className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">District / Neighborhood</label>
+                <input
+                  type="text"
+                  value={district}
+                  onChange={(e) => setDistrict(e.target.value)}
+                  placeholder="e.g. Downtown"
+                  className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">State/Province/Region</label>
+                <input
+                  type="text"
+                  value={stateProvinceRegion}
+                  onChange={(e) => setStateProvinceRegion(e.target.value)}
+                  placeholder="e.g. Alberta"
+                  className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Postal/ZIP Code</label>
+                <input
+                  type="text"
+                  value={postalZipCode}
+                  onChange={(e) => {
+                    setPostalZipCode(e.target.value.toUpperCase());
+                    setPostalError('');
+                  }}
+                  placeholder="e.g. T2P 2M5"
+                  className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent ${postalError ? 'border-red-500' : 'border-champagne'}`}
+                />
+                {postalError && (
+                  <p className="mt-1 text-xs text-red-500 font-medium">{postalError}</p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Country</label>
+              <input
+                type="text"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                placeholder="e.g. Canada"
+                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Full Address (Geocoding Address Lookups)</label>
+              <input
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="e.g. 123 Stephen Avenue, Calgary, Alberta"
+                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Map Pin</label>
+              <Map
+                latitude={latitude}
+                longitude={longitude}
+                address={address}
+                onLocationChange={handleLocationChange}
+                businessName={businessName}
+              />
+            </div>
+
+            <div className="flex gap-4 mt-4">
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="w-1/2 border border-champagne hover:bg-stone-50 text-slate-700 font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back
+              </button>
+              <button
+                type="button"
+                disabled={
+                  !businessName.trim() ||
+                  !city.trim() ||
+                  !address.trim()
+                }
+                onClick={() => {
+                  if (!isValidPostalZip(postalZipCode)) {
+                    setPostalError('Please enter a valid Canadian Postal Code (e.g. T2P 2M5) or US ZIP Code (e.g. 90210).');
+                    return;
+                  }
+                  setPostalError('');
+                  setBusinessNameError('');
+                  setStep(3);
+                }}
+                className="w-1/2 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
+              >
+                Next Step <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Step 4: Submission Confirmation */}
-      {step === 4 && (
-        <div className="bg-white border border-champagne/60 rounded-2xl p-10 shadow-md text-center flex flex-col items-center gap-6">
-          <CheckCircle className="w-16 h-16 text-purple-600" />
-          <div>
-            <h1 className="font-display text-2xl font-bold text-espresso mb-2">Application Received</h1>
-            <p className="text-stone-500 text-sm max-w-md mx-auto leading-relaxed">
-              Thank you for registering! We are reviewing your business permit details. You will receive an email verification once approved.
-            </p>
+        {/* Step 3: Add New Service */}
+        {step === 3 && (
+          <div className="bg-white border border-champagne/60 rounded-2xl p-8 shadow-sm flex flex-col gap-6">
+            <div className="flex justify-between items-center pb-2">
+              <h1 className="font-display text-2xl font-bold text-espresso">Add New Service</h1>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Name</label>
+              <input
+                type="text"
+                required
+                value={serviceName}
+                onChange={(e) => setServiceName(e.target.value)}
+                placeholder="e.g. Master Bedroom Cleaning"
+                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Description</label>
+              <textarea
+                required
+                value={serviceDescription}
+                onChange={(e) => setServiceDescription(e.target.value)}
+                placeholder="Detail what is included in this service..."
+                rows={4}
+                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent resize-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Price (CAD)</label>
+                <input
+                  type="number"
+                  required
+                  value={servicePrice}
+                  onChange={(e) => setServicePrice(e.target.value)}
+                  placeholder="100"
+                  className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Duration (Minutes)</label>
+                <select
+                  value={serviceDuration}
+                  onChange={(e) => setServiceDuration(e.target.value)}
+                  className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent bg-white"
+                >
+                  <option value="15">15 minutes</option>
+                  <option value="30">30 minutes</option>
+                  <option value="45">45 minutes</option>
+                  <option value="60">1 hour</option>
+                  <option value="90">1.5 hours</option>
+                  <option value="120">2 hours</option>
+                  <option value="180">3 hours</option>
+                  <option value="240">4 hours</option>
+                  <option value="360">6 hours</option>
+                  <option value="480">8 hours</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Services</label>
+              <select
+                value={serviceCategoryId}
+                onChange={(e) => setServiceCategoryId(e.target.value)}
+                className="w-full border border-champagne rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent bg-white"
+              >
+                {dbCategories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="serviceIsActive"
+                checked={serviceIsActive}
+                onChange={(e) => setServiceIsActive(e.target.checked)}
+                className="w-4 h-4 rounded text-accent focus:ring-accent border-champagne"
+              />
+              <label htmlFor="serviceIsActive" className="text-sm font-semibold text-slate-700 select-none">
+                Active (Visible on search and profiles)
+              </label>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Image</label>
+              <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
+                <input
+                  ref={serviceImageInputRef}
+                  type="file"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setServiceImageFile(e.target.files[0]);
+                      setServiceImageName(e.target.files[0].name);
+                    }
+                  }}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  accept="image/*"
+                />
+                <Upload className="w-8 h-8 text-stone-400 mb-2" />
+                <span className="text-xs font-bold text-slate-700 font-sans">
+                  {serviceImageName || 'Upload service image'}
+                </span>
+                <span className="text-[10px] text-stone-400 mt-1 font-sans">JPEG, PNG formats</span>
+              </div>
+            </div>
+
+            {serviceImagePreviewUrl && (
+              <div className="w-full">
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider">Image Preview</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setServiceImageFile(null);
+                      setServiceImageName('');
+                      if (serviceImageInputRef.current) {
+                        serviceImageInputRef.current.value = '';
+                      }
+                    }}
+                    className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-700 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Remove
+                  </button>
+                </div>
+                <div className="border border-champagne/80 rounded-2xl p-6 bg-stone-50/50 flex items-center justify-center relative overflow-hidden min-h-[160px]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={serviceImagePreviewUrl}
+                    alt="Service Image Preview"
+                    className="max-h-40 object-contain rounded-lg"
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-4 mt-4">
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="w-1/2 border border-champagne hover:bg-stone-50 text-slate-700 font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back
+              </button>
+              <button
+                type="button"
+                disabled={!serviceName || !servicePrice || loading}
+                onClick={handleSubmit}
+                className="w-1/2 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm py-3.5 rounded-xl transition-all flex items-center justify-center gap-1 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                ) : null}
+                Submit Application
+              </button>
+            </div>
           </div>
+        )}
 
-          <Link href="/" className="bg-primary hover:bg-slate-800 text-white font-semibold text-xs px-6 py-3 rounded-xl transition-all shadow-sm">
-            Return to Homepage
-          </Link>
-        </div>
-      )}
-    </main>
-    <Footer />
-  </div>
-);
+        {/* Step 4: Submission Confirmation */}
+        {step === 4 && (
+          <div className="bg-white border border-champagne/60 rounded-2xl p-10 shadow-md text-center flex flex-col items-center gap-6">
+            <CheckCircle className="w-16 h-16 text-purple-600" />
+            <div>
+              <h1 className="font-display text-2xl font-bold text-espresso mb-2">Application Received</h1>
+              <p className="text-stone-500 text-sm max-w-md mx-auto leading-relaxed">
+                Thank you for registering! We are reviewing your business permit details. You will receive an email verification once approved.
+              </p>
+            </div>
+
+            <Link href="/" className="bg-primary hover:bg-slate-800 text-white font-semibold text-xs px-6 py-3 rounded-xl transition-all shadow-sm">
+              Return to Homepage
+            </Link>
+          </div>
+        )}
+      </main>
+      <Footer />
+    </div>
+  );
 }
