@@ -219,13 +219,13 @@ export async function POST(req: Request) {
 
     if (serviceError) throw serviceError;
 
-    // Update user role to provider
-    const { error: roleError } = await supabaseAdmin
-      .from('users')
-      .update({ role: 'provider' })
-      .eq('id', dbUser.id);
-
-    if (roleError) throw roleError;
+    // Keep user role as seeker until approved
+    // const { error: roleError } = await supabaseAdmin
+    //   .from('users')
+    //   .update({ role: 'provider' })
+    //   .eq('id', dbUser.id);
+    //
+    // if (roleError) throw roleError;
 
     // Success - disable rollback cleanup
     providerIdToClean = null;

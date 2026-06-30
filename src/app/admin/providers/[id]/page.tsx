@@ -18,6 +18,7 @@ import {
   Plus,
   Star,
   Trash2,
+  Upload,
   XCircle
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -110,7 +111,7 @@ export default function ProviderDetailsPage() {
   
   const [loading, setLoading] = useState(true);
   const [permitSignedUrl, setPermitSignedUrl] = useState<string | null>(null);
-  const [showPermitPreview, setShowPermitPreview] = useState(false);
+  const [showPermitPreview, setShowPermitPreview] = useState(true);
 
   // Edit Mode states
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -122,8 +123,22 @@ export default function ProviderDetailsPage() {
     latitude: 14.5995,
     longitude: 120.9842,
     website: '',
-    service_categories: [] as string[]
+    service_categories: [] as string[],
+    house_building_number: '',
+    street_name: '',
+    state_province_region: '',
+    postal_zip_code: '',
+    country: '',
+    full_address: '',
+    logo_url: '',
+    business_permit_url: ''
   });
+
+  const [editLogoFile, setEditLogoFile] = useState<File | null>(null);
+  const [editLogoName, setEditLogoName] = useState('');
+  const [editPermitFile, setEditPermitFile] = useState<File | null>(null);
+  const [editPermitName, setEditPermitName] = useState('');
+  const [uploadingFiles, setUploadingFiles] = useState(false);
 
   // Services Modal states
   const [showServiceModal, setShowServiceModal] = useState(false);
@@ -137,6 +152,23 @@ export default function ProviderDetailsPage() {
     category_id: '',
     is_active: true
   });
+
+  const handleAddressFieldChange = (field: keyof typeof editForm, value: string) => {
+    setEditForm(prev => {
+      const nextForm = { ...prev, [field]: value };
+      const parts = [
+        nextForm.house_building_number,
+        nextForm.street_name,
+        nextForm.service_district,
+        nextForm.service_city,
+        nextForm.state_province_region,
+        nextForm.postal_zip_code,
+        nextForm.country
+      ].filter(Boolean);
+      nextForm.full_address = parts.join(', ');
+      return nextForm;
+    });
+  };
 
   useEffect(() => {
     checkAdminAndLoadData();
@@ -217,7 +249,23 @@ export default function ProviderDetailsPage() {
         latitude: pData.latitude || 14.5995,
         longitude: pData.longitude || 120.9842,
         website: pData.website || '',
-        service_categories: pData.service_categories || []
+        service_categories: pData.service_categories || [],
+        house_building_number: pData.house_building_number || '',
+        street_name: pData.street_name || '',
+        state_province_region: pData.state_province_region || '',
+        postal_zip_code: pData.postal_zip_code || '',
+        country: pData.country || '',
+        full_address: [
+          pData.house_building_number,
+          pData.street_name,
+          pData.service_district,
+          pData.service_city,
+          pData.state_province_region,
+          pData.postal_zip_code,
+          pData.country
+        ].filter(Boolean).join(', '),
+        logo_url: pData.logo_url || '',
+        business_permit_url: pData.business_permit_url || ''
       });
 
       // 2. Fetch services
@@ -393,9 +441,52 @@ export default function ProviderDetailsPage() {
   };
 
   const handleSaveProfile = async () => {
+    setUploadingFiles(true);
     try {
       const token = await getToken();
       const client = getSupabaseClient(token);
+
+      let finalLogoUrl = editForm.logo_url;
+      if (editLogoFile) {
+        const fileExt = editLogoFile.name.split('.').pop();
+        const filePath = `${providerId}/logo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+
+        const { error: logoUploadError } = await client.storage
+          .from('logos')
+          .upload(filePath, editLogoFile);
+
+        if (!logoUploadError) {
+          const { data } = client.storage.from('logos').getPublicUrl(filePath);
+          finalLogoUrl = data.publicUrl;
+        } else {
+          // Fallback to permits
+          const { error: fallbackError } = await client.storage
+            .from('permits')
+            .upload(filePath, editLogoFile);
+          if (!fallbackError) {
+            const { data } = client.storage.from('permits').getPublicUrl(filePath);
+            finalLogoUrl = data.publicUrl;
+          }
+        }
+      }
+
+      let finalPermitUrl = editForm.business_permit_url;
+      if (editPermitFile) {
+        const fileExt = editPermitFile.name.split('.').pop();
+        const filePath = `${providerId}/permit-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+
+        const { error: permitUploadError } = await client.storage
+          .from('permits')
+          .upload(filePath, editPermitFile);
+
+        if (permitUploadError) {
+          toast(permitUploadError.message || 'Failed to upload business permit', 'error');
+          setUploadingFiles(false);
+          return;
+        }
+
+        finalPermitUrl = `permits/${filePath}`;
+      }
 
       const { error } = await client
         .from('providers')
@@ -407,17 +498,30 @@ export default function ProviderDetailsPage() {
           latitude: editForm.latitude,
           longitude: editForm.longitude,
           website: editForm.website,
-          service_categories: editForm.service_categories
+          service_categories: editForm.service_categories,
+          house_building_number: editForm.house_building_number || null,
+          street_name: editForm.street_name || null,
+          state_province_region: editForm.state_province_region || null,
+          postal_zip_code: editForm.postal_zip_code || null,
+          country: editForm.country || null,
+          logo_url: finalLogoUrl || null,
+          business_permit_url: finalPermitUrl || null
         })
         .eq('id', providerId);
 
       if (error) throw error;
 
       toast('Provider profile updated successfully', 'success');
+      setEditLogoFile(null);
+      setEditLogoName('');
+      setEditPermitFile(null);
+      setEditPermitName('');
       setIsEditingProfile(false);
       checkAdminAndLoadData();
     } catch (err: any) {
       toast(err.message || 'Failed to update profile', 'error');
+    } finally {
+      setUploadingFiles(false);
     }
   };
 
@@ -749,35 +853,6 @@ export default function ProviderDetailsPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Description</label>
-                    <textarea 
-                      value={editForm.description}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
-                      rows={3}
-                      className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent resize-none"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">City</label>
-                      <input 
-                        type="text" 
-                        value={editForm.service_city}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, service_city: e.target.value }))}
-                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">District</label>
-                      <input 
-                        type="text" 
-                        value={editForm.service_district}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, service_district: e.target.value }))}
-                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent"
-                      />
-                    </div>
-                  </div>
-                  <div>
                     <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Website</label>
                     <input 
                       type="text" 
@@ -786,16 +861,235 @@ export default function ProviderDetailsPage() {
                       className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent"
                     />
                   </div>
+                  <div>
+                    <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Description</label>
+                    <textarea 
+                      value={editForm.description}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                      rows={3}
+                      className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent resize-none mb-2"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-champagne/40 pt-4 mt-2">
+                    <div className="md:col-span-2">
+                      <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">Address Details</span>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">House/Building Number</label>
+                      <input 
+                        type="text" 
+                        value={editForm.house_building_number}
+                        onChange={(e) => handleAddressFieldChange('house_building_number', e.target.value)}
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-white"
+                        placeholder="e.g. 123"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Street Name</label>
+                      <input 
+                        type="text" 
+                        value={editForm.street_name}
+                        onChange={(e) => handleAddressFieldChange('street_name', e.target.value)}
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-white"
+                        placeholder="e.g. Main Street"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">District / Neighborhood</label>
+                      <input 
+                        type="text" 
+                        value={editForm.service_district}
+                        onChange={(e) => handleAddressFieldChange('service_district', e.target.value)}
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-white"
+                        placeholder="e.g. Makati"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">City/Locality</label>
+                      <input 
+                        type="text" 
+                        required
+                        value={editForm.service_city}
+                        onChange={(e) => handleAddressFieldChange('service_city', e.target.value)}
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-white"
+                        placeholder="e.g. Manila"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">State/Province/Region</label>
+                      <input 
+                        type="text" 
+                        value={editForm.state_province_region}
+                        onChange={(e) => handleAddressFieldChange('state_province_region', e.target.value)}
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-white"
+                        placeholder="e.g. Metro Manila"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Postal/Zip Code</label>
+                      <input 
+                        type="text" 
+                        value={editForm.postal_zip_code}
+                        onChange={(e) => handleAddressFieldChange('postal_zip_code', e.target.value)}
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-white"
+                        placeholder="e.g. 1200"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Country</label>
+                      <input 
+                        type="text" 
+                        value={editForm.country}
+                        onChange={(e) => handleAddressFieldChange('country', e.target.value)}
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-white"
+                        placeholder="e.g. Canada"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Full Address (Geocoding Address Lookups)</label>
+                      <input 
+                        type="text" 
+                        value={editForm.full_address}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, full_address: e.target.value }))}
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-white"
+                        placeholder="Type address to locate automatically on map"
+                      />
+                    </div>
+                    <div className="md:col-span-2 mt-2">
+                      <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Pin Location on Map</label>
+                      <Map 
+                        latitude={editForm.latitude} 
+                        longitude={editForm.longitude} 
+                        address={editForm.full_address}
+                        businessName={editForm.business_name}
+                        onLocationChange={(lat, lng) => {
+                          setEditForm(prev => ({ ...prev, latitude: lat, longitude: lng }));
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Media & Vetting Documents */}
+                  <div className="border-t border-champagne/40 pt-4 mt-2">
+                    <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-3">Media & Vetting Documents</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      
+                      {/* Logo Section */}
+                      <div className="flex flex-col gap-2">
+                        <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider">Company Logo</label>
+                        
+                        {!(editLogoFile || editForm.logo_url) ? (
+                          <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative min-h-[140px]">
+                            <input 
+                              type="file" 
+                              accept="image/*"
+                              onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                  setEditLogoFile(e.target.files[0]);
+                                  setEditLogoName(e.target.files[0].name);
+                                }
+                              }}
+                              className="absolute inset-0 opacity-0 cursor-pointer"
+                            />
+                            <Upload className="w-5 h-5 text-stone-400 mb-1.5" />
+                            <span className="text-xs font-bold text-slate-700 font-sans text-center">
+                              {editLogoName || 'Click to change/upload logo'}
+                            </span>
+                            <span className="text-[10px] text-stone-400 mt-0.5 font-sans">JPEG, PNG formats</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between bg-stone-50 border border-champagne/45 p-2 rounded-xl mt-1.5 animate-fade-in">
+                            <div className="flex items-center gap-3">
+                              <img 
+                                src={editLogoFile ? URL.createObjectURL(editLogoFile) : editForm.logo_url} 
+                                alt="Logo preview" 
+                                className="w-12 h-12 rounded-lg object-cover border border-champagne"
+                              />
+                              <span className="text-[10px] text-stone-500 font-sans">
+                                {editLogoFile ? 'Selected logo file' : 'Current active logo'}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditLogoFile(null);
+                                setEditLogoName('');
+                                setEditForm(prev => ({ ...prev, logo_url: '' }));
+                              }}
+                              className="p-1.5 bg-red-50 hover:bg-red-100 rounded-lg text-red-600 transition-colors text-xs font-semibold"
+                            >
+                              Remove Logo
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Government ID Section */}
+                      <div className="flex flex-col gap-2">
+                        <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider">Government ID / Vetting Document</label>
+                        
+                        {!(editPermitFile || editForm.business_permit_url) ? (
+                          <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative min-h-[140px]">
+                            <input 
+                              type="file" 
+                              accept="image/*,application/pdf"
+                              onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                  setEditPermitFile(e.target.files[0]);
+                                  setEditPermitName(e.target.files[0].name);
+                                }
+                              }}
+                              className="absolute inset-0 opacity-0 cursor-pointer"
+                            />
+                            <Upload className="w-5 h-5 text-stone-400 mb-1.5" />
+                            <span className="text-xs font-bold text-slate-700 font-sans text-center">
+                              {editPermitName || 'Click to change/upload document'}
+                            </span>
+                            <span className="text-[10px] text-stone-400 mt-0.5 font-sans">PDF, JPEG, PNG formats</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between bg-stone-50 border border-champagne/45 p-2 rounded-xl mt-1.5 animate-fade-in">
+                            <div className="flex items-center gap-2 max-w-[65%]">
+                              <FileText className="w-5 h-5 text-accent flex-shrink-0" />
+                              <span className="text-[10px] text-stone-500 font-sans truncate">
+                                {editPermitFile ? editPermitName : 'Current active vetting document'}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditPermitFile(null);
+                                setEditPermitName('');
+                                setEditForm(prev => ({ ...prev, business_permit_url: '' }));
+                              }}
+                              className="p-1.5 bg-red-50 hover:bg-red-100 rounded-lg text-red-600 transition-colors text-xs font-semibold flex-shrink-0"
+                            >
+                              Remove Document
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                    </div>
+                  </div>
                   <div className="flex gap-4 mt-2">
                     <button 
                       onClick={handleSaveProfile} 
-                      className="bg-primary hover:bg-slate-800 text-white font-semibold text-xs px-5 py-2.5 rounded-xl transition-all shadow-sm"
+                      disabled={uploadingFiles}
+                      className="bg-primary hover:bg-slate-800 text-white font-semibold text-xs px-5 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5 disabled:opacity-55"
                     >
-                      Save Changes
+                      {uploadingFiles ? (
+                        <>
+                          <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                          Saving...
+                        </>
+                      ) : 'Save Changes'}
                     </button>
                     <button 
                       onClick={() => setIsEditingProfile(false)} 
-                      className="border border-champagne hover:bg-stone-50 text-slate-700 font-semibold text-xs px-5 py-2.5 rounded-xl transition-all"
+                      disabled={uploadingFiles}
+                      className="border border-champagne hover:bg-stone-50 text-slate-700 font-semibold text-xs px-5 py-2.5 rounded-xl transition-all disabled:opacity-50"
                     >
                       Cancel
                     </button>
@@ -826,14 +1120,69 @@ export default function ProviderDetailsPage() {
                     <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">Description</span>
                     <span className="text-stone-600 font-sans leading-relaxed block">{provider.description || 'No description provided'}</span>
                   </div>
-                  <div>
-                    <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">City</span>
-                    <span className="text-espresso font-semibold font-sans">{provider.service_city}</span>
+                  <div className="border-t border-champagne/45 pt-4 mt-2">
+                    <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-3">Address Details</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">House/Building Number</span>
+                        <span className="text-espresso font-semibold font-sans">{provider.house_building_number || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">Street Name</span>
+                        <span className="text-espresso font-semibold font-sans">{provider.street_name || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">District / Neighborhood</span>
+                        <span className="text-espresso font-semibold font-sans">{provider.service_district || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">City/Locality</span>
+                        <span className="text-espresso font-semibold font-sans">{provider.service_city || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">State/Province/Region</span>
+                        <span className="text-espresso font-semibold font-sans">{provider.state_province_region || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">Postal/Zip Code</span>
+                        <span className="text-espresso font-semibold font-sans">{provider.postal_zip_code || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">Country</span>
+                        <span className="text-espresso font-semibold font-sans">{provider.country || 'N/A'}</span>
+                      </div>
+                      <div className="md:col-span-2">
+                        <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">Full Address</span>
+                        <span className="text-espresso font-semibold font-sans leading-relaxed">
+                          {[
+                            provider.house_building_number,
+                            provider.street_name,
+                            provider.service_district,
+                            provider.service_city,
+                            provider.state_province_region,
+                            provider.postal_zip_code,
+                            provider.country
+                          ].filter(Boolean).join(', ') || 'N/A'}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                   <div>
-                    <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">District</span>
-                    <span className="text-espresso font-semibold font-sans">{provider.service_district}</span>
+                    <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">Company Logo Preview</span>
+                    {provider.logo_url ? (
+                      <div className="mb-4">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img 
+                          src={provider.logo_url} 
+                          alt="Company Logo" 
+                          className="w-32 h-32 rounded-2xl object-cover border border-champagne/80 shadow-sm"
+                        />
+                      </div>
+                    ) : (
+                      <span className="text-stone-500 font-sans text-xs block mb-4">No logo uploaded</span>
+                    )}
                   </div>
+
                   {provider.business_permit_url && (
                     <div className="col-span-1 md:col-span-2">
                       <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">Valid Government ID / Verification Document</span>
@@ -886,6 +1235,32 @@ export default function ProviderDetailsPage() {
                       )}
                     </div>
                   )}
+
+                  {/* Leaflet Map pin display */}
+                  <div className="border-t border-champagne/45 pt-6 mt-4">
+                    <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-3">Pinned Location on Map</span>
+                    <div className="h-60 rounded-2xl overflow-hidden border border-champagne/60 relative">
+                      <Map 
+                        latitude={provider.latitude} 
+                        longitude={provider.longitude} 
+                        address={[
+                          provider.house_building_number,
+                          provider.street_name,
+                          provider.service_district,
+                          provider.service_city,
+                          provider.state_province_region,
+                          provider.postal_zip_code,
+                          provider.country
+                        ].filter(Boolean).join(', ')}
+                        businessName={provider.business_name}
+                        viewOnly={true}
+                      />
+                    </div>
+                    <div className="mt-3 text-xs text-stone-400 flex gap-x-4">
+                      <span>Latitude: {provider.latitude || 'Not set'}</span>
+                      <span>Longitude: {provider.longitude || 'Not set'}</span>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -954,31 +1329,9 @@ export default function ProviderDetailsPage() {
             </div>
           </div>
 
-          {/* Right Column (1/3 width on large screen): Location Map & Reviews/Bookings summaries */}
+          {/* Right Column (1/3 width on large screen): Reviews/Bookings summaries */}
           <div className="lg:col-span-1 flex flex-col gap-8">
             
-            {/* Map location panel */}
-            <div className="bg-white border border-champagne/60 rounded-3xl p-6 shadow-sm">
-              <h2 className="font-display text-lg font-bold text-espresso mb-4">Location Map</h2>
-              
-              <div className="h-60 rounded-2xl overflow-hidden border border-champagne/60 relative">
-                <Map 
-                  latitude={provider.latitude} 
-                  longitude={provider.longitude} 
-                  address={`${provider.service_district}, ${provider.service_city}`}
-                  businessName={provider.business_name}
-                  onLocationChange={(lat, lng) => {
-                    setEditForm(prev => ({ ...prev, latitude: lat, longitude: lng }));
-                  }}
-                />
-              </div>
-              
-              <div className="mt-3 text-xs text-stone-400 flex flex-col gap-1">
-                <span>Latitude: {provider.latitude || 'Not set'}</span>
-                <span>Longitude: {provider.longitude || 'Not set'}</span>
-              </div>
-            </div>
-
             {/* Bookings panel */}
             <div className="bg-white border border-champagne/60 rounded-3xl p-6 shadow-sm">
               <h2 className="font-display text-lg font-bold text-espresso mb-4">Recent Bookings ({bookings.length})</h2>

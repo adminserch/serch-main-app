@@ -12,10 +12,12 @@ import {
   ArrowRight,
   CheckCircle,
   Upload,
-  Trash2
+  Trash2,
+  Clock
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { permitDocumentSchema } from '@/lib/validations';
 
@@ -25,6 +27,7 @@ export default function RegisterProviderPage() {
   const { getToken, isSignedIn, isLoaded } = useAuth();
   const { user } = useUser();
   const { toast } = useToast();
+  const router = useRouter();
 
   const logoInputRef = useRef<HTMLInputElement>(null);
   const permitInputRef = useRef<HTMLInputElement>(null);
@@ -32,6 +35,57 @@ export default function RegisterProviderPage() {
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [existingStatus, setExistingStatus] = useState<string | null>(null);
+  const [checkingExisting, setCheckingExisting] = useState(true);
+
+  useEffect(() => {
+    async function checkExistingProvider() {
+      if (!user) {
+        setCheckingExisting(false);
+        return;
+      }
+      try {
+        const token = await getToken();
+        if (!token) {
+          setCheckingExisting(false);
+          return;
+        }
+        const client = getSupabaseClient(token);
+        // Get user profile first
+        const { data: userData } = await client
+          .from('users')
+          .select('id')
+          .eq('clerk_user_id', user.id)
+          .maybeSingle();
+
+        if (userData) {
+          const { data: providerData } = await client
+            .from('providers')
+            .select('status')
+            .eq('user_id', userData.id)
+            .maybeSingle();
+          if (providerData) {
+            setExistingStatus(providerData.status);
+          }
+        }
+      } catch (err) {
+        console.error('Error checking existing provider:', err);
+      } finally {
+        setCheckingExisting(false);
+      }
+    }
+    if (isLoaded && isSignedIn && user) {
+      checkExistingProvider();
+    } else if (isLoaded && !isSignedIn) {
+      setCheckingExisting(false);
+    }
+  }, [isLoaded, isSignedIn, user, getToken]);
+
+  useEffect(() => {
+    if (existingStatus === 'approved') {
+      router.push('/dashboard');
+    }
+  }, [existingStatus, router]);
 
   // Form states
   const [businessName, setBusinessName] = useState('');
@@ -467,6 +521,46 @@ export default function RegisterProviderPage() {
                 Sign In / Sign Up
               </button>
             </SignInButton>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (checkingExisting) {
+    return (
+      <div className="flex flex-col min-h-screen bg-stone-50/50">
+        <Navbar />
+        <main className="flex-grow pt-28 pb-16 flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (existingStatus === 'pending') {
+    return (
+      <div className="flex flex-col min-h-screen bg-stone-50/50 text-espresso">
+        <Navbar />
+        <main className="flex-grow pt-28 pb-16 flex items-center justify-center px-6">
+          <div className="max-w-md w-full bg-white border border-champagne/80 shadow-md rounded-2xl p-8 flex flex-col items-center text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-6 border bg-amber-50 text-amber-600 border-amber-200">
+              <Clock className="w-8 h-8 animate-pulse" />
+            </div>
+            <h1 className="font-display text-2xl font-bold mb-3 text-espresso">
+              Application Under Review
+            </h1>
+            <p className="font-sans text-sm text-stone-500 mb-8 leading-relaxed">
+              We have received your registration details. Your provider application is currently under review by our admin team. Seekers will be able to search and book your services once your profile is approved.
+            </p>
+            <Link
+              href="/"
+              className="w-full bg-primary hover:bg-slate-800 text-white font-semibold text-sm py-3 px-4 rounded-xl transition-all shadow-sm"
+            >
+              Back to Home
+            </Link>
           </div>
         </main>
         <Footer />

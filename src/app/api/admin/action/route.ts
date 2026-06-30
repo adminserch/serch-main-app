@@ -24,12 +24,58 @@ export async function POST(req: Request) {
 
     if (action === 'update_status') {
       const { providerId, status } = payload;
-      const { error } = await supabaseAdmin
+
+      // 1. Fetch provider user_id and current status
+      const { data: providerData, error: providerFetchError } = await supabaseAdmin
+        .from('providers')
+        .select('user_id, status')
+        .eq('id', providerId)
+        .single();
+        
+      if (providerFetchError) throw providerFetchError;
+      if (!providerData) {
+        return NextResponse.json({ error: 'Provider not found' }, { status: 404 });
+      }
+
+      // 2. Fetch the user's current role
+      const { data: userData, error: userFetchError } = await supabaseAdmin
+        .from('users')
+        .select('role')
+        .eq('id', providerData.user_id)
+        .single();
+
+      if (userFetchError) throw userFetchError;
+      if (!userData) {
+        return NextResponse.json({ error: 'User not found for this provider' }, { status: 404 });
+      }
+
+      const originalRole = userData.role;
+
+      // 3. Update user role based on provider status
+      const targetRole = status === 'approved' ? 'provider' : 'seeker';
+      const { error: userUpdateError } = await supabaseAdmin
+        .from('users')
+        .update({ role: targetRole })
+        .eq('id', providerData.user_id);
+        
+      if (userUpdateError) throw userUpdateError;
+
+      // 4. Update provider status
+      const { error: providerUpdateError } = await supabaseAdmin
         .from('providers')
         .update({ status })
         .eq('id', providerId);
 
-      if (error) throw error;
+      if (providerUpdateError) {
+        // Rollback user role update since provider status update failed
+        await supabaseAdmin
+          .from('users')
+          .update({ role: originalRole })
+          .eq('id', providerData.user_id)
+          .catch((err: unknown) => console.error('Rollback user role error:', err instanceof Error ? err.message : err));
+
+        throw providerUpdateError;
+      }
 
       // Sync trigger for notification email mock
       await fetch(`${new URL(req.url).origin}/api/notifications/send`, {
@@ -226,7 +272,12 @@ export async function POST(req: Request) {
         logo_url,
         is_verified,
         status,
-        service_categories
+        service_categories,
+        house_building_number,
+        street_name,
+        state_province_region,
+        postal_zip_code,
+        country
       } = payload;
 
       if (!providerId) {
@@ -246,7 +297,12 @@ export async function POST(req: Request) {
           logo_url,
           is_verified,
           status,
-          service_categories
+          service_categories,
+          house_building_number,
+          street_name,
+          state_province_region,
+          postal_zip_code,
+          country
         })
         .eq('id', providerId);
 
@@ -285,12 +341,18 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Admin action execution error:', err);
     
-    let errorMessage = err.message || 'An unexpected error occurred.';
-    if (err.code === '23503' || (err.message && err.message.toLowerCase().includes('foreign key constraint'))) {
-      if (err.message.includes('services_category_id_fkey') || err.message.includes('categories')) {
+    const errorObj = err && typeof err === 'object' ? (err as { message?: unknown; code?: unknown }) : null;
+    let errorMessage = (errorObj && 'message' in errorObj && typeof errorObj.message === 'string') 
+      ? errorObj.message 
+      : 'An unexpected error occurred.';
+      
+    const errCode = (errorObj && 'code' in errorObj) ? String(errorObj.code) : '';
+
+    if (errCode === '23503' || errorMessage.toLowerCase().includes('foreign key constraint')) {
+      if (errorMessage.includes('services_category_id_fkey') || errorMessage.includes('categories')) {
         errorMessage = 'This category cannot be deleted because it is currently linked to one or more active services. Please delete or reassign those services first, or mark this category as inactive.';
       } else {
         errorMessage = 'This item cannot be deleted or updated because it is currently referenced by other records in the database.';

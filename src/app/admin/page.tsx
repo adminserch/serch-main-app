@@ -62,6 +62,11 @@ interface Provider {
   status: 'pending' | 'approved' | 'rejected' | 'suspended';
   logo_url: string | null;
   service_categories?: string[];
+  house_building_number?: string | null;
+  street_name?: string | null;
+  state_province_region?: string | null;
+  postal_zip_code?: string | null;
+  country?: string | null;
 }
 
 interface Category {
@@ -147,7 +152,13 @@ function AdminDashboardContent() {
     logo_url: '',
     is_verified: false,
     status: 'pending' as 'pending' | 'approved' | 'rejected' | 'suspended',
-    categories: [] as string[]
+    categories: [] as string[],
+    house_building_number: '',
+    street_name: '',
+    state_province_region: '',
+    postal_zip_code: '',
+    country: '',
+    full_address: ''
   });
 
   // File Upload states for creating/editing provider logos
@@ -383,6 +394,31 @@ function AdminDashboardContent() {
       setCategoryFormSlug(categoryFormName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
     }
   }, [categoryFormName, editingCategory]);
+
+  // Sync full address search term for geocoding when individual fields change
+  useEffect(() => {
+    if (editingProvider) {
+      const parts = [
+        editForm.house_building_number,
+        editForm.street_name,
+        editForm.service_district,
+        editForm.service_city,
+        editForm.state_province_region,
+        editForm.postal_zip_code,
+        editForm.country
+      ].filter(Boolean);
+      setEditForm(prev => ({ ...prev, full_address: parts.join(', ') }));
+    }
+  }, [
+    editForm.house_building_number,
+    editForm.street_name,
+    editForm.service_district,
+    editForm.service_city,
+    editForm.state_province_region,
+    editForm.postal_zip_code,
+    editForm.country,
+    editingProvider
+  ]);
 
   const handleUpdateStatus = async (providerId: string, status: 'approved' | 'rejected') => {
     try {
@@ -699,7 +735,7 @@ function AdminDashboardContent() {
                       {/* Edit Button */}
                       <button
                         onClick={() => {
-                          setEditForm({
+                           setEditForm({
                             business_name: p.business_name || '',
                             description: p.description || '',
                             service_city: p.service_city || '',
@@ -710,7 +746,21 @@ function AdminDashboardContent() {
                             logo_url: p.logo_url || '',
                             is_verified: p.is_verified || false,
                             status: p.status || 'pending',
-                            categories: p.service_categories || []
+                            categories: p.service_categories || [],
+                            house_building_number: p.house_building_number || '',
+                            street_name: p.street_name || '',
+                            state_province_region: p.state_province_region || '',
+                            postal_zip_code: p.postal_zip_code || '',
+                            country: p.country || '',
+                            full_address: [
+                              p.house_building_number,
+                              p.street_name,
+                              p.service_district,
+                              p.service_city,
+                              p.state_province_region,
+                              p.postal_zip_code,
+                              p.country
+                            ].filter(Boolean).join(', ')
                           });
                           setEditingProvider(p);
                         }}
@@ -1212,13 +1262,46 @@ function AdminDashboardContent() {
                       />
                     </div>
 
-                    {/* Location & Contact */}
+                    {/* Location & Address */}
                     <div className="md:col-span-2 border-b border-champagne/40 pb-2 mt-2">
-                      <h4 className="font-display font-bold text-xs text-stone-400 uppercase tracking-wider">Location & Branding</h4>
+                      <h4 className="font-display font-bold text-xs text-stone-400 uppercase tracking-wider">Location & Address</h4>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Service City</label>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">House/Building Number</label>
+                      <input
+                        type="text"
+                        value={editForm.house_building_number}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, house_building_number: e.target.value }))}
+                        placeholder="e.g. 123"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Street Name</label>
+                      <input
+                        type="text"
+                        value={editForm.street_name}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, street_name: e.target.value }))}
+                        placeholder="e.g. Main Street"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">District / Neighborhood</label>
+                      <input
+                        type="text"
+                        value={editForm.service_district}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, service_district: e.target.value }))}
+                        placeholder="e.g. Makati"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">City/Locality</label>
                       <input
                         type="text"
                         required
@@ -1230,19 +1313,51 @@ function AdminDashboardContent() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service District</label>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">State/Province/Region</label>
                       <input
                         type="text"
-                        required
-                        value={editForm.service_district}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, service_district: e.target.value }))}
-                        placeholder="e.g. Makati"
+                        value={editForm.state_province_region}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, state_province_region: e.target.value }))}
+                        placeholder="e.g. Metro Manila"
                         className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Latitude</label>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Postal/Zip Code</label>
+                      <input
+                        type="text"
+                        value={editForm.postal_zip_code}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, postal_zip_code: e.target.value }))}
+                        placeholder="e.g. 1200"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Country</label>
+                      <input
+                        type="text"
+                        value={editForm.country}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, country: e.target.value }))}
+                        placeholder="e.g. Canada"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Full Address (Geocoding Address Lookups)</label>
+                      <input
+                        type="text"
+                        value={editForm.full_address}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, full_address: e.target.value }))}
+                        placeholder="Type address to locate automatically on map"
+                        className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Latitude</label>
                       <input
                         type="number"
                         step="any"
@@ -1254,7 +1369,7 @@ function AdminDashboardContent() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Longitude</label>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Longitude</label>
                       <input
                         type="number"
                         step="any"
@@ -1262,6 +1377,23 @@ function AdminDashboardContent() {
                         onChange={(e) => setEditForm(prev => ({ ...prev, longitude: e.target.value }))}
                         placeholder="e.g. 120.9842"
                         className="w-full border border-champagne rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent bg-white"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Pin Location on Map</label>
+                      <Map
+                        latitude={editForm.latitude ? parseFloat(editForm.latitude) : null}
+                        longitude={editForm.longitude ? parseFloat(editForm.longitude) : null}
+                        address={editForm.full_address}
+                        onLocationChange={(lat, lng) => {
+                          setEditForm(prev => ({
+                            ...prev,
+                            latitude: String(lat),
+                            longitude: String(lng)
+                          }));
+                        }}
+                        businessName={editForm.business_name}
                       />
                     </div>
 
