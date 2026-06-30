@@ -72,7 +72,7 @@ export async function POST(req: Request) {
           .from('users')
           .update({ role: originalRole })
           .eq('id', providerData.user_id)
-          .catch((err: any) => console.error('Rollback user role error:', err));
+          .catch((err: unknown) => console.error('Rollback user role error:', err instanceof Error ? err.message : err));
 
         throw providerUpdateError;
       }
@@ -341,12 +341,18 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Admin action execution error:', err);
     
-    let errorMessage = err.message || 'An unexpected error occurred.';
-    if (err.code === '23503' || (err.message && err.message.toLowerCase().includes('foreign key constraint'))) {
-      if (err.message.includes('services_category_id_fkey') || err.message.includes('categories')) {
+    const errorObj = err as any;
+    let errorMessage = (errorObj && typeof errorObj === 'object' && 'message' in errorObj && typeof errorObj.message === 'string') 
+      ? errorObj.message 
+      : 'An unexpected error occurred.';
+      
+    const errCode = (errorObj && typeof errorObj === 'object' && 'code' in errorObj) ? String(errorObj.code) : '';
+
+    if (errCode === '23503' || errorMessage.toLowerCase().includes('foreign key constraint')) {
+      if (errorMessage.includes('services_category_id_fkey') || errorMessage.includes('categories')) {
         errorMessage = 'This category cannot be deleted because it is currently linked to one or more active services. Please delete or reassign those services first, or mark this category as inactive.';
       } else {
         errorMessage = 'This item cannot be deleted or updated because it is currently referenced by other records in the database.';
