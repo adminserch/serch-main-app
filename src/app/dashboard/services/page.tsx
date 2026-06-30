@@ -5,7 +5,7 @@ import { useToast } from '@/components/Providers';
 import { getSupabaseClient, supabase } from '@/lib/supabase';
 import { useAuth, useUser } from '@clerk/nextjs';
 import { Clock, DollarSign, Edit, Plus, Trash2, Upload, X } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface Service {
   id: string;
@@ -21,6 +21,24 @@ interface Service {
 interface Category {
   id: string;
   name: string;
+}
+
+function usePreviewUrl(file: File | null) {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!file) {
+      setPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [file]);
+
+  return previewUrl;
 }
 
 export default function ServicesManager() {
@@ -60,9 +78,12 @@ export default function ServicesManager() {
   const [images, setImages] = useState<string[]>([]);
   const [serviceImageFile, setServiceImageFile] = useState<File | null>(null);
   const [serviceImageName, setServiceImageName] = useState('');
+  const serviceImagePreviewUrl = usePreviewUrl(serviceImageFile);
+
   const [editorLoading, setEditorLoading] = useState(false);
   const [useAdminBypass, setUseAdminBypass] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+  const serviceImageInputRef = useRef<HTMLInputElement>(null);
 
   async function loadData() {
     try {
@@ -219,7 +240,8 @@ export default function ServicesManager() {
           const { data } = supabase.storage.from('permits').getPublicUrl(filePath);
           updatedImages = [data.publicUrl];
         } else {
-          console.error('Failed to upload service image, using fallback:', uploadError);
+          console.error('Failed to upload service image:', uploadError);
+          throw new Error('Failed to upload service image: ' + (uploadError.message || 'Unknown error'));
         }
       }
 
@@ -435,6 +457,8 @@ export default function ServicesManager() {
                   <option value={120}>2 hours</option>
                   <option value={180}>3 hours</option>
                   <option value={240}>4 hours</option>
+                  <option value={360}>6 hours</option>
+                  <option value={480}>8 hours</option>
                 </select>
               </div>
             </div>
@@ -457,6 +481,7 @@ export default function ServicesManager() {
               <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Service Image</label>
               <div className="border-2 border-dashed border-champagne/80 hover:border-accent rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-50 relative">
                 <input
+                  ref={serviceImageInputRef}
                   type="file"
                   onChange={(e) => {
                     if (e.target.files && e.target.files[0]) {
@@ -475,28 +500,54 @@ export default function ServicesManager() {
               </div>
 
               {/* Image Previews (Rendered below) */}
-              {serviceImageFile ? (
-                <div className="mt-3 flex items-center gap-3 bg-stone-50 border border-champagne/45 p-2 rounded-xl">
-                  <img 
-                    src={URL.createObjectURL(serviceImageFile)} 
-                    alt="New upload preview" 
-                    onClick={() => setPreviewImageUrl(URL.createObjectURL(serviceImageFile))}
-                    className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity" 
-                  />
-                  <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-slate-700">Preview of new upload</span>
-                    <span className="text-[10px] text-stone-400 font-sans">{serviceImageName}</span>
+              {serviceImageFile && serviceImagePreviewUrl ? (
+                <div className="mt-3 flex items-center justify-between gap-3 bg-stone-50 border border-champagne/45 p-2 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src={serviceImagePreviewUrl} 
+                      alt="New upload preview" 
+                      onClick={() => setPreviewImageUrl(serviceImagePreviewUrl)}
+                      className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity" 
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-xs font-semibold text-slate-700">Preview of new upload</span>
+                      <span className="text-[10px] text-stone-400 font-sans">{serviceImageName}</span>
+                    </div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setServiceImageFile(null);
+                      setServiceImageName('');
+                      if (serviceImageInputRef.current) {
+                        serviceImageInputRef.current.value = '';
+                      }
+                    }}
+                    className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-700 transition-colors mr-2"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Remove
+                  </button>
                 </div>
               ) : images.length > 0 ? (
-                <div className="mt-3 flex items-center gap-3 bg-stone-50 border border-champagne/45 p-2 rounded-xl">
-                  <img 
-                    src={images[0]} 
-                    alt="Current preview" 
-                    onClick={() => setPreviewImageUrl(images[0])}
-                    className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity" 
-                  />
-                  <span className="text-xs text-stone-500 font-sans">Current service image</span>
+                <div className="mt-3 flex items-center justify-between gap-3 bg-stone-50 border border-champagne/45 p-2 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src={images[0]} 
+                      alt="Current preview" 
+                      onClick={() => setPreviewImageUrl(images[0])}
+                      className="w-12 h-12 rounded-lg object-cover border border-champagne cursor-zoom-in hover:opacity-90 transition-opacity" 
+                    />
+                    <span className="text-xs text-stone-500 font-sans">Current service image</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImages([]);
+                    }}
+                    className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-700 transition-colors mr-2"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Remove
+                  </button>
                 </div>
               ) : null}
             </div>

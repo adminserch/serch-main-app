@@ -110,6 +110,7 @@ export default function ProviderDetailsPage() {
   
   const [loading, setLoading] = useState(true);
   const [permitSignedUrl, setPermitSignedUrl] = useState<string | null>(null);
+  const [showPermitPreview, setShowPermitPreview] = useState(false);
 
   // Edit Mode states
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -834,16 +835,55 @@ export default function ProviderDetailsPage() {
                     <span className="text-espresso font-semibold font-sans">{provider.service_district}</span>
                   </div>
                   {provider.business_permit_url && (
-                    <div>
-                      <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">Valid Government ID / Verification Document</span>
-                      <a 
-                        href={permitSignedUrl || '#'} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="flex items-center gap-1.5 text-xs text-accent font-bold hover:text-purple-700 transition-colors w-max"
-                      >
-                        <FileText className="w-4 h-4" /> Download/View Vetting Document / ID
-                      </a>
+                    <div className="col-span-1 md:col-span-2">
+                      <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">Valid Government ID / Verification Document</span>
+                      <div className="flex flex-wrap items-center gap-3 mb-3">
+                        {!permitSignedUrl ? (
+                          <div className="flex items-center gap-1.5 text-xs text-stone-400 font-semibold bg-stone-50 px-3.5 py-2 rounded-xl border border-stone-200 cursor-not-allowed">
+                            <FileText className="w-4 h-4 text-stone-300" /> Loading document controls...
+                          </div>
+                        ) : (
+                          <>
+                            <a 
+                              href={permitSignedUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="flex items-center gap-1.5 text-xs text-accent font-bold hover:text-purple-700 transition-colors bg-stone-50 hover:bg-stone-100 px-3.5 py-2 rounded-xl border border-champagne/40"
+                            >
+                              <FileText className="w-4 h-4" /> Download/View Vetting Document / ID
+                            </a>
+                            <button
+                              type="button"
+                              onClick={() => setShowPermitPreview(!showPermitPreview)}
+                              className="flex items-center gap-1.5 text-xs text-purple-700 font-bold hover:text-white hover:bg-purple-700 transition-all bg-purple-50 hover:border-purple-300 px-3.5 py-2 rounded-xl border border-purple-200"
+                            >
+                              {showPermitPreview ? 'Hide Preview' : 'Show Preview'}
+                            </button>
+                          </>
+                        )}
+                      </div>
+
+                      {showPermitPreview && permitSignedUrl && (
+                        <div className="border border-champagne/80 rounded-2xl overflow-hidden bg-stone-50 max-w-3xl mt-2 shadow-sm">
+                          {provider.business_permit_url.toLowerCase().endsWith('.pdf') ? (
+                            <iframe
+                              src={permitSignedUrl}
+                              title="Government ID Preview"
+                              className="w-full h-[500px] bg-white"
+                              sandbox="allow-scripts allow-same-origin"
+                            />
+                          ) : (
+                            <div className="p-4 flex justify-center bg-stone-100/50">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={permitSignedUrl}
+                                alt="Government ID Preview"
+                                className="max-h-[500px] object-contain rounded-lg shadow-sm"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
