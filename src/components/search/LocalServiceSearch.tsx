@@ -123,10 +123,12 @@ export default function LocalServiceSearch({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    const locationChanged = locationInput !== state.location;
+
     if (locationInput) {
       localStorage.setItem('default_seeker_location', locationInput);
       // Remove stale coordinates if location is manually typed and changes
-      if (!state.lat || !state.lng) {
+      if (locationChanged || !state.lat || !state.lng) {
         localStorage.removeItem('default_seeker_lat');
         localStorage.removeItem('default_seeker_lng');
       }
@@ -139,6 +141,7 @@ export default function LocalServiceSearch({
     updateState({
       query: queryInput,
       location: locationInput,
+      ...(locationChanged ? { lat: '', lng: '' } : {}),
     }, { pushToSearchPage: variant === 'landing' });
   };
 
@@ -167,6 +170,28 @@ export default function LocalServiceSearch({
       : 'bg-white dark:bg-zinc-900 border-stone-200 dark:border-zinc-800 text-slate-700 dark:text-slate-300 hover:bg-stone-50 dark:hover:bg-zinc-800'
     }
   `;
+
+  // Fallback category mapping for sync support
+  const fallbackCategories = [
+    { id: 'Home Cleaning', name: 'Home Services' },
+    { id: 'Maintenance', name: 'Maintenance' },
+    { id: 'Creative Services', name: 'Creative Services' },
+    { id: 'Lessons', name: 'Academic Lessons' }
+  ];
+
+  const getSelectedCategoryLabel = () => {
+    if (state.category === 'all') return 'All Categories';
+    
+    // Check DB categories
+    const dbCat = dbCategories.find(c => c.name === state.category);
+    if (dbCat) return dbCat.name;
+
+    // Check fallback categories
+    const fallbackCat = fallbackCategories.find(c => c.id === state.category);
+    if (fallbackCat) return fallbackCat.name;
+
+    return state.category;
+  };
 
   return (
     <div ref={containerRef} className="w-full space-y-4">
@@ -283,7 +308,7 @@ export default function LocalServiceSearch({
               className={getFilterButtonClass(state.category !== 'all')}
             >
               <Layers className="h-4 w-4" />
-              <span>{state.category === 'all' ? 'All Categories' : state.category}</span>
+              <span>{getSelectedCategoryLabel()}</span>
             </button>
             {activeDropdown === 'category' && (
               <div className="absolute left-0 mt-2 w-52 bg-white dark:bg-zinc-900 border border-champagne/80 dark:border-zinc-800 rounded-2xl shadow-xl z-20 p-2 space-y-1 max-h-60 overflow-y-auto">
@@ -291,12 +316,7 @@ export default function LocalServiceSearch({
                   { id: 'all', name: 'All Categories' },
                   ...(dbCategories.length > 0 
                     ? dbCategories.map(c => ({ id: c.name, name: c.name }))
-                    : [
-                        { id: 'Home Cleaning', name: 'Home Services' },
-                        { id: 'Maintenance', name: 'Maintenance' },
-                        { id: 'Creative Services', name: 'Creative Services' },
-                        { id: 'Lessons', name: 'Academic Lessons' }
-                      ])
+                    : fallbackCategories)
                 ].map((cat) => (
                   <button
                     key={cat.id}

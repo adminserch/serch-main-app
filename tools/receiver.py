@@ -1,22 +1,31 @@
 import http.server
 import json
 import os
+from urllib.parse import urlparse
 
 class UploadHandler(http.server.BaseHTTPRequestHandler):
     def check_origin(self):
         origin = self.headers.get('Origin')
         if not origin:
-            # Allow requests without Origin header (e.g. curl)
-            return '*'
+            return None
         
-        # Check if the origin matches our trusted patterns
-        is_trusted = (
-            origin.startswith('http://localhost') or 
-            origin.startswith('http://127.0.0.1') or 
-            origin.startswith('https://contribution.usercontent.google.com')
-        )
-        if is_trusted:
-            return origin
+        try:
+            parsed = urlparse(origin)
+            hostname = parsed.hostname
+            if not hostname:
+                return None
+            
+            # Check if the hostname matches our trusted hosts exactly
+            trusted_hosts = {
+                'localhost',
+                '127.0.0.1',
+                'contribution.usercontent.google.com'
+            }
+            if hostname in trusted_hosts:
+                return origin
+        except Exception:
+            pass
+            
         return None
 
     def do_OPTIONS(self):
@@ -85,7 +94,7 @@ class UploadHandler(http.server.BaseHTTPRequestHandler):
 def run(port=9999):
     # Ensure output directory exists once at startup
     os.makedirs('stitch_screens', exist_ok=True)
-    server_address = ('', port)
+    server_address = ('127.0.0.1', port)
     httpd = http.server.HTTPServer(server_address, UploadHandler)
     print(f"Starting receiver server on port {port}...")
     httpd.serve_forever()
