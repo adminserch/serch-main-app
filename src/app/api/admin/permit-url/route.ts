@@ -1,12 +1,22 @@
 import { supabaseAdmin } from '@/lib/supabase';
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import { isRateLimited } from '@/lib/rate-limiter';
 
 export async function GET(req: Request) {
   try {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Limit: 15 requests per minute (60000ms)
+    const limited = await isRateLimited(`admin:permit-url:user:${userId}`, 15, 60000);
+    if (limited) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please slow down.' },
+        { status: 429 }
+      );
     }
 
     // Verify admin role on the server

@@ -1,12 +1,22 @@
 import { supabaseAdmin } from '@/lib/supabase';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import { isRateLimited } from '@/lib/rate-limiter';
 
 export async function POST() {
   try {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Limit: 30 sync requests per minute (60000ms)
+    const limited = await isRateLimited(`users:sync:user:${userId}`, 30, 60000);
+    if (limited) {
+      return NextResponse.json(
+        { error: 'Too many synchronization requests. Please slow down.' },
+        { status: 429 }
+      );
     }
 
     const user = await currentUser();

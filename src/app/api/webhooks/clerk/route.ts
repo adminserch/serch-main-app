@@ -2,8 +2,27 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { WebhookEvent } from '@clerk/nextjs/server';
 import { headers } from 'next/headers';
 import { Webhook } from 'svix';
+import { isRateLimited } from '@/lib/rate-limiter';
+
+function getClientIp(req: Request): string {
+  const xForwardedFor = req.headers.get('x-forwarded-for');
+  if (xForwardedFor) {
+    const ips = xForwardedFor.split(',');
+    const clientIp = ips[0].trim();
+    if (clientIp) return clientIp;
+  }
+  const xRealIp = req.headers.get('x-real-ip');
+  if (xRealIp) return xRealIp.trim();
+  return '127.0.0.1';
+}
 
 export async function POST(req: Request) {
+  // Rate limiting check
+  const ip = getClientIp(req);
+  const limited = await isRateLimited(`webhooks:clerk:ip:${ip}`, 120, 60000);
+  if (limited) {
+    return new Response('Too Many Requests', { status: 429 });
+  }
   // Get the headers
   const headerPayload = await headers();
   const svix_id = headerPayload.get("svix-id");

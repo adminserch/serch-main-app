@@ -2,6 +2,19 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { Resend } from 'resend';
 import { verifyToken, signToken } from '@/lib/token';
+import { isRateLimited } from '@/lib/rate-limiter';
+
+function getClientIp(req: Request): string {
+  const xForwardedFor = req.headers.get('x-forwarded-for');
+  if (xForwardedFor) {
+    const ips = xForwardedFor.split(',');
+    const clientIp = ips[0].trim();
+    if (clientIp) return clientIp;
+  }
+  const xRealIp = req.headers.get('x-real-ip');
+  if (xRealIp) return xRealIp.trim();
+  return '127.0.0.1';
+}
 
 function escapeHtml(str: string): string {
   return str.replace(/[&<>'"]/g, 
@@ -17,6 +30,12 @@ function escapeHtml(str: string): string {
 
 export async function GET(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const limited = await isRateLimited(`newsletter:confirm:ip:${ip}`, 15, 60000);
+    if (limited) {
+      return new NextResponse('Too Many Requests', { status: 429 });
+    }
+
     const { searchParams } = new URL(request.url);
     const token = searchParams.get('token');
 
@@ -111,6 +130,11 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const limited = await isRateLimited(`newsletter:confirm:ip:${ip}`, 15, 60000);
+    if (limited) {
+      return new NextResponse('Too Many Requests', { status: 429 });
+    }
     let token = '';
 
     const contentType = request.headers.get('content-type') || '';

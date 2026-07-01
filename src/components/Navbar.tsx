@@ -2,11 +2,11 @@
 
 import logoImg from '@/images/SERCH Logo 6.png';
 import { SignInButton, SignUpButton, UserButton, useAuth } from '@clerk/nextjs';
-import { Bell, CalendarDays, Home, LayoutDashboard, Lightbulb, Search, ShieldCheck, User } from 'lucide-react';
+import { Bell, CalendarDays, Home, LayoutDashboard, Lightbulb, Search, ShieldCheck, User, Menu, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -15,6 +15,15 @@ export default function Navbar() {
   const [providerStatus, setProviderStatus] = useState<string | null>(null);
 
   const [isDark, setIsDark] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  const navbarDrawerRef = useRef<HTMLDivElement>(null);
+
+  // Close mobile menu on route change during render phase
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setIsMobileMenuOpen(false);
+  }
 
   useEffect(() => {
     function checkTheme() {
@@ -27,6 +36,65 @@ export default function Navbar() {
     window.addEventListener('theme-change', checkTheme);
     return () => window.removeEventListener('theme-change', checkTheme);
   }, []);
+
+  // Body scroll lock when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
+  // Escape key handler to close mobile menu
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isMobileMenuOpen]);
+
+  // Focus trap for mobile menu
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const focusableElements = navbarDrawerRef.current?.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements?.[0] as HTMLElement;
+    const lastElement = focusableElements?.[focusableElements.length - 1] as HTMLElement;
+
+    const timeoutId = setTimeout(() => {
+      firstElement?.focus();
+    }, 50);
+
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          lastElement?.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          firstElement?.focus();
+          e.preventDefault();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleTab);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('keydown', handleTab);
+    };
+  }, [isMobileMenuOpen]);
+
 
   const toggleTheme = () => {
     const nextDark = !isDark;
@@ -163,9 +231,100 @@ export default function Navbar() {
                 </SignUpButton>
               </div>
             )}
+            {/* Hamburger Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 rounded-xl transition-colors md:hidden hover:bg-stone-100 dark:hover:bg-slate-800 text-stone-500 dark:text-slate-400"
+              aria-label="Toggle Menu"
+              aria-expanded={isMobileMenuOpen}
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
         </div>
       </nav>
+
+      {/* Mobile Navigation Drawer */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-[60] md:hidden">
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          {/* Drawer Content */}
+          <div 
+            ref={navbarDrawerRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu"
+            tabIndex={-1}
+            className={`fixed right-0 top-0 bottom-0 w-80 max-w-[85vw] z-[60] flex flex-col p-6 shadow-2xl transition-transform duration-300 border-l ${
+              isDark 
+                ? 'bg-slate-950 border-slate-800 text-white' 
+                : 'bg-white border-champagne/80 text-espresso'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-champagne/45 dark:border-zinc-800">
+              <span className="font-display font-bold text-lg">Menu</span>
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-slate-850"
+                aria-label="Close Menu"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <nav className="flex flex-col gap-4 font-sans text-base font-semibold">
+              <Link 
+                href="/search" 
+                className={`py-2 px-3 rounded-xl transition-colors hover:bg-stone-50 dark:hover:bg-zinc-900 ${pathname === '/search' ? 'text-purple-600 bg-stone-50 dark:bg-zinc-900' : 'text-stone-600 dark:text-stone-400'}`}
+              >
+                Browse Services
+              </Link>
+              {(dbRole !== 'provider' && dbRole !== 'admin' && providerStatus !== 'pending') && (
+                <Link 
+                  href="/register" 
+                  className={`py-2 px-3 rounded-xl transition-colors hover:bg-stone-50 dark:hover:bg-zinc-900 ${pathname === '/register' ? 'text-purple-600 bg-stone-50 dark:bg-zinc-900' : 'text-stone-600 dark:text-stone-400'}`}
+                >
+                  Become a Provider
+                </Link>
+              )}
+              {dbRole === 'provider' && (
+                <Link 
+                  href="/dashboard" 
+                  className={`py-2 px-3 rounded-xl transition-colors hover:bg-stone-50 dark:hover:bg-zinc-900 ${pathname.startsWith('/dashboard') ? 'text-purple-600 bg-stone-50 dark:bg-zinc-900' : 'text-stone-600 dark:text-stone-400'}`}
+                >
+                  Provider Dashboard
+                </Link>
+              )}
+              {dbRole === 'admin' && (
+                <Link 
+                  href="/admin" 
+                  className={`py-2 px-3 rounded-xl transition-colors hover:bg-stone-50 dark:hover:bg-zinc-900 ${pathname.startsWith('/admin') ? 'text-purple-600 bg-stone-50 dark:bg-zinc-900' : 'text-stone-600 dark:text-stone-400'}`}
+                >
+                  Admin Dashboard
+                </Link>
+              )}
+              <Link 
+                href="/how-it-works" 
+                className={`py-2 px-3 rounded-xl transition-colors hover:bg-stone-50 dark:hover:bg-zinc-900 ${pathname === '/how-it-works' ? 'text-purple-600 bg-stone-50 dark:bg-zinc-900' : 'text-stone-600 dark:text-stone-400'}`}
+              >
+                How It Works
+              </Link>
+              {isSignedIn && dbRole === 'seeker' && (
+                <Link 
+                  href="/bookings" 
+                  className={`py-2 px-3 rounded-xl transition-colors hover:bg-stone-50 dark:hover:bg-zinc-900 ${pathname === '/bookings' ? 'text-purple-600 bg-stone-50 dark:bg-zinc-900' : 'text-stone-600 dark:text-stone-400'}`}
+                >
+                  My Bookings
+                </Link>
+              )}
+            </nav>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Sticky Bottom Navbar */}
       <div className={`fixed bottom-0 left-0 right-0 z-50 backdrop-blur-md border-t flex justify-around items-center md:hidden shadow-lg py-2.5 px-4 transition-colors duration-300 ${isDark ? 'bg-slate-950/90 border-slate-800' : 'bg-white/90 border-champagne/60'

@@ -1,8 +1,25 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { auth } from '@clerk/nextjs/server';
+import { isRateLimited, getClientIp } from '@/lib/rate-limiter';
+
 
 export async function POST(req: Request) {
   try {
+    // Determine user identity or client IP for rate limiting
+    const { userId } = await auth();
+    const ip = getClientIp(req);
+    const rateLimitKey = userId ? `ai:user:${userId}` : `ai:ip:${ip}`;
+    
+    // Limit: 10 requests per 1 minute (60000ms)
+    const limited = await isRateLimited(rateLimitKey, 10, 60000);
+    if (limited) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please slow down and try again shortly.' },
+        { status: 429 }
+      );
+    }
+
     const { message, bookings } = await req.json();
 
     const apiKey = process.env.OPENAI_API_KEY || '';

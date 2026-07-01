@@ -13,7 +13,9 @@ import {
   Sparkles,
   Clock,
   Ban,
-  AlertCircle
+  AlertCircle,
+  Menu,
+  X
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -33,6 +35,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [authorized, setAuthorized] = useState(false);
   const [providerStatus, setProviderStatus] = useState<string | null>(null);
   const [isDark, setIsDark] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Sync theme with HTML class and global events
   useEffect(() => {
@@ -239,7 +242,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <Navbar />
 
       {/* Main Layout body with Sidebar and Content */}
-      <div className="flex-grow pt-20 flex min-h-[calc(100vh-80px)]">
+      <div className="flex-grow pt-20 flex flex-col md:flex-row min-h-[calc(100vh-80px)]">
         {/* Sidebar navigation */}
         <aside className="w-64 bg-card-bg border-r border-champagne/80 dark:border-zinc-800 flex flex-col justify-between p-6 hidden md:flex transition-colors duration-300">
           <div className="flex flex-col gap-8">
@@ -282,36 +285,87 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </aside>
 
+        {/* Mobile Drawer Overlay */}
+        {isSidebarOpen && (
+          <div className="fixed inset-0 z-50 md:hidden animate-fade-in">
+            {/* Backdrop */}
+            <div 
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setIsSidebarOpen(false)}
+            />
+            {/* Drawer Content */}
+            <div className={`fixed left-0 top-0 bottom-0 w-72 max-w-[80vw] z-50 flex flex-col p-6 shadow-2xl transition-transform duration-300 border-r ${
+              isDark 
+                ? 'bg-slate-950 border-slate-800 text-white' 
+                : 'bg-white border-champagne/80 text-espresso'
+            }`}>
+              <div className="flex items-center justify-between mb-8 pb-4 border-b border-champagne/45 dark:border-zinc-800">
+                <span className="font-display font-bold text-lg">Menu</span>
+                <button 
+                  onClick={() => setIsSidebarOpen(false)}
+                  className="p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-slate-850"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <nav className="flex flex-col gap-2 font-sans text-sm font-semibold flex-grow">
+                <Link 
+                  href="/" 
+                  className="inline-flex items-center gap-1.5 font-sans font-bold text-xs text-stone-400 hover:text-stone-605 dark:text-stone-500 dark:hover:text-stone-300 transition-colors uppercase tracking-wider mb-6 px-4"
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" /> Back to Main
+                </Link>
+                {navItems.map((item) => {
+                  const active = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setIsSidebarOpen(false)}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                        active
+                          ? isDark 
+                            ? 'bg-white-always text-slate-950 shadow-sm'
+                            : 'bg-primary text-white shadow-sm'
+                          : 'text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-zinc-900'
+                      }`}
+                    >
+                      {item.icon}
+                      {item.name}
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              <div className="flex items-center gap-3 border-t border-champagne/45 dark:border-zinc-800 pt-6">
+                <UserButton />
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-espresso dark:text-white">{user?.fullName}</span>
+                  <span className="text-[10px] text-purple-700 dark:text-purple-400 font-sans font-bold">Verified Professional</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Main Panel */}
         <main className="flex-grow flex flex-col">
           {/* Mobile top nav header */}
           <header className="h-16 border-b border-champagne dark:border-zinc-800 bg-card-bg px-6 flex items-center justify-between md:hidden transition-colors duration-300">
-            <h2 className="font-display text-base font-bold text-espresso dark:text-accent transition-colors duration-300">Provider Dashboard</h2>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsSidebarOpen(true)}
+                className="p-2 -ml-2 rounded-xl text-stone-500 hover:bg-stone-100 dark:hover:bg-slate-800"
+                aria-label="Open Menu"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+              <h2 className="font-display text-base font-bold text-espresso dark:text-accent transition-colors duration-300">Provider Dashboard</h2>
+            </div>
             <UserButton />
           </header>
-
-          {/* Mobile sub-navigation tabs */}
-          <div className="md:hidden bg-card-bg border-b border-champagne/60 dark:border-zinc-800 px-4 py-2.5 overflow-x-auto flex gap-2 scrollbar-none shrink-0 transition-colors duration-300">
-            {navItems.map((item) => {
-              const active = pathname === item.href;
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
-                    active
-                      ? isDark
-                        ? 'bg-white-always text-slate-950'
-                        : 'bg-primary text-white'
-                      : 'bg-stone-50 dark:bg-zinc-900 text-stone-600 dark:text-stone-400 border border-champagne/45 dark:border-zinc-800'
-                  }`}
-                >
-                  {item.icon}
-                  <span>{item.name}</span>
-                </Link>
-              );
-            })}
-          </div>
 
           <div className="flex-grow p-6 md:p-10 max-w-5xl w-full mx-auto">
             {children}

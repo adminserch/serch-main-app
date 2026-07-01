@@ -1,4 +1,23 @@
+import { NextResponse } from 'next/server';
 import { supabaseAdmin } from './supabase';
+
+/**
+ * Derives the client IP securely, prioritizing x-real-ip and the last entry of x-forwarded-for
+ * to prevent header spoofing from the client side.
+ */
+export function getClientIp(req: Request): string {
+  const xRealIp = req.headers.get('x-real-ip');
+  if (xRealIp) return xRealIp.trim();
+
+  const xForwardedFor = req.headers.get('x-forwarded-for');
+  if (xForwardedFor) {
+    const ips = xForwardedFor.split(',');
+    const clientIp = ips[ips.length - 1].trim();
+    if (clientIp) return clientIp;
+  }
+
+  return '127.0.0.1';
+}
 
 /**
  * Bounded rate limiter backed by Supabase postgres database.
@@ -17,12 +36,35 @@ export async function isRateLimited(key: string, limit: number, windowMs: number
 
     if (error) {
       console.error('Rate limiter database error (rpc):', error);
-      return true; // Fail closed: deny request when database is unavailable
+      return false; // Fail open: allow request when database is unavailable
     }
 
     return !!data;
   } catch (error) {
     console.error('Unhandled rate limiter error:', error);
-    return true; // Fail closed: deny request on unhandled exception
+    return false; // Fail open: allow request on unhandled exception
   }
 }
+
+/**
+ * Centralized rate limit enforcer. Returns a 429 NextResponse if rate limited, or null if allowed.
+ */
+export async function enforceRateLimit(
+  req: Request,
+  resource: string,
+  userId: string | null,
+  limit: number,
+  windowMs: number
+): Promise<NextResponse | null> {
+  const ip = getClientIp(req);
+  const rateLimitKey = userId ? `${resource}:user:${userId}` : `${resource}:ip:${ip}`;
+  const limited = await isRateLimited(rateLimitKey, limit, windowMs);
+  if (limited) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please slow down.' },
+      { status: 429 }
+    );
+  }
+  return null;
+}
+

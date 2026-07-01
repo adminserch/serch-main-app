@@ -1,6 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase';
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import { enforceRateLimit } from '@/lib/rate-limiter';
 
 async function getProviderAndVerify() {
   const { userId } = await auth();
@@ -42,6 +43,11 @@ async function getProviderAndVerify() {
 
 export async function GET(req: Request) {
   try {
+    const { userId } = await auth();
+    const limitResponse = await enforceRateLimit(req, 'services:get', userId, 60, 60000);
+    if (limitResponse) return limitResponse;
+
+
     const { searchParams } = new URL(req.url);
     const providerId = searchParams.get('providerId');
     if (!providerId) {
@@ -72,6 +78,11 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const { userId } = await auth();
+    const limitResponse = await enforceRateLimit(req, 'services:write', userId, 15, 60000);
+    if (limitResponse) return limitResponse;
+
+
     const authStatus = await getProviderAndVerify();
     if (!authStatus.authorized) {
       return NextResponse.json({ error: authStatus.error }, { status: authStatus.status });
@@ -136,6 +147,11 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
   try {
+    const { userId } = await auth();
+    const limitResponse = await enforceRateLimit(req, 'services:write', userId, 15, 60000);
+    if (limitResponse) return limitResponse;
+
+
     const authStatus = await getProviderAndVerify();
     if (!authStatus.authorized) {
       return NextResponse.json({ error: authStatus.error }, { status: authStatus.status });
@@ -220,6 +236,11 @@ export async function PUT(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
+    const { userId } = await auth();
+    const limitResponse = await enforceRateLimit(req, 'services:write', userId, 15, 60000);
+    if (limitResponse) return limitResponse;
+
+
     const authStatus = await getProviderAndVerify();
     if (!authStatus.authorized) {
       return NextResponse.json({ error: authStatus.error }, { status: authStatus.status });
