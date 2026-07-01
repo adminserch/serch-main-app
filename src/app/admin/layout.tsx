@@ -35,6 +35,7 @@ function AdminSidebarContent({ isSidebarOpen, setIsSidebarOpen }: AdminSidebarCo
   const currentTab = searchParams.get('tab') || 'stats';
   const { user } = useUser();
   const [isDark, setIsDark] = useState(false);
+  const drawerRef = React.useRef<HTMLDivElement>(null);
 
   // Sync theme with HTML class and global events
   useEffect(() => {
@@ -48,6 +49,65 @@ function AdminSidebarContent({ isSidebarOpen, setIsSidebarOpen }: AdminSidebarCo
     window.addEventListener('theme-change', checkTheme);
     return () => window.removeEventListener('theme-change', checkTheme);
   }, []);
+
+  // Body scroll lock
+  useEffect(() => {
+    if (isSidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isSidebarOpen]);
+
+  // Escape key handler
+  useEffect(() => {
+    if (!isSidebarOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsSidebarOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isSidebarOpen, setIsSidebarOpen]);
+
+  // Focus trap handler
+  useEffect(() => {
+    if (!isSidebarOpen) return;
+    const focusableElements = drawerRef.current?.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements?.[0] as HTMLElement;
+    const lastElement = focusableElements?.[focusableElements.length - 1] as HTMLElement;
+
+    // Small delay to let rendering complete
+    const timeoutId = setTimeout(() => {
+      firstElement?.focus();
+    }, 50);
+
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          lastElement?.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          firstElement?.focus();
+          e.preventDefault();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleTab);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('keydown', handleTab);
+    };
+  }, [isSidebarOpen]);
 
   const navItems: SidebarItem[] = [
     {
@@ -127,16 +187,24 @@ function AdminSidebarContent({ isSidebarOpen, setIsSidebarOpen }: AdminSidebarCo
             onClick={() => setIsSidebarOpen(false)}
           />
           {/* Drawer Content */}
-          <div className={`fixed left-0 top-0 bottom-0 w-72 max-w-[80vw] z-50 flex flex-col p-6 shadow-2xl transition-transform duration-300 border-r ${
-            isDark 
-              ? 'bg-slate-950 border-slate-800 text-white' 
-              : 'bg-white border-champagne/80 text-espresso'
-          }`}>
+          <div 
+            ref={drawerRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Admin Menu"
+            tabIndex={-1}
+            className={`fixed left-0 top-0 bottom-0 w-72 max-w-[80vw] z-50 flex flex-col p-6 shadow-2xl transition-transform duration-300 border-r ${
+              isDark 
+                ? 'bg-slate-950 border-slate-800 text-white' 
+                : 'bg-white border-champagne/80 text-espresso'
+            }`}
+          >
             <div className="flex items-center justify-between mb-8 pb-4 border-b border-champagne/45 dark:border-zinc-800">
               <span className="font-display font-bold text-lg">Admin Menu</span>
               <button 
                 onClick={() => setIsSidebarOpen(false)}
                 className="p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-slate-850"
+                aria-label="Close Menu"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -305,6 +373,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 onClick={() => setIsSidebarOpen(true)}
                 className="p-2 -ml-2 rounded-xl text-stone-500 hover:bg-stone-100 dark:hover:bg-slate-800"
                 aria-label="Open Menu"
+                aria-expanded={isSidebarOpen}
               >
                 <Menu className="w-5 h-5" />
               </button>

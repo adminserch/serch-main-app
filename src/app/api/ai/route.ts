@@ -1,19 +1,8 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { auth } from '@clerk/nextjs/server';
-import { isRateLimited } from '@/lib/rate-limiter';
+import { isRateLimited, getClientIp } from '@/lib/rate-limiter';
 
-function getClientIp(req: Request): string {
-  const xForwardedFor = req.headers.get('x-forwarded-for');
-  if (xForwardedFor) {
-    const ips = xForwardedFor.split(',');
-    const clientIp = ips[0].trim();
-    if (clientIp) return clientIp;
-  }
-  const xRealIp = req.headers.get('x-real-ip');
-  if (xRealIp) return xRealIp.trim();
-  return '127.0.0.1';
-}
 
 export async function POST(req: Request) {
   try {

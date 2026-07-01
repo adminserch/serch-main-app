@@ -6,7 +6,7 @@ import { Bell, CalendarDays, Home, LayoutDashboard, Lightbulb, Search, ShieldChe
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -16,10 +16,14 @@ export default function Navbar() {
 
   const [isDark, setIsDark] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  const navbarDrawerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  // Close mobile menu on route change during render phase
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
     setIsMobileMenuOpen(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     function checkTheme() {
@@ -32,6 +36,65 @@ export default function Navbar() {
     window.addEventListener('theme-change', checkTheme);
     return () => window.removeEventListener('theme-change', checkTheme);
   }, []);
+
+  // Body scroll lock when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
+  // Escape key handler to close mobile menu
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isMobileMenuOpen]);
+
+  // Focus trap for mobile menu
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const focusableElements = navbarDrawerRef.current?.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements?.[0] as HTMLElement;
+    const lastElement = focusableElements?.[focusableElements.length - 1] as HTMLElement;
+
+    const timeoutId = setTimeout(() => {
+      firstElement?.focus();
+    }, 50);
+
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          lastElement?.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          firstElement?.focus();
+          e.preventDefault();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleTab);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('keydown', handleTab);
+    };
+  }, [isMobileMenuOpen]);
+
 
   const toggleTheme = () => {
     const nextDark = !isDark;
@@ -173,6 +236,7 @@ export default function Navbar() {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2 rounded-xl transition-colors md:hidden hover:bg-stone-100 dark:hover:bg-slate-800 text-stone-500 dark:text-slate-400"
               aria-label="Toggle Menu"
+              aria-expanded={isMobileMenuOpen}
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -182,23 +246,31 @@ export default function Navbar() {
 
       {/* Mobile Navigation Drawer */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 z-[60] md:hidden">
           {/* Backdrop */}
           <div 
             className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
             onClick={() => setIsMobileMenuOpen(false)}
           />
           {/* Drawer Content */}
-          <div className={`fixed right-0 top-0 bottom-0 w-80 max-w-[85vw] z-50 flex flex-col p-6 shadow-2xl transition-transform duration-300 border-l ${
-            isDark 
-              ? 'bg-slate-950 border-slate-800 text-white' 
-              : 'bg-white border-champagne/80 text-espresso'
-          }`}>
+          <div 
+            ref={navbarDrawerRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu"
+            tabIndex={-1}
+            className={`fixed right-0 top-0 bottom-0 w-80 max-w-[85vw] z-[60] flex flex-col p-6 shadow-2xl transition-transform duration-300 border-l ${
+              isDark 
+                ? 'bg-slate-950 border-slate-800 text-white' 
+                : 'bg-white border-champagne/80 text-espresso'
+            }`}
+          >
             <div className="flex items-center justify-between mb-8 pb-4 border-b border-champagne/45 dark:border-zinc-800">
               <span className="font-display font-bold text-lg">Menu</span>
               <button 
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-slate-850"
+                aria-label="Close Menu"
               >
                 <X className="w-5 h-5" />
               </button>
