@@ -6,8 +6,6 @@ import Navbar from '@/components/Navbar';
 import { supabase } from '@/lib/supabase';
 import { useAuth, useUser } from '@clerk/nextjs';
 import {
-  
-  Search as SearchIcon,
   ShieldCheck,
   Star,
   X,
@@ -15,8 +13,12 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
+import { useSearchParamsState } from '@/hooks/useSearchParamsState';
+import LocalServiceSearch from '@/components/search/LocalServiceSearch';
+import { useCategories } from '@/hooks/useCategories';
+
+const MAX_COMPARE_PROVIDERS = 4;
 
 interface Provider {
   id: string;
@@ -98,10 +100,7 @@ const STATIC_PROVIDERS: Provider[] = [
 ];
 
 function SearchContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const initialQuery = searchParams.get('query') || '';
-  const initialLoc = searchParams.get('location') || '';
+  const { state: searchState, updateState } = useSearchParamsState();
 
   const { isSignedIn } = useAuth();
   const { user } = useUser();
@@ -109,16 +108,14 @@ function SearchContent() {
   const [currentProviderId, setCurrentProviderId] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState(initialQuery);
-  const [searchLoc, setSearchLoc] = useState(initialLoc);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [priceFilter, setPriceFilter] = useState<string>('all');
-  const [minRating, setMinRating] = useState<number>(0);
+  const selectedCategory = searchState.category;
   const [providers, setProviders] = useState<Provider[]>([]);
   const [compareList, setCompareList] = useState<Provider[]>([]);
   const [showCompareDrawer, setShowCompareDrawer] = useState(false);
   const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
   const [isDark, setIsDark] = useState(false);
+  const { categories: dbCategories } = useCategories();
+  const [showAllCategories, setShowAllCategories] = useState(false);
 
   // Sync theme with HTML class and global events
   useEffect(() => {
@@ -132,6 +129,8 @@ function SearchContent() {
     window.addEventListener('theme-change', checkTheme);
     return () => window.removeEventListener('theme-change', checkTheme);
   }, []);
+
+  // Sync theme with HTML class and global events
 
   useEffect(() => {
     async function loadUserRole() {
@@ -167,7 +166,6 @@ function SearchContent() {
           setCurrentProviderId(null);
         }
       } catch (err) {
-        console.error('Error fetching search user details:', err);
         setDbRole(null);
         setCurrentProviderId(null);
       }
@@ -178,7 +176,17 @@ function SearchContent() {
   // Reset pagination on filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, searchLoc, selectedCategory, priceFilter, minRating]);
+  }, [
+    searchState.query,
+    searchState.location,
+    searchState.lat,
+    searchState.lng,
+    searchState.distance,
+    searchState.rating,
+    searchState.price,
+    searchState.availability,
+    selectedCategory
+  ]);
 
   // Load providers from DB or fallback
   useEffect(() => {
@@ -266,34 +274,56 @@ function SearchContent() {
           setProviders(STATIC_PROVIDERS);
         }
       } catch (err) {
-        console.error(err);
         setProviders(STATIC_PROVIDERS);
       }
     }
     loadProviders();
   }, [currentProviderId]);
 
+  // Helper to calculate distance in km using Haversine formula
+  const getDistanceInKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371; // Radius of the Earth in km
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
   // Filter logic
   const filteredProviders = providers.filter((p) => {
-    const matchesQuery = searchQuery 
-      ? p.business_name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        p.description.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesQuery = searchState.query 
+      ? p.business_name.toLowerCase().includes(searchState.query.toLowerCase()) || 
+        p.description.toLowerCase().includes(searchState.query.toLowerCase()) ||
+        p.categories?.some(cat => cat.toLowerCase().includes(searchState.query.toLowerCase()))
       : true;
 
-    const matchesLoc = searchLoc
-      ? p.service_city.toLowerCase().includes(searchLoc.toLowerCase()) ||
-        p.service_district.toLowerCase().includes(searchLoc.toLowerCase())
-      : true;
+    // Location filter: if we have user coords from geolocation search, filter by radius (km)
+    let matchesLoc = true;
+    if (searchState.lat && searchState.lng && p.latitude && p.longitude) {
+      const distance = getDistanceInKm(
+        Number(searchState.lat),
+        Number(searchState.lng),
+        p.latitude,
+        p.longitude
+      );
+      matchesLoc = distance <= Number(searchState.distance || '25');
+    } else if (searchState.location) {
+      matchesLoc = p.service_city.toLowerCase().includes(searchState.location.toLowerCase()) ||
+        p.service_district.toLowerCase().includes(searchState.location.toLowerCase());
+    }
 
     const matchesCat = selectedCategory === 'all'
       ? true
       : p.categories?.some(cat => cat.toLowerCase().includes(selectedCategory.toLowerCase()));
 
-    const matchesPrice = priceFilter === 'all'
+    const matchesPrice = searchState.price === 'all'
       ? true
-      : p.price_level === priceFilter;
+      : p.price_level === searchState.price;
 
-    const matchesRating = p.avg_rating >= minRating;
+    const matchesRating = p.avg_rating >= Number(searchState.rating || '0');
 
     return matchesQuery && matchesLoc && matchesCat && matchesPrice && matchesRating;
   });
@@ -308,13 +338,28 @@ function SearchContent() {
     if (compareList.some(item => item.id === p.id)) {
       setCompareList(prev => prev.filter(item => item.id !== p.id));
     } else {
-      if (compareList.length >= 3) {
-        alert('You can compare up to 3 professionals side-by-side.');
-        return;
-      }
-      setCompareList(prev => [...prev, p]);
+      setCompareList(prev => {
+        if (prev.length >= MAX_COMPARE_PROVIDERS) {
+          return prev;
+        }
+        return [...prev, p];
+      });
     }
   };
+
+  const categoriesList = dbCategories.length > 0 
+    ? [{ id: 'all', name: 'All Services' }, ...dbCategories.map(c => ({ id: c.name, name: c.name }))]
+    : [
+        { id: 'all', name: 'All Services' },
+        { id: 'Home Cleaning', name: 'Home Services' },
+        { id: 'Maintenance', name: 'Maintenance' },
+        { id: 'Creative Services', name: 'Creative Services' },
+        { id: 'Lessons', name: 'Academic Lessons' }
+      ];
+
+  const displayedCategories = showAllCategories 
+    ? categoriesList 
+    : categoriesList.slice(0, 5);
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-on-surface transition-colors duration-300">
@@ -322,88 +367,59 @@ function SearchContent() {
       <Navbar />
 
       {/* Main Content Body */}
-      <div className="flex-grow pt-20">
-        <main className="max-w-screen-2xl mx-auto px-4 md:px-8 py-6 md:py-10 flex flex-col lg:flex-row gap-8 lg:gap-12">
-          {/* Sidebar Filters */}
-          <aside className="w-full lg:w-72 flex-shrink-0 lg:sticky lg:top-24 lg:h-[calc(100vh-8rem)] overflow-y-auto pr-0 lg:pr-4 custom-scrollbar">
-            <h3 className="font-headline text-lg md:text-xl mb-4 md:mb-6 text-on-surface">Refine Search</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6 lg:gap-8">
+      <div className="flex-grow pt-24 max-w-screen-2xl mx-auto w-full px-4 md:px-8">
+        <div className="mb-6 pt-2 max-w-3xl mx-auto">
+          <LocalServiceSearch variant="full" />
+        </div>
+
+        {/* Mobile Swipeable Categories */}
+        <div className="block lg:hidden mb-6 overflow-x-auto pb-2 scrollbar-none flex gap-2 w-full">
+          {categoriesList.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => updateState({ category: cat.id })}
+              className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all border ${
+                selectedCategory === cat.id
+                  ? 'bg-purple-600 border-purple-600 text-white shadow-md shadow-purple-600/10'
+                  : 'bg-card-bg border-stone-200 dark:border-zinc-800 text-slate-700 dark:text-slate-350 hover:bg-stone-50 dark:hover:bg-zinc-800'
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+
+        <main className="py-6 flex flex-col lg:flex-row gap-8 lg:gap-12">
+          {/* Sidebar Filters - Desktop only */}
+          <aside className="hidden lg:block lg:w-64 flex-shrink-0 lg:sticky lg:top-24 lg:h-[calc(100vh-12rem)] overflow-y-auto pr-0 lg:pr-4 custom-scrollbar">
+            <h3 className="font-headline text-lg md:text-xl mb-4 md:mb-6 text-on-surface">Categories</h3>
+            <div className="grid grid-cols-1 gap-6">
               {/* Categories */}
               <section className="bg-card-bg p-4 rounded-2xl border border-champagne/60 dark:border-zinc-800 lg:border-none lg:p-0">
-                <label className="font-label text-xs font-bold uppercase tracking-widest text-outline mb-3 block">Popular Categories</label>
                 <div className="space-y-2">
-                  {[
-                    { id: 'all', label: 'All Services' },
-                    { id: 'Home Cleaning', label: 'Home Services' },
-                    { id: 'Maintenance', label: 'Maintenance' },
-                    { id: 'Creative Services', label: 'Creative Services' },
-                    { id: 'Lessons', label: 'Academic Lessons' }
-                  ].map((cat) => (
+                  {displayedCategories.map((cat) => (
                     <label key={cat.id} className="flex items-center group cursor-pointer">
                       <input
                         type="radio"
                         name="category-filter"
                         checked={selectedCategory === cat.id}
-                        onChange={() => setSelectedCategory(cat.id)}
+                        onChange={() => updateState({ category: cat.id })}
                         className="border-outline-variant text-primary focus:ring-primary mr-3"
                       />
-                      <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">{cat.label}</span>
+                      <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">{cat.name}</span>
                     </label>
                   ))}
+
+                  {categoriesList.length > 5 && (
+                    <button
+                      onClick={() => setShowAllCategories(!showAllCategories)}
+                      className="text-xs font-bold text-purple-600 hover:text-purple-700 hover:underline pt-2 focus:outline-none flex items-center gap-1 transition-colors"
+                    >
+                      {showAllCategories ? 'Show Less' : `Show More (${categoriesList.length - 5} more)`}
+                    </button>
+                  )}
                 </div>
               </section>
-
-              {/* Price Range & Rating */}
-              <div className="space-y-6 lg:space-y-8">
-                <section className="bg-card-bg p-4 rounded-2xl border border-champagne/60 dark:border-zinc-800 lg:border-none lg:p-0">
-                  <label className="font-label text-xs font-bold uppercase tracking-widest text-outline mb-3 block">Price Filter</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { id: 'all', label: 'Any Price' },
-                      { id: '$', label: '$ Budget' },
-                      { id: '$$', label: '$$ Moderate' },
-                      { id: '$$$', label: '$$$ Luxury' }
-                    ].map((p) => (
-                      <label key={p.id} className="flex items-center group cursor-pointer">
-                        <input
-                          type="radio"
-                          name="price-filter"
-                          checked={priceFilter === p.id}
-                          onChange={() => setPriceFilter(p.id)}
-                          className="border-outline-variant text-primary focus:ring-primary mr-2"
-                        />
-                        <span className="font-body text-xs text-on-surface group-hover:text-primary transition-colors">{p.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </section>
-
-                <section className="bg-card-bg p-4 rounded-2xl border border-champagne/60 dark:border-zinc-800 lg:border-none lg:p-0">
-                  <label className="font-label text-xs font-bold uppercase tracking-widest text-outline mb-3 block">Minimum Rating</label>
-                  <div className="flex gap-2">
-                    {[0, 4.5, 4.8].map((ratingVal) => (
-                      <button
-                        key={ratingVal}
-                        onClick={() => setMinRating(ratingVal)}
-                        className={`flex-grow px-3 py-2 rounded-lg border text-xs font-semibold font-label transition-all ${
-                          minRating === ratingVal
-                            ? 'bg-primary text-white border-primary'
-                            : 'bg-card-bg border-stone-200 dark:border-zinc-800 text-on-surface hover:bg-stone-50'
-                        }`}
-                      >
-                        {ratingVal === 0 ? (
-                          'Any'
-                        ) : (
-                          <span className="flex items-center gap-1 justify-center">
-                            {ratingVal}
-                            <Star className="w-3 h-3 fill-current inline-block" />
-                          </span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </section>
-              </div>
             </div>
           </aside>
 
@@ -415,18 +431,6 @@ function SearchContent() {
                 <h2 className="font-headline text-2xl font-bold text-on-surface">
                   {filteredProviders.length} Available Providers
                 </h2>
-              </div>
-
-              {/* Text Search inside Area */}
-              <div className="bg-stone-50 dark:bg-zinc-900 border border-champagne/65 dark:border-zinc-800 rounded-full px-4 py-2.5 flex items-center gap-2 text-sm w-full md:w-[350px]">
-                <SearchIcon className="w-4 h-4 text-stone-400" />
-                <input
-                  type="text"
-                  placeholder="Filter by keyword..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-transparent border-none focus:outline-none w-full text-on-surface placeholder:text-stone-400"
-                />
               </div>
             </div>
 
@@ -491,6 +495,7 @@ function SearchContent() {
                       <div className="p-6 pt-0 flex gap-3">
                         {filteredProviders.length > 1 && (
                           <button
+                            disabled={compareList.length >= MAX_COMPARE_PROVIDERS && !isCompared}
                             onClick={(e) => {
                               e.stopPropagation();
                               toggleCompare(p);
@@ -498,6 +503,8 @@ function SearchContent() {
                             className={`flex-grow font-label text-sm font-semibold py-3 rounded-xl transition-all border ${
                               isCompared
                                 ? 'bg-primary/10 border-primary text-primary'
+                                : compareList.length >= MAX_COMPARE_PROVIDERS
+                                ? 'bg-stone-100 dark:bg-zinc-800 text-stone-400 dark:text-stone-500 border-transparent cursor-not-allowed'
                                 : 'bg-surface-container-high hover:bg-surface-container-highest text-on-surface border-transparent'
                             }`}
                           >
@@ -608,23 +615,35 @@ function SearchContent() {
       {/* Footer */}
       <Footer />
 
+      {/* Floating Compare Drawer Trigger Bar */}
+      {compareList.length > 0 && !showCompareDrawer && (
+        <div className="fixed bottom-6 right-6 z-50 animate-bounce">
+          <button
+            onClick={() => setShowCompareDrawer(true)}
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-3 rounded-full shadow-2xl flex items-center gap-2 hover:scale-105 transition-all"
+          >
+            <span>Compare Providers ({compareList.length})</span>
+          </button>
+        </div>
+      )}
+
       {/* Slide-Up Comparison Drawer */}
       {showCompareDrawer && (
         <div className="fixed inset-0 bg-slate-900/40 z-55 backdrop-blur-xs flex items-end justify-center">
-          <div className="bg-card-bg rounded-t-3xl shadow-2xl max-w-5xl w-full p-6 border-t border-champagne dark:border-zinc-800 max-h-[85vh] overflow-y-auto transform translate-y-0 transition-transform duration-300">
-            <div className="flex justify-between items-center border-b border-champagne/80 dark:border-zinc-800 pb-4 mb-6 transition-colors duration-300">
-              <h2 className="text-lg font-bold font-display text-espresso">Side-by-Side Comparison</h2>
+          <div className="bg-card-bg rounded-t-3xl shadow-2xl max-w-5xl w-full p-4 md:p-6 border-t border-champagne dark:border-zinc-800 max-h-[90vh] overflow-y-auto transform translate-y-0 transition-transform duration-300">
+            <div className="flex justify-between items-center border-b border-champagne/80 dark:border-zinc-800 pb-3 md:pb-4 mb-4 md:mb-6 transition-colors duration-300">
+              <h2 className="text-base md:text-lg font-bold font-display text-espresso">Side-by-Side Comparison</h2>
               <button
                 onClick={() => setShowCompareDrawer(false)}
-                className="p-1 rounded-full hover:bg-stone-100 dark:hover:bg-zinc-800 text-stone-400 hover:text-stone-600"
+                className="p-1.5 rounded-full hover:bg-stone-100 dark:hover:bg-zinc-800 text-stone-400 hover:text-stone-600"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 border-b border-champagne/40 dark:border-zinc-800 pb-6 transition-colors duration-300">
+            <div className="flex md:grid md:grid-cols-4 overflow-x-auto md:overflow-x-visible gap-4 border-b border-champagne/40 dark:border-zinc-800 pb-6 transition-colors duration-300 scrollbar-none snap-x snap-mandatory">
               {compareList.map((p) => (
-                <div key={p.id} className="border border-champagne/80 dark:border-zinc-800 rounded-2xl p-4 bg-stone-50 dark:bg-zinc-900/60 flex flex-col justify-between transition-colors duration-300">
+                <div key={p.id} className="snap-center flex-shrink-0 w-[280px] md:w-auto md:flex-shrink border border-champagne/80 dark:border-zinc-800 rounded-2xl p-4 bg-stone-50 dark:bg-zinc-900/60 flex flex-col justify-between transition-colors duration-300">
                   <div>
                     <div className="flex items-center gap-1 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-purple-800 dark:text-purple-300 text-[10px] font-bold px-2 py-0.5 rounded-full w-max mb-3 transition-colors duration-300">
                       <ShieldCheck className="w-3.5 h-3.5" /> VERIFIED
@@ -642,18 +661,14 @@ function SearchContent() {
 
                   <Link
                     href={`/providers/${p.id}`}
-                    className={`text-xs font-bold py-2 px-3 rounded-lg text-center transition-all mt-4 ${
-                      isDark
-                        ? 'bg-white hover:bg-slate-200 text-slate-950'
-                        : 'bg-primary hover:bg-slate-800 text-white'
-                    }`}
+                    className="text-xs font-bold py-2 px-3 rounded-lg text-center transition-all mt-4 bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-600/10"
                   >
                     Book This Pro
                   </Link>
                 </div>
               ))}
-              {Array.from({ length: 3 - compareList.length }).map((_, i) => (
-                <div key={i} className="border border-dashed border-stone-300 dark:border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center text-xs text-stone-400 dark:text-stone-500 bg-card-bg transition-colors duration-300">
+              {Array.from({ length: MAX_COMPARE_PROVIDERS - compareList.length }).map((_, i) => (
+                <div key={i} className="snap-center flex-shrink-0 w-[280px] md:w-auto md:flex-shrink border border-dashed border-stone-300 dark:border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center text-xs text-stone-400 dark:text-stone-500 bg-card-bg transition-colors duration-300">
                   Add another expert to compare
                 </div>
               ))}

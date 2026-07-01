@@ -6,11 +6,12 @@ import { supabase } from '@/lib/supabase';
 import {
   useUser
 } from '@clerk/nextjs';
-import { ChevronDown, ChevronRight, Home, MapPin, Search, Star, Heart } from 'lucide-react';
+import { ChevronRight, Home, Star, Heart } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
+import LocalServiceSearch from '@/components/search/LocalServiceSearch';
 
 interface FeaturedProvider {
   id: string;
@@ -175,7 +176,9 @@ export default function LandingPage() {
           setLiveProviders(providersWithRatings);
         }
       } catch (err) {
-        console.error('Error fetching landing details:', err);
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('Failed to load landing-page providers:', err);
+        }
       }
     }
     loadData();
@@ -200,30 +203,15 @@ export default function LandingPage() {
             What <span className="italic font-semibold text-purple-600">service</span><br />do you need?
           </h1>
           {/* Search Container */}
-          <form onSubmit={handleSearch} className="bg-white rounded-2xl md:rounded-full p-2 flex flex-col md:flex-row items-stretch md:items-center gap-2 shadow-2xl">
-            <div className="flex-grow flex items-center px-4 py-3 gap-3">
-              <Search className="h-6 w-6 text-slate-400" />
-              <input
-                className="w-full border-none focus:ring-0 text-slate-800 text-lg placeholder:text-slate-400 focus:outline-none bg-transparent"
-                placeholder="Search services (e.g. house cleaning, plumbing)"
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </div>
-            <div className="hidden md:block h-10 w-px bg-slate-200"></div>
-            <div className="flex items-center px-4 py-3 gap-2 group cursor-pointer">
-              <MapPin className="h-5 w-5 text-[#3366cc]" />
-              <span className="text-slate-700 font-medium whitespace-nowrap">Calgary, AB</span>
-              <ChevronDown className="h-4 w-4 text-slate-400 group-hover:text-[#3366cc] transition-colors" />
-            </div>
-            <button
-              type="submit"
-              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 md:py-4 rounded-xl md:rounded-full font-bold transition-all transform active:scale-95 cursor-pointer text-center"
-            >
-              Search
-            </button>
-          </form>
+          <div className="max-w-3xl mx-auto">
+            <Suspense fallback={
+              <div className="h-16 bg-white dark:bg-zinc-950 rounded-full border border-champagne/80 dark:border-zinc-800 animate-pulse flex items-center px-6">
+                <span className="text-slate-400 text-sm">Loading search options...</span>
+              </div>
+            }>
+              <LocalServiceSearch variant="landing" />
+            </Suspense>
+          </div>
           <h2 className="font-serif text-4xl md:text-6xl font-bold leading-tight mt-12 text-[#1b1c1d] dark:text-slate-100">
             Find. <span className="italic font-semibold text-purple-600">Book.</span> Trust.
           </h2>
