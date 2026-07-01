@@ -124,11 +124,12 @@ export default function LocalServiceSearch({
     e.preventDefault();
     
     const locationChanged = locationInput !== state.location;
+    const shouldResetCoords = locationChanged || !state.lat || !state.lng;
 
     if (locationInput) {
       localStorage.setItem('default_seeker_location', locationInput);
       // Remove stale coordinates if location is manually typed and changes
-      if (locationChanged || !state.lat || !state.lng) {
+      if (shouldResetCoords) {
         localStorage.removeItem('default_seeker_lat');
         localStorage.removeItem('default_seeker_lng');
       }
@@ -141,7 +142,7 @@ export default function LocalServiceSearch({
     updateState({
       query: queryInput,
       location: locationInput,
-      ...(locationChanged ? { lat: '', lng: '' } : {}),
+      ...(shouldResetCoords ? { lat: '', lng: '' } : {}),
     }, { pushToSearchPage: variant === 'landing' });
   };
 
@@ -183,7 +184,14 @@ export default function LocalServiceSearch({
     if (state.category === 'all') return 'All Categories';
     
     // Check DB categories
-    const dbCat = dbCategories.find(c => c.name === state.category);
+    const dbCat = dbCategories.find(c => {
+      const canonicalId = c.name === 'Home Services' || c.name === 'Home Cleaning'
+        ? 'Home Cleaning'
+        : c.name === 'Academic Lessons' || c.name === 'Lessons'
+        ? 'Lessons'
+        : c.name;
+      return canonicalId === state.category;
+    });
     if (dbCat) return dbCat.name;
 
     // Check fallback categories
@@ -315,7 +323,14 @@ export default function LocalServiceSearch({
                 {[
                   { id: 'all', name: 'All Categories' },
                   ...(dbCategories.length > 0 
-                    ? dbCategories.map(c => ({ id: c.name, name: c.name }))
+                    ? dbCategories.map(c => {
+                        const canonicalId = c.name === 'Home Services' || c.name === 'Home Cleaning'
+                          ? 'Home Cleaning'
+                          : c.name === 'Academic Lessons' || c.name === 'Lessons'
+                          ? 'Lessons'
+                          : c.name;
+                        return { id: canonicalId, name: c.name };
+                      })
                     : fallbackCategories)
                 ].map((cat) => (
                   <button
