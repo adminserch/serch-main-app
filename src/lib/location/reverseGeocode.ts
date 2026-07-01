@@ -6,7 +6,7 @@ export async function reverseGeocode(lat: number, lng: number): Promise<{
   city: string;
   district: string;
   formattedAddress: string;
-}> {
+} | null> {
   // Simulate network latency
   await new Promise((resolve) => setTimeout(resolve, 800));
 
@@ -64,18 +64,6 @@ export async function reverseGeocode(lat: number, lng: number): Promise<{
     };
   }
 
-  // Default fallback based on closest known region
-  if (lat > 30) {
-    return {
-      city: 'Calgary',
-      district: 'SW Calgary',
-      formattedAddress: 'Calgary, AB',
-    };
-  }
-
-  return {
-    city: 'Manila',
-    district: 'Makati',
-    formattedAddress: 'Makati, Manila',
-  };
+  // Default fallback: return null to indicate unknown region
+  return null;
 }

@@ -17,56 +17,41 @@ import {
 import { useUserLocation } from '@/hooks/useUserLocation';
 import { useSearchParamsState } from '@/hooks/useSearchParamsState';
 import { reverseGeocode } from '@/lib/location/reverseGeocode';
-import { supabase } from '@/lib/supabase';
+import { useCategories } from '@/hooks/useCategories';
 
 interface LocalServiceSearchProps {
   variant?: 'landing' | 'full';
-  onSearchChange?: (payload: any) => void;
 }
 
 export default function LocalServiceSearch({ 
-  variant = 'landing', 
-  onSearchChange 
+  variant = 'landing'
 }: LocalServiceSearchProps) {
   const { coords, status, error, requestLocation } = useUserLocation();
   const { state, updateState } = useSearchParamsState();
 
+  // State derivation for queryInput
+  const [prevQuery, setPrevQuery] = useState(state.query);
   const [queryInput, setQueryInput] = useState(state.query);
+  if (state.query !== prevQuery) {
+    setQueryInput(state.query);
+    setPrevQuery(state.query);
+  }
+
+  // State derivation for locationInput
+  const [prevLocation, setPrevLocation] = useState(state.location);
   const [locationInput, setLocationInput] = useState(state.location);
+  if (state.location !== prevLocation) {
+    setLocationInput(state.location);
+    setPrevLocation(state.location);
+  }
+
   const [showFilters, setShowFilters] = useState(variant === 'full');
   
   // Active dropdown states for full variant
-  const [activeDropdown, setActiveDropdown] = useState<'distance' | 'rating' | 'price' | 'availability' | 'mode' | 'category' | null>(null);
+  const [activeDropdown, setActiveDropdown] = useState<'distance' | 'rating' | 'price' | 'availability' | 'category' | null>(null);
   
-  const [dbCategories, setDbCategories] = useState<{ id: string; name: string }[]>([]);
+  const { categories: dbCategories } = useCategories();
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Sync inputs with URL params if they change
-  useEffect(() => {
-    setQueryInput(state.query);
-  }, [state.query]);
-
-  // Load categories from database
-  useEffect(() => {
-    async function loadCategories() {
-      try {
-        const { data, error } = await supabase
-          .from('categories')
-          .select('id, name')
-          .eq('is_active', true);
-        if (!error && data) {
-          setDbCategories(data);
-        }
-      } catch (err) {
-        // fail silently
-      }
-    }
-    loadCategories();
-  }, []);
-
-  useEffect(() => {
-    setLocationInput(state.location);
-  }, [state.location]);
 
   // Load cached location on mount if no location is specified in URL query params
   useEffect(() => {
@@ -75,7 +60,6 @@ export default function LocalServiceSearch({
       const cachedLat = localStorage.getItem('default_seeker_lat');
       const cachedLng = localStorage.getItem('default_seeker_lng');
       if (cachedLoc) {
-        setLocationInput(cachedLoc);
         updateState({
           location: cachedLoc,
           lat: cachedLat || '',
@@ -91,19 +75,32 @@ export default function LocalServiceSearch({
       const getAddress = async () => {
         try {
           const result = await reverseGeocode(coords.latitude, coords.longitude);
-          setLocationInput(result.formattedAddress);
-          
-          // Cache in localStorage
-          localStorage.setItem('default_seeker_location', result.formattedAddress);
-          localStorage.setItem('default_seeker_lat', coords.latitude.toString());
-          localStorage.setItem('default_seeker_lng', coords.longitude.toString());
+          if (result) {
+            setLocationInput(result.formattedAddress);
+            
+            // Cache in localStorage
+            localStorage.setItem('default_seeker_location', result.formattedAddress);
+            localStorage.setItem('default_seeker_lat', coords.latitude.toString());
+            localStorage.setItem('default_seeker_lng', coords.longitude.toString());
 
-          updateState({
-            location: result.formattedAddress,
-            lat: coords.latitude.toString(),
-            lng: coords.longitude.toString(),
-          }, { replace: true, pushToSearchPage: variant === 'landing' });
-        } catch (err) {
+            updateState({
+              location: result.formattedAddress,
+              lat: coords.latitude.toString(),
+              lng: coords.longitude.toString(),
+            }, { replace: true, pushToSearchPage: variant === 'landing' });
+          } else {
+            // Handle unknown location case: clear values
+            setLocationInput('');
+            localStorage.removeItem('default_seeker_location');
+            localStorage.removeItem('default_seeker_lat');
+            localStorage.removeItem('default_seeker_lng');
+            updateState({
+              location: '',
+              lat: '',
+              lng: '',
+            }, { replace: true });
+          }
+        } catch {
           // fail silently
         }
       };

@@ -16,6 +16,9 @@ import Image from 'next/image';
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParamsState } from '@/hooks/useSearchParamsState';
 import LocalServiceSearch from '@/components/search/LocalServiceSearch';
+import { useCategories } from '@/hooks/useCategories';
+
+const MAX_COMPARE_PROVIDERS = 4;
 
 interface Provider {
   id: string;
@@ -111,7 +114,7 @@ function SearchContent() {
   const [showCompareDrawer, setShowCompareDrawer] = useState(false);
   const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
   const [isDark, setIsDark] = useState(false);
-  const [dbCategories, setDbCategories] = useState<{ id: string; name: string }[]>([]);
+  const { categories: dbCategories } = useCategories();
   const [showAllCategories, setShowAllCategories] = useState(false);
 
   // Sync theme with HTML class and global events
@@ -127,23 +130,7 @@ function SearchContent() {
     return () => window.removeEventListener('theme-change', checkTheme);
   }, []);
 
-  // Fetch categories from DB
-  useEffect(() => {
-    async function loadCategories() {
-      try {
-        const { data, error } = await supabase
-          .from('categories')
-          .select('id, name')
-          .eq('is_active', true);
-        if (!error && data) {
-          setDbCategories(data);
-        }
-      } catch (err) {
-        // fail silently
-      }
-    }
-    loadCategories();
-  }, []);
+  // Sync theme with HTML class and global events
 
   useEffect(() => {
     async function loadUserRole() {
@@ -198,7 +185,6 @@ function SearchContent() {
     searchState.rating,
     searchState.price,
     searchState.availability,
-    searchState.mode,
     selectedCategory
   ]);
 
@@ -339,14 +325,7 @@ function SearchContent() {
 
     const matchesRating = p.avg_rating >= Number(searchState.rating || '0');
 
-    let matchesMode = true;
-    if (searchState.mode === 'remote') {
-      matchesMode = p.description.toLowerCase().includes('remote') || 
-                    p.description.toLowerCase().includes('online') || 
-                    p.description.toLowerCase().includes('virtual');
-    }
-
-    return matchesQuery && matchesLoc && matchesCat && matchesPrice && matchesRating && matchesMode;
+    return matchesQuery && matchesLoc && matchesCat && matchesPrice && matchesRating;
   });
 
   const itemsPerPage = 10;
@@ -359,10 +338,12 @@ function SearchContent() {
     if (compareList.some(item => item.id === p.id)) {
       setCompareList(prev => prev.filter(item => item.id !== p.id));
     } else {
-      if (compareList.length >= 4) {
-        return;
-      }
-      setCompareList(prev => [...prev, p]);
+      setCompareList(prev => {
+        if (prev.length >= MAX_COMPARE_PROVIDERS) {
+          return prev;
+        }
+        return [...prev, p];
+      });
     }
   };
 
@@ -514,7 +495,7 @@ function SearchContent() {
                       <div className="p-6 pt-0 flex gap-3">
                         {filteredProviders.length > 1 && (
                           <button
-                            disabled={compareList.length >= 4 && !isCompared}
+                            disabled={compareList.length >= MAX_COMPARE_PROVIDERS && !isCompared}
                             onClick={(e) => {
                               e.stopPropagation();
                               toggleCompare(p);
@@ -522,7 +503,7 @@ function SearchContent() {
                             className={`flex-grow font-label text-sm font-semibold py-3 rounded-xl transition-all border ${
                               isCompared
                                 ? 'bg-primary/10 border-primary text-primary'
-                                : compareList.length >= 4
+                                : compareList.length >= MAX_COMPARE_PROVIDERS
                                 ? 'bg-stone-100 dark:bg-zinc-800 text-stone-400 dark:text-stone-500 border-transparent cursor-not-allowed'
                                 : 'bg-surface-container-high hover:bg-surface-container-highest text-on-surface border-transparent'
                             }`}
@@ -649,20 +630,20 @@ function SearchContent() {
       {/* Slide-Up Comparison Drawer */}
       {showCompareDrawer && (
         <div className="fixed inset-0 bg-slate-900/40 z-55 backdrop-blur-xs flex items-end justify-center">
-          <div className="bg-card-bg rounded-t-3xl shadow-2xl max-w-5xl w-full p-6 border-t border-champagne dark:border-zinc-800 max-h-[85vh] overflow-y-auto transform translate-y-0 transition-transform duration-300">
-            <div className="flex justify-between items-center border-b border-champagne/80 dark:border-zinc-800 pb-4 mb-6 transition-colors duration-300">
-              <h2 className="text-lg font-bold font-display text-espresso">Side-by-Side Comparison</h2>
+          <div className="bg-card-bg rounded-t-3xl shadow-2xl max-w-5xl w-full p-4 md:p-6 border-t border-champagne dark:border-zinc-800 max-h-[90vh] overflow-y-auto transform translate-y-0 transition-transform duration-300">
+            <div className="flex justify-between items-center border-b border-champagne/80 dark:border-zinc-800 pb-3 md:pb-4 mb-4 md:mb-6 transition-colors duration-300">
+              <h2 className="text-base md:text-lg font-bold font-display text-espresso">Side-by-Side Comparison</h2>
               <button
                 onClick={() => setShowCompareDrawer(false)}
-                className="p-1 rounded-full hover:bg-stone-100 dark:hover:bg-zinc-800 text-stone-400 hover:text-stone-600"
+                className="p-1.5 rounded-full hover:bg-stone-100 dark:hover:bg-zinc-800 text-stone-400 hover:text-stone-600"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="flex md:grid md:grid-cols-4 overflow-x-auto md:overflow-x-visible gap-4 border-b border-champagne/40 dark:border-zinc-800 pb-6 transition-colors duration-300 scrollbar-none">
+            <div className="flex md:grid md:grid-cols-4 overflow-x-auto md:overflow-x-visible gap-4 border-b border-champagne/40 dark:border-zinc-800 pb-6 transition-colors duration-300 scrollbar-none snap-x snap-mandatory">
               {compareList.map((p) => (
-                <div key={p.id} className="flex-shrink-0 w-[85%] md:w-auto md:flex-shrink border border-champagne/80 dark:border-zinc-800 rounded-2xl p-4 bg-stone-50 dark:bg-zinc-900/60 flex flex-col justify-between transition-colors duration-300">
+                <div key={p.id} className="snap-center flex-shrink-0 w-[280px] md:w-auto md:flex-shrink border border-champagne/80 dark:border-zinc-800 rounded-2xl p-4 bg-stone-50 dark:bg-zinc-900/60 flex flex-col justify-between transition-colors duration-300">
                   <div>
                     <div className="flex items-center gap-1 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-purple-800 dark:text-purple-300 text-[10px] font-bold px-2 py-0.5 rounded-full w-max mb-3 transition-colors duration-300">
                       <ShieldCheck className="w-3.5 h-3.5" /> VERIFIED
@@ -686,8 +667,8 @@ function SearchContent() {
                   </Link>
                 </div>
               ))}
-              {Array.from({ length: 4 - compareList.length }).map((_, i) => (
-                <div key={i} className="flex-shrink-0 w-[85%] md:w-auto md:flex-shrink border border-dashed border-stone-300 dark:border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center text-xs text-stone-400 dark:text-stone-500 bg-card-bg transition-colors duration-300">
+              {Array.from({ length: MAX_COMPARE_PROVIDERS - compareList.length }).map((_, i) => (
+                <div key={i} className="snap-center flex-shrink-0 w-[280px] md:w-auto md:flex-shrink border border-dashed border-stone-300 dark:border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center text-xs text-stone-400 dark:text-stone-500 bg-card-bg transition-colors duration-300">
                   Add another expert to compare
                 </div>
               ))}

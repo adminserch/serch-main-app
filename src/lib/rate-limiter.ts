@@ -36,12 +36,14 @@ export async function isRateLimited(key: string, limit: number, windowMs: number
 
     if (error) {
       // Fail open: allow request when database is unavailable
+      console.error(`Rate limiter RPC error for key ${key}:`, error);
       return false;
     }
 
     return !!data;
   } catch (error) {
     // Fail open: allow request on unhandled exception
+    console.error(`Rate limiter exception for key ${key}:`, error);
     return false;
   }
 }

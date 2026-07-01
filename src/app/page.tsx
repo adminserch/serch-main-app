@@ -176,7 +176,9 @@ export default function LandingPage() {
           setLiveProviders(providersWithRatings);
         }
       } catch (err) {
-        // fail silently
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('Failed to load landing-page providers:', err);
+        }
       }
     }
     loadData();

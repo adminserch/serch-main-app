@@ -10,7 +10,6 @@ export interface SearchParamsState {
   rating: string;
   price: string;
   availability: string;
-  mode: string;
   category: string;
 }
 
@@ -28,7 +27,6 @@ export function useSearchParamsState() {
       rating: searchParams.get('rating') || '0',
       price: searchParams.get('price') || 'all',
       availability: searchParams.get('availability') || '',
-      mode: searchParams.get('mode') || 'all',
       category: searchParams.get('category') || 'all',
     };
   }, [searchParams]);
@@ -49,7 +47,11 @@ export function useSearchParamsState() {
       const path = options?.pushToSearchPage ? '/search' : '';
       const url = `${path}?${searchString}`;
 
-      if (options?.replace) {
+      const shouldReplace = options?.replace !== undefined 
+        ? options.replace 
+        : (options?.pushToSearchPage ? false : true);
+
+      if (shouldReplace) {
         router.replace(url);
       } else {
         router.push(url);
