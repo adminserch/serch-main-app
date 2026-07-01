@@ -2,6 +2,19 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { permitPathSchema } from '@/lib/validations';
+import { isRateLimited } from '@/lib/rate-limiter';
+
+function getClientIp(req: Request): string {
+  const xForwardedFor = req.headers.get('x-forwarded-for');
+  if (xForwardedFor) {
+    const ips = xForwardedFor.split(',');
+    const clientIp = ips[0].trim();
+    if (clientIp) return clientIp;
+  }
+  const xRealIp = req.headers.get('x-real-ip');
+  if (xRealIp) return xRealIp.trim();
+  return '127.0.0.1';
+}
 
 export async function POST(req: Request) {
   let providerIdToClean: string | null = null;
@@ -11,6 +24,18 @@ export async function POST(req: Request) {
     const { userId: clerkUserId } = await auth();
     if (!clerkUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const ip = getClientIp(req);
+    const rateLimitKey = `register:user:${clerkUserId}:ip:${ip}`;
+    
+    // Limit: 5 registration requests per hour (3600000ms)
+    const limited = await isRateLimited(rateLimitKey, 5, 3600000);
+    if (limited) {
+      return NextResponse.json(
+        { error: 'Too many registration attempts. Please try again in an hour.' },
+        { status: 429 }
+      );
     }
 
     // Get user from users table

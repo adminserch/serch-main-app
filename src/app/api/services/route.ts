@@ -1,6 +1,19 @@
 import { supabaseAdmin } from '@/lib/supabase';
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import { isRateLimited } from '@/lib/rate-limiter';
+
+function getClientIp(req: Request): string {
+  const xForwardedFor = req.headers.get('x-forwarded-for');
+  if (xForwardedFor) {
+    const ips = xForwardedFor.split(',');
+    const clientIp = ips[0].trim();
+    if (clientIp) return clientIp;
+  }
+  const xRealIp = req.headers.get('x-real-ip');
+  if (xRealIp) return xRealIp.trim();
+  return '127.0.0.1';
+}
 
 async function getProviderAndVerify() {
   const { userId } = await auth();
@@ -42,6 +55,14 @@ async function getProviderAndVerify() {
 
 export async function GET(req: Request) {
   try {
+    const { userId } = await auth();
+    const ip = getClientIp(req);
+    const rateLimitKey = userId ? `services:get:user:${userId}` : `services:get:ip:${ip}`;
+    const limited = await isRateLimited(rateLimitKey, 60, 60000);
+    if (limited) {
+      return NextResponse.json({ error: 'Too many requests. Please slow down.' }, { status: 429 });
+    }
+
     const { searchParams } = new URL(req.url);
     const providerId = searchParams.get('providerId');
     if (!providerId) {
@@ -72,6 +93,20 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const { userId } = await auth();
+    if (userId) {
+      const limited = await isRateLimited(`services:write:user:${userId}`, 15, 60000);
+      if (limited) {
+        return NextResponse.json({ error: 'Too many requests. Please slow down.' }, { status: 429 });
+      }
+    } else {
+      const ip = getClientIp(req);
+      const limited = await isRateLimited(`services:write:ip:${ip}`, 15, 60000);
+      if (limited) {
+        return NextResponse.json({ error: 'Too many requests. Please slow down.' }, { status: 429 });
+      }
+    }
+
     const authStatus = await getProviderAndVerify();
     if (!authStatus.authorized) {
       return NextResponse.json({ error: authStatus.error }, { status: authStatus.status });
@@ -136,6 +171,20 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
   try {
+    const { userId } = await auth();
+    if (userId) {
+      const limited = await isRateLimited(`services:write:user:${userId}`, 15, 60000);
+      if (limited) {
+        return NextResponse.json({ error: 'Too many requests. Please slow down.' }, { status: 429 });
+      }
+    } else {
+      const ip = getClientIp(req);
+      const limited = await isRateLimited(`services:write:ip:${ip}`, 15, 60000);
+      if (limited) {
+        return NextResponse.json({ error: 'Too many requests. Please slow down.' }, { status: 429 });
+      }
+    }
+
     const authStatus = await getProviderAndVerify();
     if (!authStatus.authorized) {
       return NextResponse.json({ error: authStatus.error }, { status: authStatus.status });
@@ -220,6 +269,20 @@ export async function PUT(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
+    const { userId } = await auth();
+    if (userId) {
+      const limited = await isRateLimited(`services:write:user:${userId}`, 15, 60000);
+      if (limited) {
+        return NextResponse.json({ error: 'Too many requests. Please slow down.' }, { status: 429 });
+      }
+    } else {
+      const ip = getClientIp(req);
+      const limited = await isRateLimited(`services:write:ip:${ip}`, 15, 60000);
+      if (limited) {
+        return NextResponse.json({ error: 'Too many requests. Please slow down.' }, { status: 429 });
+      }
+    }
+
     const authStatus = await getProviderAndVerify();
     if (!authStatus.authorized) {
       return NextResponse.json({ error: authStatus.error }, { status: authStatus.status });

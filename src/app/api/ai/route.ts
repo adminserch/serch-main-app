@@ -1,8 +1,36 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { auth } from '@clerk/nextjs/server';
+import { isRateLimited } from '@/lib/rate-limiter';
+
+function getClientIp(req: Request): string {
+  const xForwardedFor = req.headers.get('x-forwarded-for');
+  if (xForwardedFor) {
+    const ips = xForwardedFor.split(',');
+    const clientIp = ips[0].trim();
+    if (clientIp) return clientIp;
+  }
+  const xRealIp = req.headers.get('x-real-ip');
+  if (xRealIp) return xRealIp.trim();
+  return '127.0.0.1';
+}
 
 export async function POST(req: Request) {
   try {
+    // Determine user identity or client IP for rate limiting
+    const { userId } = await auth();
+    const ip = getClientIp(req);
+    const rateLimitKey = userId ? `ai:user:${userId}` : `ai:ip:${ip}`;
+    
+    // Limit: 10 requests per 1 minute (60000ms)
+    const limited = await isRateLimited(rateLimitKey, 10, 60000);
+    if (limited) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please slow down and try again shortly.' },
+        { status: 429 }
+      );
+    }
+
     const { message, bookings } = await req.json();
 
     const apiKey = process.env.OPENAI_API_KEY || '';
