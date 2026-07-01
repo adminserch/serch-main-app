@@ -35,14 +35,14 @@ export async function isRateLimited(key: string, limit: number, windowMs: number
     });
 
     if (error) {
-      console.error('Rate limiter database error (rpc):', error);
-      return false; // Fail open: allow request when database is unavailable
+      // Fail open: allow request when database is unavailable
+      return false;
     }
 
     return !!data;
   } catch (error) {
-    console.error('Unhandled rate limiter error:', error);
-    return false; // Fail open: allow request on unhandled exception
+    // Fail open: allow request on unhandled exception
+    return false;
   }
 }
 
