@@ -1193,7 +1193,7 @@ function AdminDashboardContent() {
                     <button
                       type="submit"
                       disabled={uploadingLogo}
-                      className="px-4 py-2.5 bg-primary hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+                      className="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
                     >
                       {uploadingLogo ? (
                         <>
@@ -1532,7 +1532,7 @@ function AdminDashboardContent() {
                     <button
                       type="submit"
                       disabled={uploadingLogo}
-                      className="px-4 py-2.5 bg-primary hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+                      className="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
                     >
                       {uploadingLogo ? (
                         <>
@@ -1760,7 +1760,7 @@ function AdminDashboardContent() {
                     <button
                       type="submit"
                       disabled={submittingCategory}
-                      className="w-full bg-primary hover:bg-slate-800 text-white font-semibold text-xs py-3 rounded-xl transition-all shadow-sm mt-2 flex items-center justify-center gap-1.5"
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs py-3 rounded-xl transition-all shadow-sm mt-2 flex items-center justify-center gap-1.5"
                     >
                       {submittingCategory ? (
                         <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>

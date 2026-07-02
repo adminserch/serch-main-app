@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import { useSearchParamsState } from '@/hooks/useSearchParamsState';
 import LocalServiceSearch from '@/components/search/LocalServiceSearch';
 import { useCategories } from '@/hooks/useCategories';
+import { useQuery } from '@tanstack/react-query';
 
 const MAX_COMPARE_PROVIDERS = 4;
 
@@ -107,16 +108,16 @@ function SearchContent() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const selectedCategory = searchState.category;
-  const [providers, setProviders] = useState<Provider[]>([]);
   const [compareList, setCompareList] = useState<Provider[]>([]);
   const { categories: dbCategories } = useCategories();
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
 
   useEffect(() => {
+    let active = true;
     async function loadUserRole() {
       if (!user) {
-        setCurrentProviderId(null);
+        if (active) setCurrentProviderId(null);
         return;
       }
       try {
@@ -125,6 +126,7 @@ function SearchContent() {
           .select('id, role')
           .eq('clerk_user_id', user.id)
           .single();
+        if (!active) return;
         if (userData) {
           if (userData.role === 'provider') {
             const { data: provData } = await supabase
@@ -132,6 +134,7 @@ function SearchContent() {
               .select('id')
               .eq('user_id', userData.id)
               .single();
+            if (!active) return;
             if (provData) {
               setCurrentProviderId(provData.id);
             } else {
@@ -144,10 +147,13 @@ function SearchContent() {
           setCurrentProviderId(null);
         }
       } catch {
-        setCurrentProviderId(null);
+        if (active) setCurrentProviderId(null);
       }
     }
     loadUserRole();
+    return () => {
+      active = false;
+    };
   }, [user]);
 
   // Reset pagination on filter changes
@@ -165,92 +171,98 @@ function SearchContent() {
     selectedCategory
   ]);
 
-  // Load providers from DB or fallback
-  useEffect(() => {
-    async function loadProviders() {
-      try {
-        const { data: dbProviders, error } = await supabase
-          .from('providers')
-          .select(`
-            id,
-            business_name,
-            description,
-            logo_url,
-            service_city,
-            service_district,
-            is_verified,
-            latitude,
-            longitude,
-            status,
-            service_categories
-          `)
-          .eq('status', 'approved');
+  interface DbProvider {
+    id: string;
+    business_name: string;
+    description: string | null;
+    logo_url: string | null;
+    service_city: string;
+    service_district: string | null;
+    is_verified: boolean;
+    latitude: number | null;
+    longitude: number | null;
+    status: string;
+    service_categories: string[] | null;
+  }
 
-        interface DbProvider {
-          id: string;
-          business_name: string;
-          description: string | null;
-          logo_url: string | null;
-          service_city: string;
-          service_district: string | null;
-          is_verified: boolean;
-          latitude: number | null;
-          longitude: number | null;
-          status: string;
-          service_categories: string[] | null;
-        }
+  // Load providers using React Query (staleTime 5 minutes)
+  const { data: queryProviders, isError } = useQuery({
+    queryKey: ['providers', 'search', currentProviderId],
+    queryFn: async () => {
+      let query = supabase
+        .from('providers')
+        .select(`
+          id,
+          business_name,
+          description,
+          logo_url,
+          service_city,
+          service_district,
+          is_verified,
+          latitude,
+          longitude,
+          status,
+          service_categories
+        `)
+        .eq('status', 'approved');
 
-        interface ReviewRow {
-          rating: number;
-        }
-
-        if (!error && dbProviders && dbProviders.length > 0) {
-          const typedDbProviders = dbProviders as DbProvider[];
-          // Filter out the logged-in provider
-          const filteredDbProviders = currentProviderId
-            ? typedDbProviders.filter((p: DbProvider) => p.id !== currentProviderId)
-            : typedDbProviders;
-
-          const formatted = await Promise.all(
-            filteredDbProviders.map(async (p: DbProvider) => {
-              const { data: revData } = await supabase
-                .from('reviews')
-                .select('rating')
-                .eq('provider_id', p.id);
-
-              const count = revData?.length || 0;
-              const avg = count > 0
-                ? Number(((revData as ReviewRow[]).reduce((acc: number, curr: ReviewRow) => acc + curr.rating, 0) / count).toFixed(2))
-                : 5.0;
-
-              return {
-                id: p.id,
-                business_name: p.business_name,
-                description: p.description || '',
-                logo_url: p.logo_url,
-                service_city: p.service_city,
-                service_district: p.service_district || '',
-                is_verified: p.is_verified,
-                latitude: p.latitude,
-                longitude: p.longitude,
-                avg_rating: avg,
-                review_count: count,
-                price_level: '$$', // default
-                categories: p.service_categories || []
-              };
-            })
-          );
-          setProviders(formatted);
-
-        } else {
-          setProviders(STATIC_PROVIDERS);
-        }
-      } catch {
-        setProviders(STATIC_PROVIDERS);
+      if (currentProviderId) {
+        query = query.neq('id', currentProviderId);
       }
-    }
-    loadProviders();
-  }, [currentProviderId]);
+
+      const { data: dbProviders, error } = await query;
+      if (error) throw error;
+      if (!dbProviders) return [];
+
+      const typedDbProviders = dbProviders as DbProvider[];
+      const dbIds = typedDbProviders.map(p => p.id);
+
+      if (dbIds.length === 0) return [];
+
+      // Batch fetch all reviews
+      const { data: allReviews, error: reviewsError } = await supabase
+        .from('reviews')
+        .select('provider_id, rating')
+        .in('provider_id', dbIds);
+
+      const reviewsMap: Record<string, number[]> = {};
+      if (!reviewsError && allReviews) {
+        allReviews.forEach((r: { provider_id: string; rating: number }) => {
+          if (!reviewsMap[r.provider_id]) {
+            reviewsMap[r.provider_id] = [];
+          }
+          reviewsMap[r.provider_id].push(r.rating);
+        });
+      }
+
+      return typedDbProviders.map(p => {
+        const ratings = reviewsMap[p.id] || [];
+        const count = ratings.length;
+        const avg = count > 0
+          ? Number((ratings.reduce((acc, curr) => acc + curr, 0) / count).toFixed(2))
+          : 5.0;
+
+        return {
+          id: p.id,
+          business_name: p.business_name,
+          description: p.description || '',
+          logo_url: p.logo_url,
+          service_city: p.service_city,
+          service_district: p.service_district || '',
+          is_verified: p.is_verified,
+          latitude: p.latitude,
+          longitude: p.longitude,
+          avg_rating: avg,
+          review_count: count,
+          price_level: '$$',
+          categories: p.service_categories || []
+        };
+      });
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const providers = isError ? STATIC_PROVIDERS : (queryProviders || []);
 
   // Helper to calculate distance in km using Haversine formula
   const getDistanceInKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
