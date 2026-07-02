@@ -8,7 +8,7 @@ import NewsletterForm from './NewsletterForm';
 export default function Footer() {
 
   return (
-    <footer className="bg-[#001a4d] text-white pt-24 pb-12 font-sans" data-purpose="footer">
+    <footer className="bg-[#001a4d] text-white pt-24 pb-28 md:pb-12 font-sans" data-purpose="footer">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
           <div className="md:col-span-4">

@@ -327,7 +327,7 @@ export default function Navbar() {
       )}
 
       {/* Mobile Sticky Bottom Navbar */}
-      <div className={`fixed bottom-0 left-0 right-0 z-50 backdrop-blur-md border-t flex justify-around items-center md:hidden shadow-lg py-2.5 px-4 transition-colors duration-300 ${isDark ? 'bg-slate-950/90 border-slate-800' : 'bg-white/90 border-champagne/60'
+      <div className={`fixed bottom-0 left-0 right-0 z-50 backdrop-blur-md border-t flex justify-around items-center md:hidden shadow-lg pt-2.5 pb-[calc(10px+env(safe-area-inset-bottom,0px))] px-4 transition-colors duration-300 ${isDark ? 'bg-slate-950/90 border-slate-800' : 'bg-white/90 border-champagne/60'
         }`}>
         <Link href="/" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/' ? 'text-purple-600' : 'text-stone-400 hover:text-stone-600 dark:text-slate-400 dark:hover:text-slate-300'}`}>
           <Home className="w-5 h-5" />
