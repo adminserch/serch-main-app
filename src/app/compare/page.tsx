@@ -151,8 +151,10 @@ function CompareContent() {
             .select('provider_id, rating')
             .in('provider_id', dbIds);
 
+          if (reviewsError) throw reviewsError;
+
           const reviewsMap: Record<string, number[]> = {};
-          if (!reviewsError && allReviews) {
+          if (allReviews) {
             allReviews.forEach((r: { provider_id: string; rating: number }) => {
               if (!reviewsMap[r.provider_id]) {
                 reviewsMap[r.provider_id] = [];
@@ -168,8 +170,10 @@ function CompareContent() {
             .in('provider_id', dbIds)
             .eq('is_active', true);
 
+          if (servicesError) throw servicesError;
+
           const servicesMap: Record<string, number[]> = {};
-          if (!servicesError && allServices) {
+          if (allServices) {
             allServices.forEach((s: { provider_id: string; price: number }) => {
               if (!servicesMap[s.provider_id]) {
                 servicesMap[s.provider_id] = [];
@@ -279,7 +283,7 @@ function CompareContent() {
         {isError && (
           <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 text-red-800 dark:text-red-400 rounded-2xl text-sm flex flex-col gap-1 font-sans">
             <span className="font-bold">Failed to load real-time provider comparison details.</span>
-            <span>We've loaded standard demo providers instead. Error: {error instanceof Error ? error.message : "Unknown error"}</span>
+            <span>We have loaded standard demo providers instead. Please try again later.</span>
           </div>
         )}
 
@@ -300,7 +304,15 @@ function CompareContent() {
         ) : (
           <div className="flex overflow-x-auto snap-x snap-mandatory pb-6 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 scrollbar-none scroll-smooth">
             {displayProviders.map((p) => {
-              const isSupabaseUrl = p.logo_url?.includes('tadcpqqrszwpkudtsvgr.supabase.co');
+              let isSupabaseUrl = false;
+              if (p.logo_url) {
+                try {
+                  const url = new URL(p.logo_url);
+                  isSupabaseUrl = url.hostname === 'tadcpqqrszwpkudtsvgr.supabase.co';
+                } catch (_) {
+                  isSupabaseUrl = false;
+                }
+              }
               return (
                 <div
                   key={p.id}
@@ -406,12 +418,18 @@ function CompareContent() {
 
                   {/* Actions Footer */}
                   <div className="p-6 pt-0 border-t border-slate-100 dark:border-zinc-800/50 bg-stone-50/50 dark:bg-zinc-900/10 flex flex-col gap-2.5">
-                    <Link
-                      href={`/providers/${p.id}`}
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs py-3 rounded-2xl transition-all shadow-md shadow-purple-600/10 text-center block"
-                    >
-                      View Full Profile & Book
-                    </Link>
+                    {!p.id.startsWith('static-') ? (
+                      <Link
+                        href={`/providers/${p.id}`}
+                        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs py-3 rounded-2xl transition-all shadow-md shadow-purple-600/10 text-center block"
+                      >
+                        View Full Profile & Book
+                      </Link>
+                    ) : (
+                      <div className="w-full bg-slate-200 dark:bg-zinc-800 text-slate-400 dark:text-zinc-650 font-bold text-xs py-3 rounded-2xl text-center cursor-not-allowed">
+                        Demo Provider (Booking Unavailable)
+                      </div>
+                    )}
                   </div>
                 </div>
               );
