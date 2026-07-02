@@ -200,7 +200,7 @@ export default function Navbar() {
 
             <button 
               aria-label="Notifications (coming soon)"
-              onClick={() => alert("Notifications feature is coming soon!")}
+              onClick={() => {}}
               className="text-[#5a5f63] hover:text-purple-600 transition-colors relative p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
             >
               <Bell className="w-5 h-5" />

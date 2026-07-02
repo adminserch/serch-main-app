@@ -661,7 +661,7 @@ function AdminDashboardContent() {
                   });
                   setShowCreateModal(true);
                 }}
-                className="px-4 py-2.5 bg-primary hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-black rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm"
+                className="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm"
               >
                 <Plus className="w-4 h-4" /> Add Provider
               </button>
@@ -1611,7 +1611,7 @@ function AdminDashboardContent() {
                   setCategoryFormActive(true);
                   setShowCategoryForm(true);
                 }}
-                className="bg-primary hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-xs px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
               >
                 <Plus className="w-4 h-4" /> Add Category
               </button>
