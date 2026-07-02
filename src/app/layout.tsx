@@ -1,12 +1,19 @@
 import Providers from "@/components/Providers";
 import ConsentBanner from "@/components/ConsentBanner";
 import { ClerkProvider } from "@clerk/nextjs";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Serch - Find Trusted Services Near You — Fast",
   description: "Curated local services marketplace for cleaning, repair, and renovations.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
