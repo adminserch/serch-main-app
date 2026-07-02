@@ -4,19 +4,19 @@
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 import { supabase } from '@/lib/supabase';
-import { useAuth, useUser } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';
 import {
-  ShieldCheck,
   Star,
-  X,
   Home
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Suspense, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useSearchParamsState } from '@/hooks/useSearchParamsState';
 import LocalServiceSearch from '@/components/search/LocalServiceSearch';
 import { useCategories } from '@/hooks/useCategories';
+import { useQuery } from '@tanstack/react-query';
 
 const MAX_COMPARE_PROVIDERS = 4;
 
@@ -101,42 +101,23 @@ const STATIC_PROVIDERS: Provider[] = [
 
 function SearchContent() {
   const { state: searchState, updateState } = useSearchParamsState();
+  const router = useRouter();
 
-  const { isSignedIn } = useAuth();
   const { user } = useUser();
-  const [dbRole, setDbRole] = useState<string | null>(null);
   const [currentProviderId, setCurrentProviderId] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const selectedCategory = searchState.category;
-  const [providers, setProviders] = useState<Provider[]>([]);
   const [compareList, setCompareList] = useState<Provider[]>([]);
-  const [showCompareDrawer, setShowCompareDrawer] = useState(false);
-  const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
-  const [isDark, setIsDark] = useState(false);
   const { categories: dbCategories } = useCategories();
   const [showAllCategories, setShowAllCategories] = useState(false);
-
-  // Sync theme with HTML class and global events
-  useEffect(() => {
-    function checkTheme() {
-      if (typeof window !== 'undefined') {
-        const isDarkTheme = document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
-        setIsDark(isDarkTheme);
-      }
-    }
-    checkTheme();
-    window.addEventListener('theme-change', checkTheme);
-    return () => window.removeEventListener('theme-change', checkTheme);
-  }, []);
-
-  // Sync theme with HTML class and global events
+  const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
 
   useEffect(() => {
+    let active = true;
     async function loadUserRole() {
       if (!user) {
-        setDbRole(null);
-        setCurrentProviderId(null);
+        if (active) setCurrentProviderId(null);
         return;
       }
       try {
@@ -145,14 +126,15 @@ function SearchContent() {
           .select('id, role')
           .eq('clerk_user_id', user.id)
           .single();
+        if (!active) return;
         if (userData) {
-          setDbRole(userData.role);
           if (userData.role === 'provider') {
             const { data: provData } = await supabase
               .from('providers')
               .select('id')
               .eq('user_id', userData.id)
               .single();
+            if (!active) return;
             if (provData) {
               setCurrentProviderId(provData.id);
             } else {
@@ -162,15 +144,16 @@ function SearchContent() {
             setCurrentProviderId(null);
           }
         } else {
-          setDbRole(null);
           setCurrentProviderId(null);
         }
-      } catch (err) {
-        setDbRole(null);
-        setCurrentProviderId(null);
+      } catch {
+        if (active) setCurrentProviderId(null);
       }
     }
     loadUserRole();
+    return () => {
+      active = false;
+    };
   }, [user]);
 
   // Reset pagination on filter changes
@@ -188,97 +171,98 @@ function SearchContent() {
     selectedCategory
   ]);
 
-  // Load providers from DB or fallback
-  useEffect(() => {
-    async function loadProviders() {
-      try {
-        const { data: dbProviders, error } = await supabase
-          .from('providers')
-          .select(`
-            id,
-            business_name,
-            description,
-            logo_url,
-            service_city,
-            service_district,
-            is_verified,
-            latitude,
-            longitude,
-            status,
-            service_categories
-          `)
-          .eq('status', 'approved');
+  interface DbProvider {
+    id: string;
+    business_name: string;
+    description: string | null;
+    logo_url: string | null;
+    service_city: string;
+    service_district: string | null;
+    is_verified: boolean;
+    latitude: number | null;
+    longitude: number | null;
+    status: string;
+    service_categories: string[] | null;
+  }
 
-        interface DbProvider {
-          id: string;
-          business_name: string;
-          description: string | null;
-          logo_url: string | null;
-          service_city: string;
-          service_district: string | null;
-          is_verified: boolean;
-          latitude: number | null;
-          longitude: number | null;
-          status: string;
-          service_categories: string[] | null;
-        }
+  // Load providers using React Query (staleTime 5 minutes)
+  const { data: queryProviders, isError } = useQuery({
+    queryKey: ['providers', 'search', currentProviderId],
+    queryFn: async () => {
+      let query = supabase
+        .from('providers')
+        .select(`
+          id,
+          business_name,
+          description,
+          logo_url,
+          service_city,
+          service_district,
+          is_verified,
+          latitude,
+          longitude,
+          status,
+          service_categories
+        `)
+        .eq('status', 'approved');
 
-        interface ReviewRow {
-          rating: number;
-        }
-
-        if (!error && dbProviders && dbProviders.length > 0) {
-          const typedDbProviders = dbProviders as DbProvider[];
-          // Filter out the logged-in provider
-          const filteredDbProviders = currentProviderId
-            ? typedDbProviders.filter((p: DbProvider) => p.id !== currentProviderId)
-            : typedDbProviders;
-
-          const formatted = await Promise.all(
-            filteredDbProviders.map(async (p: DbProvider) => {
-              const { data: revData } = await supabase
-                .from('reviews')
-                .select('rating')
-                .eq('provider_id', p.id);
-
-              const count = revData?.length || 0;
-              const avg = count > 0 
-                ? Number(((revData as ReviewRow[]).reduce((acc: number, curr: ReviewRow) => acc + curr.rating, 0) / count).toFixed(2)) 
-                : 5.0;
-
-              return {
-                id: p.id,
-                business_name: p.business_name,
-                description: p.description || '',
-                logo_url: p.logo_url,
-                service_city: p.service_city,
-                service_district: p.service_district || '',
-                is_verified: p.is_verified,
-                latitude: p.latitude,
-                longitude: p.longitude,
-                avg_rating: avg,
-                review_count: count,
-                price_level: '$$', // default
-                categories: p.service_categories || []
-              };
-            })
-          );
-          setProviders(formatted);
-          
-          // Center on first provider with coordinates
-          const withCoords = formatted.find(f => f.latitude && f.longitude);
-          if (withCoords) {
-            setSelectedProviderId(withCoords.id);
-          }
-        } else {
-          setProviders(STATIC_PROVIDERS);
-        }
-      } catch (err) {
-        setProviders(STATIC_PROVIDERS);
+      if (currentProviderId) {
+        query = query.neq('id', currentProviderId);
       }
-    }
-    loadProviders();
-  }, [currentProviderId]);
+
+      const { data: dbProviders, error } = await query;
+      if (error) throw error;
+      if (!dbProviders) return [];
+
+      const typedDbProviders = dbProviders as DbProvider[];
+      const dbIds = typedDbProviders.map(p => p.id);
+
+      if (dbIds.length === 0) return [];
+
+      // Batch fetch all reviews
+      const { data: allReviews, error: reviewsError } = await supabase
+        .from('reviews')
+        .select('provider_id, rating')
+        .in('provider_id', dbIds);
+
+      const reviewsMap: Record<string, number[]> = {};
+      if (!reviewsError && allReviews) {
+        allReviews.forEach((r: { provider_id: string; rating: number }) => {
+          if (!reviewsMap[r.provider_id]) {
+            reviewsMap[r.provider_id] = [];
+          }
+          reviewsMap[r.provider_id].push(r.rating);
+        });
+      }
+
+      return typedDbProviders.map(p => {
+        const ratings = reviewsMap[p.id] || [];
+        const count = ratings.length;
+        const avg = count > 0
+          ? Number((ratings.reduce((acc, curr) => acc + curr, 0) / count).toFixed(2))
+          : 5.0;
+
+        return {
+          id: p.id,
+          business_name: p.business_name,
+          description: p.description || '',
+          logo_url: p.logo_url,
+          service_city: p.service_city,
+          service_district: p.service_district || '',
+          is_verified: p.is_verified,
+          latitude: p.latitude,
+          longitude: p.longitude,
+          avg_rating: avg,
+          review_count: count,
+          price_level: '$$',
+          categories: p.service_categories || []
+        };
+      });
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const providers = isError ? STATIC_PROVIDERS : (queryProviders || []);
 
   // Helper to calculate distance in km using Haversine formula
   const getDistanceInKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -294,10 +278,10 @@ function SearchContent() {
 
   // Filter logic
   const filteredProviders = providers.filter((p) => {
-    const matchesQuery = searchState.query 
-      ? p.business_name.toLowerCase().includes(searchState.query.toLowerCase()) || 
-        p.description.toLowerCase().includes(searchState.query.toLowerCase()) ||
-        p.categories?.some(cat => cat.toLowerCase().includes(searchState.query.toLowerCase()))
+    const matchesQuery = searchState.query
+      ? p.business_name.toLowerCase().includes(searchState.query.toLowerCase()) ||
+      p.description.toLowerCase().includes(searchState.query.toLowerCase()) ||
+      p.categories?.some(cat => cat.toLowerCase().includes(searchState.query.toLowerCase()))
       : true;
 
     // Location filter: if we have user coords from geolocation search, filter by radius (km)
@@ -347,18 +331,18 @@ function SearchContent() {
     }
   };
 
-  const categoriesList = dbCategories.length > 0 
+  const categoriesList = dbCategories.length > 0
     ? [{ id: 'all', name: 'All Services' }, ...dbCategories.map(c => ({ id: c.name, name: c.name }))]
     : [
-        { id: 'all', name: 'All Services' },
-        { id: 'Home Cleaning', name: 'Home Services' },
-        { id: 'Maintenance', name: 'Maintenance' },
-        { id: 'Creative Services', name: 'Creative Services' },
-        { id: 'Lessons', name: 'Academic Lessons' }
-      ];
+      { id: 'all', name: 'All Services' },
+      { id: 'Home Cleaning', name: 'Home Services' },
+      { id: 'Maintenance', name: 'Maintenance' },
+      { id: 'Creative Services', name: 'Creative Services' },
+      { id: 'Lessons', name: 'Academic Lessons' }
+    ];
 
-  const displayedCategories = showAllCategories 
-    ? categoriesList 
+  const displayedCategories = showAllCategories
+    ? categoriesList
     : categoriesList.slice(0, 5);
 
   return (
@@ -378,11 +362,10 @@ function SearchContent() {
             <button
               key={cat.id}
               onClick={() => updateState({ category: cat.id })}
-              className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all border ${
-                selectedCategory === cat.id
+              className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all border ${selectedCategory === cat.id
                   ? 'bg-purple-600 border-purple-600 text-white shadow-md shadow-purple-600/10'
                   : 'bg-card-bg border-stone-200 dark:border-zinc-800 text-slate-700 dark:text-slate-350 hover:bg-stone-50 dark:hover:bg-zinc-800'
-              }`}
+                }`}
             >
               {cat.name}
             </button>
@@ -445,11 +428,10 @@ function SearchContent() {
                       onClick={() => {
                         setSelectedProviderId(p.id);
                       }}
-                      className={`group bg-card-bg rounded-2xl overflow-hidden border ghost-border card-hover transition-all duration-500 flex flex-col justify-between cursor-pointer ${
-                        selectedProviderId === p.id
+                      className={`group bg-card-bg rounded-2xl overflow-hidden border ghost-border card-hover transition-all duration-500 flex flex-col justify-between cursor-pointer ${selectedProviderId === p.id
                           ? 'border-primary ring-2 ring-primary/20'
                           : 'border-champagne/60 dark:border-zinc-800'
-                      }`}
+                        }`}
                     >
                       <div>
                         <div className="h-48 relative overflow-hidden bg-slate-100 dark:bg-zinc-900 flex items-center justify-center">
@@ -500,13 +482,12 @@ function SearchContent() {
                               e.stopPropagation();
                               toggleCompare(p);
                             }}
-                            className={`flex-grow font-label text-sm font-semibold py-3 rounded-xl transition-all border ${
-                              isCompared
+                            className={`flex-grow font-label text-sm font-semibold py-3 rounded-xl transition-all border ${isCompared
                                 ? 'bg-primary/10 border-primary text-primary'
                                 : compareList.length >= MAX_COMPARE_PROVIDERS
-                                ? 'bg-stone-100 dark:bg-zinc-800 text-stone-400 dark:text-stone-500 border-transparent cursor-not-allowed'
-                                : 'bg-surface-container-high hover:bg-surface-container-highest text-on-surface border-transparent'
-                            }`}
+                                  ? 'bg-stone-100 dark:bg-zinc-800 text-stone-400 dark:text-stone-500 border-transparent cursor-not-allowed'
+                                  : 'bg-surface-container-high hover:bg-surface-container-highest text-on-surface border-transparent'
+                              }`}
                           >
                             {isCompared ? 'Compared' : 'Compare'}
                           </button>
@@ -549,7 +530,7 @@ function SearchContent() {
                   {/* Render page numbers */}
                   {Array.from({ length: totalPages }).map((_, i) => {
                     const pageNum = i + 1;
-                    
+
                     const isFirst = pageNum === 1;
                     const isLast = pageNum === totalPages;
                     const isWithinRange = Math.abs(pageNum - currentPage) <= 1;
@@ -559,11 +540,10 @@ function SearchContent() {
                         <button
                           key={pageNum}
                           onClick={() => setCurrentPage(pageNum)}
-                          className={`w-10 h-10 rounded-full font-bold transition-all cursor-pointer ${
-                            currentPage === pageNum
+                          className={`w-10 h-10 rounded-full font-bold transition-all cursor-pointer ${currentPage === pageNum
                               ? 'bg-primary text-white'
                               : 'hover:bg-surface-container text-on-surface-variant'
-                          }`}
+                            }`}
                         >
                           {pageNum}
                         </button>
@@ -615,65 +595,18 @@ function SearchContent() {
       {/* Footer */}
       <Footer />
 
-      {/* Floating Compare Drawer Trigger Bar */}
-      {compareList.length > 0 && !showCompareDrawer && (
+      {/* Floating Compare Trigger Bar */}
+      {compareList.length > 0 && (
         <div className="fixed bottom-6 right-6 z-50 animate-bounce">
           <button
-            onClick={() => setShowCompareDrawer(true)}
+            onClick={() => {
+              const ids = compareList.map(p => p.id).join(',');
+              router.push(`/compare?ids=${ids}`);
+            }}
             className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-3 rounded-full shadow-2xl flex items-center gap-2 hover:scale-105 transition-all"
           >
             <span>Compare Providers ({compareList.length})</span>
           </button>
-        </div>
-      )}
-
-      {/* Slide-Up Comparison Drawer */}
-      {showCompareDrawer && (
-        <div className="fixed inset-0 bg-slate-900/40 z-55 backdrop-blur-xs flex items-end justify-center">
-          <div className="bg-card-bg rounded-t-3xl shadow-2xl max-w-5xl w-full p-4 md:p-6 border-t border-champagne dark:border-zinc-800 max-h-[90vh] overflow-y-auto transform translate-y-0 transition-transform duration-300">
-            <div className="flex justify-between items-center border-b border-champagne/80 dark:border-zinc-800 pb-3 md:pb-4 mb-4 md:mb-6 transition-colors duration-300">
-              <h2 className="text-base md:text-lg font-bold font-display text-espresso">Side-by-Side Comparison</h2>
-              <button
-                onClick={() => setShowCompareDrawer(false)}
-                className="p-1.5 rounded-full hover:bg-stone-100 dark:hover:bg-zinc-800 text-stone-400 hover:text-stone-600"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="flex md:grid md:grid-cols-4 overflow-x-auto md:overflow-x-visible gap-4 border-b border-champagne/40 dark:border-zinc-800 pb-6 transition-colors duration-300 scrollbar-none snap-x snap-mandatory">
-              {compareList.map((p) => (
-                <div key={p.id} className="snap-center flex-shrink-0 w-[280px] md:w-auto md:flex-shrink border border-champagne/80 dark:border-zinc-800 rounded-2xl p-4 bg-stone-50 dark:bg-zinc-900/60 flex flex-col justify-between transition-colors duration-300">
-                  <div>
-                    <div className="flex items-center gap-1 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-purple-800 dark:text-purple-300 text-[10px] font-bold px-2 py-0.5 rounded-full w-max mb-3 transition-colors duration-300">
-                      <ShieldCheck className="w-3.5 h-3.5" /> VERIFIED
-                    </div>
-                    <h3 className="font-display font-bold text-espresso text-base mb-1 transition-colors duration-300">{p.business_name}</h3>
-                    <div className="flex items-center gap-1 text-xs text-slate-700 dark:text-slate-350 font-bold mb-3 transition-colors duration-300">
-                      <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                      <span>{p.avg_rating} ({p.review_count} reviews)</span>
-                    </div>
-
-                    <p className="text-[11px] text-stone-600 dark:text-stone-300 font-sans leading-relaxed mb-4 line-clamp-4 transition-colors duration-300">
-                      {p.description}
-                    </p>
-                  </div>
-
-                  <Link
-                    href={`/providers/${p.id}`}
-                    className="text-xs font-bold py-2 px-3 rounded-lg text-center transition-all mt-4 bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-600/10"
-                  >
-                    Book This Pro
-                  </Link>
-                </div>
-              ))}
-              {Array.from({ length: MAX_COMPARE_PROVIDERS - compareList.length }).map((_, i) => (
-                <div key={i} className="snap-center flex-shrink-0 w-[280px] md:w-auto md:flex-shrink border border-dashed border-stone-300 dark:border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center text-xs text-stone-400 dark:text-stone-500 bg-card-bg transition-colors duration-300">
-                  Add another expert to compare
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       )}
     </div>

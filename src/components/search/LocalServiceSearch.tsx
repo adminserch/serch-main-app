@@ -47,58 +47,100 @@ export default function LocalServiceSearch({
 
   const [showFilters, setShowFilters] = useState(variant === 'full');
   
+  // Local coordinate state to avoid URL pollution on the landing page
+  const [localCoords, setLocalCoords] = useState<{ lat: string; lng: string }>({
+    lat: state.lat,
+    lng: state.lng
+  });
+
   // Active dropdown states for full variant
   const [activeDropdown, setActiveDropdown] = useState<'distance' | 'rating' | 'price' | 'availability' | 'category' | null>(null);
   
   const { categories: dbCategories } = useCategories();
   const containerRef = useRef<HTMLDivElement>(null);
+  const lastGeocodedCoords = useRef<{ latitude: number; longitude: number } | null>(null);
+
+  // Helper to clear cached coordinates locally, in localStorage, and URL params
+  const clearCachedCoords = () => {
+    setLocalCoords({ lat: '', lng: '' });
+    localStorage.removeItem('default_seeker_lat');
+    localStorage.removeItem('default_seeker_lng');
+    if (variant !== 'landing') {
+      updateState({
+        lat: '',
+        lng: '',
+      }, { replace: true });
+    }
+  };
 
   // Load cached location on mount if no location is specified in URL query params
   useEffect(() => {
     if (typeof window !== 'undefined' && !state.location) {
       const cachedLoc = localStorage.getItem('default_seeker_location');
-      const cachedLat = localStorage.getItem('default_seeker_lat');
-      const cachedLng = localStorage.getItem('default_seeker_lng');
+      const cachedLat = localStorage.getItem('default_seeker_lat') || '';
+      const cachedLng = localStorage.getItem('default_seeker_lng') || '';
       if (cachedLoc) {
-        updateState({
-          location: cachedLoc,
-          lat: cachedLat || '',
-          lng: cachedLng || '',
-        }, { replace: true });
+        setLocalCoords({ lat: cachedLat, lng: cachedLng });
+        if (variant === 'landing') {
+          setLocationInput(cachedLoc);
+        } else {
+          updateState({
+            location: cachedLoc,
+            lat: cachedLat,
+            lng: cachedLng,
+          }, { replace: true });
+        }
       }
     }
-  }, [state.location, updateState]);
+  }, [state.location, updateState, variant]);
 
   // Handle Geolocation Success & Cache it
   useEffect(() => {
     if (status === 'success' && coords) {
+      if (
+        lastGeocodedCoords.current &&
+        lastGeocodedCoords.current.latitude === coords.latitude &&
+        lastGeocodedCoords.current.longitude === coords.longitude
+      ) {
+        return;
+      }
+      lastGeocodedCoords.current = {
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+      };
+
       const getAddress = async () => {
         try {
           const result = await reverseGeocode(coords.latitude, coords.longitude);
           if (result) {
             setLocationInput(result.formattedAddress);
+            setLocalCoords({
+              lat: coords.latitude.toString(),
+              lng: coords.longitude.toString()
+            });
             
             // Cache in localStorage
             localStorage.setItem('default_seeker_location', result.formattedAddress);
             localStorage.setItem('default_seeker_lat', coords.latitude.toString());
             localStorage.setItem('default_seeker_lng', coords.longitude.toString());
 
-            updateState({
-              location: result.formattedAddress,
-              lat: coords.latitude.toString(),
-              lng: coords.longitude.toString(),
-            }, { replace: true, pushToSearchPage: variant === 'landing' });
+            if (variant !== 'landing') {
+              updateState({
+                location: result.formattedAddress,
+                lat: coords.latitude.toString(),
+                lng: coords.longitude.toString(),
+              }, { replace: true, pushToSearchPage: false });
+            }
           } else {
             // Handle unknown location case: clear values
             setLocationInput('');
             localStorage.removeItem('default_seeker_location');
-            localStorage.removeItem('default_seeker_lat');
-            localStorage.removeItem('default_seeker_lng');
-            updateState({
-              location: '',
-              lat: '',
-              lng: '',
-            }, { replace: true });
+            clearCachedCoords();
+            if (variant !== 'landing') {
+              updateState({
+                location: '',
+              }, { replace: true });
+            }
           }
         } catch {
           // fail silently
@@ -123,13 +165,15 @@ export default function LocalServiceSearch({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const locationChanged = locationInput !== state.location;
-    const shouldResetCoords = locationChanged || !state.lat || !state.lng;
+    const targetLat = localCoords.lat;
+    const targetLng = localCoords.lng;
 
     if (locationInput) {
       localStorage.setItem('default_seeker_location', locationInput);
-      // Remove stale coordinates if location is manually typed and changes
-      if (shouldResetCoords) {
+      if (targetLat && targetLng) {
+        localStorage.setItem('default_seeker_lat', targetLat);
+        localStorage.setItem('default_seeker_lng', targetLng);
+      } else {
         localStorage.removeItem('default_seeker_lat');
         localStorage.removeItem('default_seeker_lng');
       }
@@ -142,20 +186,20 @@ export default function LocalServiceSearch({
     updateState({
       query: queryInput,
       location: locationInput,
-      ...(shouldResetCoords ? { lat: '', lng: '' } : {}),
+      lat: targetLat,
+      lng: targetLng,
     }, { pushToSearchPage: variant === 'landing' });
   };
 
   const handleClearLocation = () => {
     setLocationInput('');
     localStorage.removeItem('default_seeker_location');
-    localStorage.removeItem('default_seeker_lat');
-    localStorage.removeItem('default_seeker_lng');
-    updateState({
-      location: '',
-      lat: '',
-      lng: '',
-    }, { replace: true });
+    clearCachedCoords();
+    if (variant !== 'landing') {
+      updateState({
+        location: '',
+      }, { replace: true });
+    }
   };
 
   // Helper to toggle dropdowns
@@ -230,10 +274,7 @@ export default function LocalServiceSearch({
             value={locationInput}
             onChange={(e) => {
               setLocationInput(e.target.value);
-              // Clear coordinates when typing manually
-              if (state.lat || state.lng) {
-                updateState({ lat: '', lng: '' }, { replace: true });
-              }
+              clearCachedCoords();
             }}
           />
           <div className="absolute right-2 flex items-center gap-1.5">
